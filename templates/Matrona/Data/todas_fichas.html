@@ -1,0 +1,157 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-folder-fill text-danger"></i> 
+            Todas las Fichas Obstétricas
+        </h2>
+        <a href="{% url 'matrona:menu_matrona' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Menú
+        </a>
+    </div>
+
+    <!-- Búsqueda -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-search"></i> Buscar Fichas
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{% url 'matrona:todas_fichas' %}">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            name="q" 
+                            placeholder="Buscar por RUT, nombre de paciente o número de ficha"
+                            value="{{ query }}"
+                        >
+                    </div>
+                    <div class="col-md-2">
+                        <select name="activa" class="form-select">
+                            <option value="">Todas</option>
+                            <option value="true" {% if request.GET.activa == 'true' %}selected{% endif %}>Activas</option>
+                            <option value="false" {% if request.GET.activa == 'false' %}selected{% endif %}>Cerradas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Listado de Fichas -->
+    {% if fichas %}
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-check-circle"></i> 
+                    Se encontraron {{ fichas.count }} ficha(s)
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>N° Ficha</th>
+                                <th>Paciente</th>
+                                <th>RUT</th>
+                                <th>Matrona</th>
+                                <th>Fecha Creación</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ficha in fichas %}
+                            <tr>
+                                <td><strong>{{ ficha.numero_ficha }}</strong></td>
+                                <td>
+                                    {{ ficha.paciente.persona.Nombre }} 
+                                    {{ ficha.paciente.persona.Apellido_Paterno }}
+                                </td>
+                                <td>{{ ficha.paciente.persona.Rut }}</td>
+                                <td>
+                                    {{ ficha.matrona_responsable.persona.Nombre }} 
+                                    {{ ficha.matrona_responsable.persona.Apellido_Paterno }}
+                                </td>
+                                <td>{{ ficha.fecha_creacion|date:"d/m/Y" }}</td>
+                                <td>
+                                    {% if ficha.activa %}
+                                        <span class="badge bg-success">Activa</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Cerrada</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" 
+                                           class="btn btn-sm btn-info" 
+                                           title="Ver detalle">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        {% if ficha.activa %}
+                                        <a href="{% url 'matrona:editar_ficha' ficha.pk %}" 
+                                           class="btn btn-sm btn-warning" 
+                                           title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        {% if query %}
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i>
+                No se encontraron fichas con el criterio: <strong>{{ query }}</strong>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                No hay fichas registradas en el sistema
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <!-- Botón Volver -->
+    <div class="mt-4">
+        <a href="{% url 'matrona:menu_matrona' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Menú
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('✅ Listado de todas las fichas cargado');
+</script>
+{% endblock %}

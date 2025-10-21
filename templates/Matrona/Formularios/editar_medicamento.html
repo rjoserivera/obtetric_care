@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Medicamento{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'matrona:panel' %}">Panel Matrona</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'matrona:detalle_ficha' ficha.pk %}">Ficha {{ ficha.numero_ficha }}</a></li>
+            <li class="breadcrumb-item active">Editar Medicamento</li>
+        </ol>
+    </nav>
+
+    <!-- Título -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-danger">
+                <i class="bi bi-capsule"></i> Editar Medicamento
+            </h2>
+            <p class="text-muted">Modifique los datos del medicamento asignado</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información del Paciente -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-fill"></i> Datos del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Nombre:</strong>
+                        <p class="mb-2">{{ paciente.persona.Nombre }} {{ paciente.persona.Apellido_Paterno }} {{ paciente.persona.Apellido_Materno }}</p>
+                        <strong>RUT:</strong>
+                        <p class="mb-2">{{ paciente.persona.Rut }}</p>
+                    </div>
+                    <hr>
+                    <div>
+                        <strong>Ficha:</strong>
+                        <p class="mb-2">{{ ficha.numero_ficha }}</p>
+                        <strong>Estado:</strong>
+                        <span class="badge bg-success">Activa</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Edición -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pencil-square"></i> Modificar Datos del Medicamento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <h6 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Errores:</h6>
+                            <ul class="mb-0">
+                                {% for field, errors in form.errors.items %}
+                                    <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- Medicamento -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nombre_medicamento.id_for_label }}" class="form-label">
+                                    <i class="bi bi-capsule"></i> {{ form.nombre_medicamento.label }} 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.nombre_medicamento }}
+                            </div>
+
+                            <!-- Dosis -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.dosis.id_for_label }}" class="form-label">
+                                    <i class="bi bi-droplet"></i> {{ form.dosis.label }} 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.dosis }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Vía de Administración -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.via_administracion.id_for_label }}" class="form-label">
+                                    <i class="bi bi-signpost"></i> {{ form.via_administracion.label }} 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.via_administracion }}
+                            </div>
+
+                            <!-- Frecuencia -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.frecuencia.id_for_label }}" class="form-label">
+                                    <i class="bi bi-clock"></i> {{ form.frecuencia.label }} 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.frecuencia }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Fecha Inicio -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.fecha_inicio.id_for_label }}" class="form-label">
+                                    <i class="bi bi-calendar-check"></i> {{ form.fecha_inicio.label }} 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.fecha_inicio }}
+                            </div>
+
+                            <!-- Fecha Término -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.fecha_termino.id_for_label }}" class="form-label">
+                                    <i class="bi bi-calendar-x"></i> {{ form.fecha_termino.label }} 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.fecha_termino }}
+                            </div>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="mb-3">
+                            <label for="{{ form.observaciones.id_for_label }}" class="form-label">
+                                <i class="bi bi-chat-square-text"></i> {{ form.observaciones.label }}
+                            </label>
+                            {{ form.observaciones }}
+                            <small class="form-text text-muted">
+                                Indicaciones especiales, alergias o contraindicaciones
+                            </small>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-circle"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

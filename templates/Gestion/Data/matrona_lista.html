@@ -1,0 +1,244 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}Lista de Matronas - Sistema Obstétrico{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-heart-pulse text-success"></i>
+                    Lista de Matronas Registradas
+                </h2>
+                <a href="{% url 'gestion:registrar_matrona' %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Nueva Matrona
+                </a>
+            </div>
+            
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="buscar_nombre" class="form-label">Buscar por Nombre</label>
+                            <input type="text" class="form-control" id="buscar_nombre" name="nombre" 
+                                   placeholder="Nombre o apellido" value="{{ request.GET.nombre }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filtro_especialidad" class="form-label">Especialidad</label>
+                            <select class="form-select" id="filtro_especialidad" name="especialidad">
+                                <option value="">Todas</option>
+                                <option value="PARTO_NORMAL" {% if request.GET.especialidad == 'PARTO_NORMAL' %}selected{% endif %}>
+                                    Parto Normal
+                                </option>
+                                <option value="PARTO_ALTO_RIESGO" {% if request.GET.especialidad == 'PARTO_ALTO_RIESGO' %}selected{% endif %}>
+                                    Parto Alto Riesgo
+                                </option>
+                                <option value="NEONATOLOGIA" {% if request.GET.especialidad == 'NEONATOLOGIA' %}selected{% endif %}>
+                                    Neonatología
+                                </option>
+                                <option value="GENERAL" {% if request.GET.especialidad == 'GENERAL' %}selected{% endif %}>
+                                    General
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filtro_turno" class="form-label">Turno</label>
+                            <select class="form-select" id="filtro_turno" name="turno">
+                                <option value="">Todos</option>
+                                <option value="MAÑANA" {% if request.GET.turno == 'MAÑANA' %}selected{% endif %}>Mañana</option>
+                                <option value="TARDE" {% if request.GET.turno == 'TARDE' %}selected{% endif %}>Tarde</option>
+                                <option value="NOCHE" {% if request.GET.turno == 'NOCHE' %}selected{% endif %}>Noche</option>
+                                <option value="ROTATIVO" {% if request.GET.turno == 'ROTATIVO' %}selected{% endif %}>Rotativo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success me-2">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                            <a href="{% url 'gestion:lista_matronas' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Tabla de Matronas -->
+            <div class="card">
+                <div class="card-body">
+                    {% if matronas %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>RUT</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Especialidad</th>
+                                    <th>Registro Profesional</th>
+                                    <th>Experiencia</th>
+                                    <th>Turno</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for matrona in matronas %}
+                                <tr>
+                                    <td><strong>{{ matrona.persona.Rut }}</strong></td>
+                                    <td>
+                                        <i class="bi bi-person-heart text-success"></i>
+                                        {{ matrona.persona.Nombre }} {{ matrona.persona.Apellido }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">
+                                            {{ matrona.get_Especialidad_display }}
+                                        </span>
+                                    </td>
+                                    <td><code>{{ matrona.Registro_medico }}</code></td>
+                                    <td>
+                                        <i class="bi bi-award text-success"></i>
+                                        {{ matrona.Años_experiencia }} año{{ matrona.Años_experiencia|pluralize }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            {{ matrona.get_Turno_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if matrona.activo %}
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> Activa
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">
+                                                <i class="bi bi-x-circle"></i> Inactiva
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'gestion:detalle_persona' matrona.persona.pk %}" 
+                                           class="btn btn-sm btn-outline-success" title="Ver detalle">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Paginación -->
+                    {% if is_paginated %}
+                    <nav aria-label="Paginación" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">Primera</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                            </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+                            
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                    
+                    <!-- Estadísticas por Turno -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5 class="mb-3">
+                                <i class="bi bi-pie-chart"></i>
+                                Distribución por Turno
+                            </h5>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center bg-light">
+                                <div class="card-body">
+                                    <i class="bi bi-sunrise text-warning" style="font-size: 2rem;"></i>
+                                    <h4 class="mt-2">{{ turnos.manana|default:0 }}</h4>
+                                    <p class="mb-0 text-muted">Turno Mañana</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center bg-light">
+                                <div class="card-body">
+                                    <i class="bi bi-sun text-warning" style="font-size: 2rem;"></i>
+                                    <h4 class="mt-2">{{ turnos.tarde|default:0 }}</h4>
+                                    <p class="mb-0 text-muted">Turno Tarde</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center bg-light">
+                                <div class="card-body">
+                                    <i class="bi bi-moon-stars text-primary" style="font-size: 2rem;"></i>
+                                    <h4 class="mt-2">{{ turnos.noche|default:0 }}</h4>
+                                    <p class="mb-0 text-muted">Turno Noche</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center bg-light">
+                                <div class="card-body">
+                                    <i class="bi bi-arrow-repeat text-info" style="font-size: 2rem;"></i>
+                                    <h4 class="mt-2">{{ turnos.rotativo|default:0 }}</h4>
+                                    <p class="mb-0 text-muted">Turno Rotativo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-success mt-4">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Total de matronas activas:</strong> {{ matronas|length }}
+                    </div>
+                    
+                    {% else %}
+                    <div class="alert alert-info text-center" role="alert">
+                        <i class="bi bi-info-circle fs-1"></i>
+                        <h4 class="mt-3">No hay matronas registradas</h4>
+                        <p>Comience registrando una nueva matrona en el sistema.</p>
+                        <a href="{% url 'gestion:registrar_matrona' %}" class="btn btn-success">
+                            <i class="bi bi-plus-circle"></i> Registrar Primera Matrona
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

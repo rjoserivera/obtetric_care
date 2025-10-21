@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Desactivar Medicamento{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <!-- Card de Confirmación -->
+            <div class="card shadow border-warning">
+                <div class="card-header bg-warning">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pause-circle-fill"></i> Confirmar Desactivación
+                    </h4>
+                </div>
+                <div class="card-body">
+                    
+                    <div class="alert alert-info mb-4">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-info-circle"></i> Información
+                        </h5>
+                        <p class="mb-0">
+                            Al desactivar este medicamento, se suspenderá el tratamiento. 
+                            El medicamento permanecerá en el historial pero marcado como <strong>inactivo</strong>.
+                        </p>
+                    </div>
+
+                    <!-- Información del Medicamento -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning mb-3">
+                                <i class="bi bi-capsule-pill"></i> Datos del Medicamento
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Medicamento:</strong><br>{{ medicamento.nombre_medicamento }}</p>
+                                    <p><strong>Dosis:</strong><br>{{ medicamento.dosis }}</p>
+                                    <p><strong>Vía:</strong><br>{{ medicamento.via_administracion }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Frecuencia:</strong><br>{{ medicamento.frecuencia }}</p>
+                                    <p><strong>Vigencia:</strong><br>
+                                        {{ medicamento.fecha_inicio|date:"d/m/Y" }} - {{ medicamento.fecha_termino|date:"d/m/Y" }}
+                                    </p>
+                                    <p><strong>Estado Actual:</strong><br>
+                                        <span class="badge bg-success">Activo</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            {% if medicamento.observaciones %}
+                            <div class="mt-3 p-2 bg-light rounded">
+                                <strong>Observaciones:</strong>
+                                <p class="mb-0">{{ medicamento.observaciones }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Información de la Ficha -->
+                    <div class="mb-3">
+                        <p><strong>Ficha:</strong> {{ ficha.numero_ficha }}</p>
+                        <p><strong>Paciente:</strong> 
+                            {{ ficha.paciente.persona.Nombre }} 
+                            {{ ficha.paciente.persona.Apellido_Paterno }} 
+                            {{ ficha.paciente.persona.Apellido_Materno }}
+                        </p>
+                    </div>
+
+                    <!-- Razón de Desactivación (Opcional) -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="motivo" class="form-label">
+                                <i class="bi bi-chat-square-text"></i> Motivo de Suspensión (Opcional)
+                            </label>
+                            <textarea class="form-control" id="motivo" name="motivo" rows="3" 
+                                    placeholder="Ej: Reacción adversa, término del tratamiento, cambio de medicamento..."></textarea>
+                            <small class="form-text text-muted">
+                                Este motivo se agregará a las observaciones del medicamento
+                            </small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="bi bi-pause-circle"></i> Confirmar Desactivación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

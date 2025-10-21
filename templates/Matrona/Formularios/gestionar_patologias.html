@@ -1,0 +1,497 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}Gestionar Patologías - Ficha {{ ficha.numero_ficha }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'matrona:panel' %}">Panel Matrona</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'matrona:detalle_ficha' ficha.pk %}">Ficha {{ ficha.numero_ficha }}</a></li>
+            <li class="breadcrumb-item active">Gestionar Patologías</li>
+        </ol>
+    </nav>
+
+    <!-- Título -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-primary">
+                <i class="bi bi-clipboard2-pulse"></i> Gestionar Patologías
+            </h2>
+            <p class="text-muted">Seleccione del catálogo las patologías diagnosticadas a esta paciente</p>
+        </div>
+    </div>
+
+    <div class="row">
+        
+        <!-- Columna Izquierda: Info del Paciente -->
+        <div class="col-md-4 mb-4">
+            
+            <!-- Card Paciente -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-fill"></i> Datos del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Nombre:</strong><br>
+                        {{ paciente.persona.Nombre }} {{ paciente.persona.Apellido_Paterno }} {{ paciente.persona.Apellido_Materno }}
+                    </p>
+                    <p><strong>RUT:</strong> {{ paciente.persona.Rut }}</p>
+                    <p><strong>Ficha:</strong> {{ ficha.numero_ficha }}</p>
+                    <p><strong>Estado:</strong> <span class="badge bg-success">Activa</span></p>
+                </div>
+            </div>
+
+            <!-- Card Patologías Actuales -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> 
+                        Patologías Asociadas ({{ patologias_actuales.count }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if patologias_actuales %}
+                        <ul class="list-group">
+                            {% for patologia in patologias_actuales %}
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong class="text-primary">{{ patologia.codigo_cie10 }}</strong>
+                                    <br>
+                                    <small>{{ patologia.nombre }}</small>
+                                </div>
+                                <span class="badge bg-danger">
+                                    {{ patologia.gravedad }}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle"></i>
+                            No hay patologías asociadas actualmente.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Info del Catálogo -->
+            <div class="card shadow-sm mt-3 border-info">
+                <div class="card-body text-center">
+                    <i class="bi bi-info-circle text-info" style="font-size: 2rem;"></i>
+                    <p class="mb-2 mt-2"><strong>Catálogo de Patologías</strong></p>
+                    <p class="text-muted mb-0">
+                        <small>Total disponibles: <strong>{{ total_catalogo }}</strong></small>
+                        <br>
+                        <small class="text-info">Las patologías son gestionadas por el Médico</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Formulario -->
+        <div class="col-md-8 mb-4">
+            
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-check2-square"></i> Catálogo de Patologías
+                    </h5>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Buscador -->
+                    <div class="card mb-3 bg-light">
+                        <div class="card-body">
+                            <form method="GET" class="row g-3">
+                                <div class="col-md-10">
+                                    {{ buscar_form.busqueda }}
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-search"></i> Buscar
+                                    </button>
+                                </div>
+                            </form>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> 
+                                Busque por nombre, código CIE-10 o descripción
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje de ayuda -->
+                    <div class="alert alert-info">
+                        <i class="bi bi-lightbulb"></i>
+                        <strong>Instrucciones:</strong> 
+                        Marque con <strong>✓</strong> todas las patologías diagnosticadas a esta paciente. 
+                        Las patologías ya están en el catálogo gestionado por el médico.
+                        <br>
+                        <small class="text-muted">Mostrando: <strong>{{ total_disponibles }}</strong> patologías</small>
+                    </div>
+
+                    <!-- Formulario de Patologías -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <strong>Error:</strong> {{ form.errors }}
+                            </div>
+                        {% endif %}
+
+                        <!-- Lista de Patologías con Checkboxes -->
+                        <div class="patologias-container" style="max-height: 500px; overflow-y: auto;">
+                            {% if total_disponibles > 0 %}
+                                <div class="row">
+                                    {% for checkbox in form.patologias %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 patologia-item {% if checkbox.data.value in form.initial.patologias %}border-success bg-success-subtle{% endif %}">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    {{ checkbox.tag }}
+                                                    <label class="form-check-label w-100" for="{{ checkbox.id_for_label }}" style="cursor: pointer;">
+                                                        <div class="d-flex justify-content-between align-items-start">
+                                                            <div>
+                                                                <span class="badge bg-primary mb-1">{{ checkbox.choice_label|truncatewords:1 }}</span>
+                                                                <br>
+                                                                <strong class="text-dark">{{ checkbox.choice_label|slice:"8:" }}</strong>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    No se encontraron patologías con ese criterio de búsqueda.
+                                    <a href="{% url 'matrona:gestionar_patologias_ficha' ficha.pk %}" class="alert-link">
+                                        Ver todas
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Guardar Selección
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .patologia-item {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .patologia-item:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .patologia-item.border-success {
+        border-width: 2px !important;
+    }
+    
+    .bg-success-subtle {
+        background-color: #d4edda !important;
+    }
+    
+    .patologias-container {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        background-color: #f8f9fa;
+    }
+    
+    .form-check-input:checked + .form-check-label {
+        font-weight: bold;
+    }
+    
+    .form-check-input:checked + .form-check-label strong {
+        color: #28a745 !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Efecto visual al seleccionar/deseleccionar
+    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const card = this.closest('.patologia-item');
+            if (this.checked) {
+                card.classList.add('border-success', 'bg-success-subtle');
+            } else {
+                card.classList.remove('border-success', 'bg-success-subtle');
+            }
+        });
+    });
+    
+    // Hacer que toda la card sea clickeable
+    document.querySelectorAll('.patologia-item').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (e.target.type !== 'checkbox' && e.target.tagName !== 'LABEL') {
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+    
+    console.log('✅ Gestor de patologías cargado');
+    console.log('📋 Total en catálogo: {{ total_catalogo }}');
+</script>
+{% endblock %}
+{% load static %}
+
+{% block title %}Gestionar Patologías - Ficha {{ ficha.numero_ficha }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'matrona:panel' %}">Panel Matrona</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'matrona:detalle_ficha' ficha.pk %}">Ficha {{ ficha.numero_ficha }}</a></li>
+            <li class="breadcrumb-item active">Gestionar Patologías</li>
+        </ol>
+    </nav>
+
+    <!-- Título -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-primary">
+                <i class="bi bi-clipboard2-pulse"></i> Gestionar Patologías
+            </h2>
+            <p class="text-muted">Asigne una o varias patologías a esta ficha obstétrica</p>
+        </div>
+    </div>
+
+    <div class="row">
+        
+        <!-- Columna Izquierda: Info del Paciente -->
+        <div class="col-md-4 mb-4">
+            
+            <!-- Card Paciente -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-fill"></i> Datos del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Nombre:</strong><br>
+                        {{ paciente.persona.Nombre }} {{ paciente.persona.Apellido_Paterno }} {{ paciente.persona.Apellido_Materno }}
+                    </p>
+                    <p><strong>RUT:</strong> {{ paciente.persona.Rut }}</p>
+                    <p><strong>Ficha:</strong> {{ ficha.numero_ficha }}</p>
+                    <p><strong>Estado:</strong> <span class="badge bg-success">Activa</span></p>
+                </div>
+            </div>
+
+            <!-- Card Patologías Actuales -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> 
+                        Patologías Actuales ({{ patologias_actuales.count }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if patologias_actuales %}
+                        <ul class="list-group">
+                            {% for patologia in patologias_actuales %}
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>{{ patologia.codigo_cie10 }}</strong>
+                                    <br>
+                                    <small>{{ patologia.nombre }}</small>
+                                </div>
+                                <span class="badge bg-danger">
+                                    {{ patologia.gravedad }}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle"></i>
+                            No hay patologías asociadas actualmente.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Formulario -->
+        <div class="col-md-8 mb-4">
+            
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-check2-square"></i> Seleccionar Patologías
+                    </h5>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Buscador -->
+                    <div class="card mb-3 bg-light">
+                        <div class="card-body">
+                            <form method="GET" class="row g-3">
+                                <div class="col-md-10">
+                                    {{ buscar_form.busqueda }}
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-search"></i> Buscar
+                                    </button>
+                                </div>
+                            </form>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> 
+                                Busque por nombre o código CIE-10 para filtrar las patologías
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje de ayuda -->
+                    <div class="alert alert-info">
+                        <i class="bi bi-lightbulb"></i>
+                        <strong>Instrucciones:</strong> 
+                        Marque todas las patologías que desea asociar a esta ficha. 
+                        Total disponibles: <strong>{{ total_disponibles }}</strong>
+                    </div>
+
+                    <!-- Formulario de Patologías -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <strong>Error:</strong> {{ form.errors }}
+                            </div>
+                        {% endif %}
+
+                        <!-- Lista de Patologías con Checkboxes -->
+                        <div class="patologias-container" style="max-height: 500px; overflow-y: auto;">
+                            {% if total_disponibles > 0 %}
+                                <div class="row">
+                                    {% for checkbox in form.patologias %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 patologia-item {% if checkbox.data.value in form.initial.patologias %}border-success{% endif %}">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    {{ checkbox.tag }}
+                                                    <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                                                        <strong class="text-primary">{{ checkbox.choice_label }}</strong>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    No se encontraron patologías con ese criterio de búsqueda.
+                                    <a href="{% url 'matrona:gestionar_patologias_ficha' ficha.pk %}" class="alert-link">
+                                        Ver todas
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Guardar Patologías
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .patologia-item {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .patologia-item:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .patologia-item.border-success {
+        background-color: #d4edda;
+    }
+    
+    .patologias-container {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+    }
+    
+    .form-check-input:checked + .form-check-label {
+        font-weight: bold;
+        color: #28a745;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Efecto visual al seleccionar/deseleccionar
+    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const card = this.closest('.patologia-item');
+            if (this.checked) {
+                card.classList.add('border-success');
+                card.style.backgroundColor = '#d4edda';
+            } else {
+                card.classList.remove('border-success');
+                card.style.backgroundColor = '';
+            }
+        });
+    });
+    
+    // Hacer que toda la card sea clickeable
+    document.querySelectorAll('.patologia-item').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (e.target.type !== 'checkbox') {
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+</script>
+{% endblock %}

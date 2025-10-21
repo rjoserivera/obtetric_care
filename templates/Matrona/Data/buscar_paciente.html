@@ -1,0 +1,93 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}Buscar Paciente - Sistema Obstétrico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-search"></i> Buscar Paciente
+            </h4>
+        </div>
+        <div class="card-body">
+            <!-- Formulario de búsqueda -->
+            <form method="get" class="mb-4">
+                <div class="input-group">
+                    <input type="text" 
+                        name="q" 
+                        class="form-control" 
+                        placeholder="Buscar por RUT o nombre..."
+                        value="{{ query }}"
+                        autofocus>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+                <small class="form-text text-muted">
+                    Ingrese el RUT (ej: 12345678-9) o el nombre del paciente
+                </small>
+            </form>
+            
+            <!-- Resultados -->
+            {% if query %}
+                {% if pacientes %}
+                    <h5 class="mb-3">Resultados de búsqueda ({{ pacientes.count }} encontrados)</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>RUT</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Edad</th>
+                                    <th>Estado Civil</th>
+                                    <th>Previsión</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for paciente in pacientes %}
+                                <tr>
+                                    <td>{{ paciente.persona.Rut }}</td>
+                                    <td>{{ paciente.persona.Nombre }} {{ paciente.persona.Apellido }}</td>
+                                    <td>{{ paciente.Edad }} años</td>
+                                    <td>{{ paciente.get_Estado_civil_display }}</td>
+                                    <td>{{ paciente.get_Previcion_display }}</td>
+                                    <td>
+                                        <a href="{% url 'matrona:detalle_paciente' paciente.pk %}" 
+                                           class="btn btn-sm btn-info"
+                                           title="Ver detalle">
+                                            <i class="bi bi-eye"></i> Ver
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> 
+                        No se encontraron pacientes con el criterio de búsqueda: <strong>{{ query }}</strong>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> 
+                    Ingrese un RUT o nombre para buscar pacientes en el sistema.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a href="{% url 'matrona:registrar_paciente' %}" class="btn btn-danger">
+            <i class="bi bi-person-plus"></i> Registrar Nuevo Paciente
+        </a>
+        <a href="{% url 'home' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Inicio
+        </a>
+    </div>
+</div>
+{% endblock %}

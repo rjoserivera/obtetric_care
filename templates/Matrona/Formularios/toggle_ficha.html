@@ -1,0 +1,94 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if ficha.activa %}Desactivar{% else %}Activar{% endif %} Ficha - Sistema Obstétrico
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header {% if ficha.activa %}bg-warning{% else %}bg-success{% endif %} text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-toggle-on"></i>
+                        {% if ficha.activa %}
+                            ¿Desactivar esta ficha obstétrica?
+                        {% else %}
+                            ¿Activar esta ficha obstétrica?
+                        {% endif %}
+                    </h4>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Información de la ficha -->
+                    <div class="alert {% if ficha.activa %}alert-warning{% else %}alert-success{% endif %}">
+                        <h6><i class="bi bi-info-circle"></i> Datos de la ficha:</h6>
+                        <hr>
+                        <p class="mb-2">
+                            <strong>Número de Ficha:</strong> 
+                            <span class="badge bg-primary">{{ ficha.numero_ficha }}</span>
+                        </p>
+                        <p class="mb-2">
+                            <strong>Paciente:</strong> 
+                            {{ ficha.paciente.persona.Nombre }} {{ ficha.paciente.persona.Apellido }}
+                            ({{ ficha.paciente.persona.Rut }})
+                        </p>
+                        <p class="mb-2">
+                            <strong>Matrona Responsable:</strong> 
+                            {{ ficha.matrona_responsable.persona.Nombre }} {{ ficha.matrona_responsable.persona.Apellido }}
+                        </p>
+                        <p class="mb-2">
+                            <strong>Fórmula Obstétrica:</strong> 
+                            <span class="badge bg-info">{{ ficha.get_formula_obstetrica }}</span>
+                        </p>
+                        <p class="mb-2">
+                            <strong>Fecha de Creación:</strong> {{ ficha.fecha_creacion|date:"d/m/Y H:i" }}
+                        </p>
+                        <p class="mb-0">
+                            <strong>Estado actual:</strong> 
+                            {% if ficha.activa %}
+                                <span class="badge bg-success">Activa</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactiva</span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Mensaje informativo -->
+                    <div class="alert alert-info">
+                        <i class="bi bi-lightbulb"></i>
+                        <strong>Nota:</strong>
+                        {% if ficha.activa %}
+                            Al desactivar esta ficha, se <strong>mantendrá en el historial</strong> pero 
+                            no estará disponible para consultas activas.
+                        {% else %}
+                            Al activar esta ficha, estará <strong>disponible nuevamente</strong> para 
+                            consultas y ediciones.
+                        {% endif %}
+                    </div>
+
+                    <!-- Formulario de confirmación -->
+                    <form method="POST" class="mt-4">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn {% if ficha.activa %}btn-warning{% else %}btn-success{% endif %}">
+                                <i class="bi bi-check-circle"></i>
+                                {% if ficha.activa %}
+                                    Desactivar Ficha
+                                {% else %}
+                                    Activar Ficha
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

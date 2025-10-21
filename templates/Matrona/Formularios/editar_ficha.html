@@ -1,0 +1,436 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}Editar Ficha Obstétrica - Sistema Obstétrico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-pencil-square text-warning"></i>
+                    Editar Ficha Obstétrica: {{ ficha.numero_ficha }}
+                </h2>
+                <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancelar
+                </a>
+            </div>
+            
+            <!-- Información del Paciente -->
+            <div class="card mb-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge"></i> Información del Paciente
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>RUT:</strong> {{ paciente.persona.Rut }}</p>
+                            <p class="mb-2"><strong>Nombre:</strong> {{ paciente.persona.Nombre }} {{ paciente.persona.Apellido }}</p>
+                            <p class="mb-2"><strong>Edad:</strong> {{ paciente.Edad }} años</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>Teléfono:</strong> {{ paciente.persona.Telefono|default:"No registrado" }}</p>
+                            <p class="mb-2"><strong>Previsión:</strong> {{ paciente.get_Previcion_display }}</p>
+                            <p class="mb-2"><strong>N° Ficha:</strong> <span class="badge bg-primary">{{ ficha.numero_ficha }}</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulario (Igual estructura que crear_ficha.html) -->
+            <form method="POST" novalidate class="needs-validation">
+                {% csrf_token %}
+                {{ form.paciente_id }}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                
+                <!-- Sección 1: Datos Administrativos -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clipboard-data"></i> Datos Administrativos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.matrona_responsable.id_for_label }}" class="form-label">
+                                    {{ form.matrona_responsable.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.matrona_responsable }}
+                                {% if form.matrona_responsable.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.matrona_responsable.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nacionalidad.id_for_label }}" class="form-label">
+                                    {{ form.nacionalidad.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.nacionalidad }}
+                                {% if form.nacionalidad.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.nacionalidad.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.nombre_acompanante.id_for_label }}" class="form-label">
+                                    {{ form.nombre_acompanante.label }}
+                                </label>
+                                {{ form.nombre_acompanante }}
+                                {% if form.nombre_acompanante.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.nombre_acompanante.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección 2: Datos Obstétricos -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-heart-pulse"></i> Datos Obstétricos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.tipo_parto_planificado.id_for_label }}" class="form-label">
+                                    {{ form.tipo_parto_planificado.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.tipo_parto_planificado }}
+                                {% if form.tipo_parto_planificado.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.tipo_parto_planificado.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="{{ form.edad_gestacional_semanas.id_for_label }}" class="form-label">
+                                    {{ form.edad_gestacional_semanas.label }}
+                                </label>
+                                {{ form.edad_gestacional_semanas }}
+                                {% if form.edad_gestacional_semanas.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.edad_gestacional_semanas.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="{{ form.edad_gestacional_dias.id_for_label }}" class="form-label">
+                                    {{ form.edad_gestacional_dias.label }}
+                                </label>
+                                {{ form.edad_gestacional_dias }}
+                                {% if form.edad_gestacional_dias.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.edad_gestacional_dias.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.fecha_ultima_regla.id_for_label }}" class="form-label">
+                                    {{ form.fecha_ultima_regla.label }}
+                                </label>
+                                {{ form.fecha_ultima_regla }}
+                                {% if form.fecha_ultima_regla.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.fecha_ultima_regla.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.fecha_probable_parto.id_for_label }}" class="form-label">
+                                    {{ form.fecha_probable_parto.label }}
+                                </label>
+                                {{ form.fecha_probable_parto }}
+                                {% if form.fecha_probable_parto.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.fecha_probable_parto.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección 3: Datos Antropométricos -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-activity"></i> Datos Antropométricos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.peso_actual.id_for_label }}" class="form-label">
+                                    {{ form.peso_actual.label }}
+                                </label>
+                                <div class="input-group">
+                                    {{ form.peso_actual }}
+                                    <span class="input-group-text">kg</span>
+                                </div>
+                                {% if form.peso_actual.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.peso_actual.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.talla.id_for_label }}" class="form-label">
+                                    {{ form.talla.label }}
+                                </label>
+                                <div class="input-group">
+                                    {{ form.talla }}
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                                {% if form.talla.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.talla.errors }}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">El IMC se calcula automáticamente</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección 4: Antecedentes Obstétricos -->
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clipboard-heart"></i> Antecedentes Obstétricos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.numero_gestas.id_for_label }}" class="form-label">
+                                    {{ form.numero_gestas.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.numero_gestas }}
+                                {% if form.numero_gestas.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.numero_gestas.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.numero_partos.id_for_label }}" class="form-label">
+                                    {{ form.numero_partos.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.numero_partos }}
+                                {% if form.numero_partos.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.numero_partos.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.numero_abortos.id_for_label }}" class="form-label">
+                                    {{ form.numero_abortos.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.numero_abortos }}
+                                {% if form.numero_abortos.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.numero_abortos.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.partos_vaginales.id_for_label }}" class="form-label">
+                                    {{ form.partos_vaginales.label }}
+                                </label>
+                                {{ form.partos_vaginales }}
+                                {% if form.partos_vaginales.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.partos_vaginales.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.partos_cesareas.id_for_label }}" class="form-label">
+                                    {{ form.partos_cesareas.label }}
+                                </label>
+                                {{ form.partos_cesareas }}
+                                {% if form.partos_cesareas.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.partos_cesareas.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.hijos_vivos.id_for_label }}" class="form-label">
+                                    {{ form.hijos_vivos.label }}
+                                </label>
+                                {{ form.hijos_vivos }}
+                                {% if form.hijos_vivos.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.hijos_vivos.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección 5: Patologías -->
+                <div class="card mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-heart-pulse-fill"></i> Patologías Asociadas
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.patologias.label }}</label>
+                            <div class="row">
+                                {% for choice in form.patologias %}
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check">
+                                            {{ choice.tag }}
+                                            <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                                {{ choice.choice_label }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.patologias.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.patologias.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.descripcion_patologias.id_for_label }}" class="form-label">
+                                {{ form.descripcion_patologias.label }}
+                            </label>
+                            {{ form.descripcion_patologias }}
+                            {% if form.descripcion_patologias.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.descripcion_patologias.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección 6: Observaciones -->
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-journal-medical"></i> Observaciones y Antecedentes
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="{{ form.observaciones_generales.id_for_label }}" class="form-label">
+                                {{ form.observaciones_generales.label }}
+                            </label>
+                            {{ form.observaciones_generales }}
+                            {% if form.observaciones_generales.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.observaciones_generales.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.antecedentes_relevantes.id_for_label }}" class="form-label">
+                                {{ form.antecedentes_relevantes.label }}
+                            </label>
+                            {{ form.antecedentes_relevantes }}
+                            {% if form.antecedentes_relevantes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.antecedentes_relevantes.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Botones de Acción -->
+                <div class="d-flex justify-content-end gap-2 mb-4">
+                    <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Validación del formulario (mismo que crear_ficha.html)
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.needs-validation');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    }
+    
+    // Validación de antecedentes obstétricos
+    const numeroPartos = document.querySelector('input[name="numero_partos"]');
+    const partosVaginales = document.querySelector('input[name="partos_vaginales"]');
+    const partosCesareas = document.querySelector('input[name="partos_cesareas"]');
+    
+    if (numeroPartos && partosVaginales && partosCesareas) {
+        function validarPartos() {
+            const total = parseInt(numeroPartos.value) || 0;
+            const vag = parseInt(partosVaginales.value) || 0;
+            const ces = parseInt(partosCesareas.value) || 0;
+            
+            if (vag + ces > total) {
+                numeroPartos.setCustomValidity('La suma de partos vaginales y cesáreas no puede ser mayor al total');
+            } else {
+                numeroPartos.setCustomValidity('');
+            }
+        }
+        
+        numeroPartos.addEventListener('change', validarPartos);
+        partosVaginales.addEventListener('change', validarPartos);
+        partosCesareas.addEventListener('change', validarPartos);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,405 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}Detalle Ficha {{ ficha.numero_ficha }} - Sistema Obstétrico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-file-earmark-medical text-danger"></i>
+                    Ficha Obstétrica: {{ ficha.numero_ficha }}
+                    {% if ficha.activa %}
+                        <span class="badge bg-success">Activa</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Cerrada</span>
+                    {% endif %}
+                </h2>
+                <div>
+                    {% if ficha.activa %}
+                        <a href="{% url 'matrona:editar_ficha' ficha.pk %}" class="btn btn-warning">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'matrona:lista_fichas_paciente' paciente.pk %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Información del Paciente -->
+            <div class="card mb-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge"></i> Información del Paciente
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>RUT:</strong> {{ paciente.persona.Rut }}</p>
+                            <p class="mb-2"><strong>Nombre:</strong> 
+                                {{ paciente.persona.Nombre }} 
+                                {{ paciente.persona.Apellido_Paterno }} 
+                                {{ paciente.persona.Apellido_Materno }}
+                            </p>
+                            <p class="mb-2"><strong>Edad:</strong> {{ paciente.Edad }} años</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>Teléfono:</strong> {{ paciente.persona.Telefono|default:"No registrado" }}</p>
+                            <p class="mb-2"><strong>Previsión:</strong> {{ paciente.get_Previcion_display }}</p>
+                            <p class="mb-2"><strong>Estado Civil:</strong> {{ paciente.get_Estado_civil_display }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información de la Ficha -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Información de la Ficha
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>Número de Ficha:</strong> {{ ficha.numero_ficha }}</p>
+                            <p class="mb-2"><strong>Fecha de Creación:</strong> {{ ficha.fecha_creacion|date:"d/m/Y H:i" }}</p>
+                            <p class="mb-2"><strong>Matrona Responsable:</strong> 
+                                {{ ficha.matrona_responsable.persona.Nombre }} 
+                                {{ ficha.matrona_responsable.persona.Apellido_Paterno }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>Acompañante:</strong> {{ ficha.nombre_acompanante|default:"No registrado" }}</p>
+                            <p class="mb-2"><strong>Estado:</strong> 
+                                {% if ficha.activa %}
+                                    <span class="badge bg-success">Activa</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Cerrada</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Antecedentes Obstétricos -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-heart"></i> Antecedentes Obstétricos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="mb-2"><strong>Gestas:</strong> {{ ficha.numero_gestas }}</p>
+                            <p class="mb-2"><strong>Partos:</strong> {{ ficha.numero_partos }}</p>
+                            <p class="mb-2"><strong>Abortos:</strong> {{ ficha.numero_abortos }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="mb-2"><strong>Partos Vaginales:</strong> {{ ficha.partos_vaginales }}</p>
+                            <p class="mb-2"><strong>Cesáreas:</strong> {{ ficha.partos_cesareas }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="mb-2"><strong>Hijos Vivos:</strong> {{ ficha.hijos_vivos }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Datos del Embarazo Actual -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-heart"></i> Datos del Embarazo Actual
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>FUR:</strong> 
+                                {% if ficha.fecha_ultima_regla %}
+                                    {{ ficha.fecha_ultima_regla|date:"d/m/Y" }}
+                                {% else %}
+                                    No registrada
+                                {% endif %}
+                            </p>
+                            <p class="mb-2"><strong>FPP:</strong> 
+                                {% if ficha.fecha_probable_parto %}
+                                    {{ ficha.fecha_probable_parto|date:"d/m/Y" }}
+                                {% else %}
+                                    No registrada
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>Edad Gestacional:</strong> 
+                                {% if ficha.edad_gestacional_semanas is not None %}
+                                    {{ ficha.edad_gestacional_semanas }} semanas
+                                    {% if ficha.edad_gestacional_dias %}
+                                        y {{ ficha.edad_gestacional_dias }} días
+                                    {% endif %}
+                                {% else %}
+                                    No registrada
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Datos Antropométricos CON IMC CORREGIDO -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-data"></i> Datos Antropométricos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <p class="mb-2"><strong>Talla:</strong> 
+                                {% if ficha.talla %}
+                                    {{ ficha.talla }} cm
+                                {% else %}
+                                    <span class="text-muted">No registrada</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="mb-2"><strong>Peso Actual:</strong> 
+                                {% if ficha.peso_actual %}
+                                    {{ ficha.peso_actual }} kg
+                                {% else %}
+                                    <span class="text-muted">No registrado</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="mb-2">
+                                <strong>IMC:</strong>
+                                {% if ficha.calcular_imc %}
+                                    <span class="badge bg-{{ ficha.color_imc }} fs-6">
+                                        {{ ficha.calcular_imc }} kg/m²
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">No calculable</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="mb-2">
+                                <strong>Clasificación:</strong><br>
+                                <span class="text-{{ ficha.color_imc }}">
+                                    <strong>{{ ficha.clasificacion_imc }}</strong>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if ficha.calcular_imc %}
+                    <div class="alert alert-{{ ficha.color_imc }} mt-3 mb-0">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Información:</strong>
+                        {% with imc=ficha.calcular_imc %}
+                            {% if imc < 18.5 %}
+                                La paciente presenta bajo peso. Se recomienda evaluación nutricional.
+                            {% elif imc < 25 %}
+                                La paciente presenta peso normal para su talla.
+                            {% elif imc < 30 %}
+                                La paciente presenta sobrepeso. Se recomienda seguimiento nutricional.
+                            {% else %}
+                                La paciente presenta obesidad. Es importante el control nutricional especializado.
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Patologías -->
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-heart-pulse-fill"></i> Patologías Asociadas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if ficha.patologias.all %}
+                        <div class="mb-3">
+                            {% for patologia in ficha.patologias.all %}
+                                <span class="badge bg-danger me-2 mb-2 p-2">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    {{ patologia.nombre }} ({{ patologia.codigo_cie_10 }})
+                                    - Riesgo: {{ patologia.nivel_de_riesgo }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No hay patologías asociadas a esta ficha.</p>
+                    {% endif %}
+                    
+                    {% if ficha.descripcion_patologias %}
+                        <hr>
+                        <p class="mb-0"><strong>Descripción de Patologías:</strong></p>
+                        <p class="mb-0">{{ ficha.descripcion_patologias }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Medicamentos -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-capsule"></i> Medicamentos Asignados
+                        </h5>
+                        {% if ficha.activa %}
+                            <a href="{% url 'matrona:agregar_medicamento' ficha.pk %}" class="btn btn-light btn-sm">
+                                <i class="bi bi-plus-circle"></i> Agregar Medicamento
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if medicamentos %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Medicamento</th>
+                                        <th>Dosis</th>
+                                        <th>Vía</th>
+                                        <th>Frecuencia</th>
+                                        <th>Periodo</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for med in medicamentos %}
+                                    <tr>
+                                        <td><strong>{{ med.get_nombre_medicamento_display }}</strong></td>
+                                        <td>{{ med.get_dosis_display }}</td>
+                                        <td>{{ med.get_via_administracion_display }}</td>
+                                        <td>{{ med.get_frecuencia_display }}</td>
+                                        <td>
+                                            <small>
+                                                {{ med.fecha_inicio|date:"d/m/Y" }} <br>
+                                                {{ med.fecha_termino|date:"d/m/Y" }}
+                                            </small>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if ficha.activa %}
+                                                <a href="{% url 'matrona:editar_medicamento' med.pk %}" 
+                                                   class="btn btn-sm btn-warning" 
+                                                   title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="{% url 'matrona:desactivar_medicamento' med.pk %}" 
+                                                   class="btn btn-sm btn-danger" 
+                                                   title="Desactivar"
+                                                   onclick="return confirm('¿Desactivar este medicamento?')">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No hay medicamentos asignados a esta ficha.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Observaciones y Antecedentes -->
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-journal-text"></i> Observaciones y Antecedentes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if ficha.observaciones_generales %}
+                        <p class="mb-2"><strong>Observaciones Generales:</strong></p>
+                        <p class="mb-3">{{ ficha.observaciones_generales }}</p>
+                    {% endif %}
+                    
+                    {% if ficha.antecedentes_relevantes %}
+                        <p class="mb-2"><strong>Antecedentes Relevantes:</strong></p>
+                        <p class="mb-0">{{ ficha.antecedentes_relevantes }}</p>
+                    {% endif %}
+                    
+                    {% if not ficha.observaciones_generales and not ficha.antecedentes_relevantes %}
+                        <p class="text-muted mb-0">No hay observaciones registradas.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear"></i> Acciones
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2 d-md-flex">
+                        {% if ficha.activa %}
+                            <a href="{% url 'matrona:editar_ficha' ficha.pk %}" class="btn btn-warning">
+                                <i class="bi bi-pencil-square"></i> Editar Ficha
+                            </a>
+                            <form method="POST" action="{% url 'matrona:toggle_ficha' ficha.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary" 
+                                        onclick="return confirm('¿Está seguro que desea cerrar esta ficha?')">
+                                    <i class="bi bi-lock"></i> Cerrar Ficha
+                                </button>
+                            </form>
+                        {% else %}
+                            <form method="POST" action="{% url 'matrona:toggle_ficha' ficha.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success" 
+                                        onclick="return confirm('¿Está seguro que desea reactivar esta ficha?')">
+                                    <i class="bi bi-unlock"></i> Reactivar Ficha
+                                </button>
+                            </form>
+                        {% endif %}
+                        <a href="{% url 'matrona:lista_fichas_paciente' paciente.pk %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a Fichas del Paciente
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .badge {
+        font-size: 0.9rem;
+    }
+    
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+    
+    .fs-6 {
+        font-size: 1.1rem !important;
+    }
+</style>
+{% endblock %}

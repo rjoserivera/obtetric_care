@@ -1,0 +1,64 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="alert alert-info">
+    Complete los datos del ingreso. El número de ficha se genera automáticamente.
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <!-- Hidden SEGURO: usa paciente.id si está en contexto; si no, queda vacío -->
+    <input type="hidden" name="paciente_id" id="id_paciente_id"
+           value="{% if paciente %}{{ paciente.id }}{% else %}{% endif %}">
+
+    {% if paciente %}
+    <div class="alert alert-secondary d-flex align-items-center">
+      <span class="me-2">👤</span>
+      <div>
+        <strong>Paciente seleccionado:</strong>
+        {{ paciente.nombres }} {{ paciente.apellido_paterno }} {{ paciente.apellido_materno }}
+        (RUT: {{ paciente.rut }})
+      </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">
+      Debe seleccionar un paciente antes de registrar el ingreso.
+      <!-- Aquí va tu botón/modal de “Buscar Paciente”, si ya lo tienes -->
+    </div>
+    {% endif %}
+
+    <div class="card">
+      <div class="card-header fw-bold">Datos del Ingreso</div>
+      <div class="card-body">
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+          {{ form.semana_gestacional.label_tag }}
+          {{ form.semana_gestacional }}
+          {{ form.semana_gestacional.errors }}
+          <small class="form-text text-muted">Entre 1 y 42 semanas</small>
+        </div>
+
+        <div class="mb-3">
+          {{ form.motivo_consulta.label_tag }}
+          {{ form.motivo_consulta }}
+          {{ form.motivo_consulta.errors }}
+        </div>
+
+        <div class="mb-3">
+          {{ form.observaciones.label_tag }}
+          {{ form.observaciones }}
+          {{ form.observaciones.errors }}
+        </div>
+      </div>
+      <div class="card-footer text-end">
+        <a href="{% url 'matrona:menu_matrona' %}" class="btn btn-outline-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-success">Registrar Ingreso</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

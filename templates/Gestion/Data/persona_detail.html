@@ -1,0 +1,108 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}Detalle de Persona - Sistema Obstétrico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-person-badge"></i> Detalle de Persona
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">RUT</h6>
+                    <p class="fs-5">{{ persona.Rut }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Nombre Completo</h6>
+                    <p class="fs-5">{{ persona.Nombre }} {{ persona.Apellido }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Sexo</h6>
+                    <p>{{ persona.Sexo }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Fecha de Nacimiento</h6>
+                    <p>{{ persona.Fecha_nacimiento|date:"d/m/Y" }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Teléfono</h6>
+                    <p>{{ persona.Telefono|default:"No registrado" }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Email</h6>
+                    <p>{{ persona.Email|default:"No registrado" }}</p>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <h6 class="text-muted">Dirección</h6>
+                    <p>{{ persona.Direccion|default:"No registrada" }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Estado</h6>
+                    <p>
+                        {% if persona.Activo %}
+                            <span class="badge bg-success">Activo</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactivo</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <h5 class="mb-3">Roles Asignados</h5>
+            <div class="row">
+                {% if persona.paciente %}
+                <div class="col-md-6 mb-3">
+                    <div class="alert alert-danger">
+                        <h6><i class="bi bi-person-heart"></i> Paciente</h6>
+                        <p class="mb-0">Esta persona está registrada como paciente</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if persona.medico %}
+                <div class="col-md-6 mb-3">
+                    <div class="alert alert-success">
+                        <h6><i class="bi bi-hospital"></i> Médico</h6>
+                        <p class="mb-0">Esta persona está registrada como médico</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if persona.matrona %}
+                <div class="col-md-6 mb-3">
+                    <div class="alert alert-warning">
+                        <h6><i class="bi bi-heart-pulse"></i> Matrona</h6>
+                        <p class="mb-0">Esta persona está registrada como matrona</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if persona.tens %}
+                <div class="col-md-6 mb-3">
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-bandaid"></i> TENS</h6>
+                        <p class="mb-0">Esta persona está registrada como TENS</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a href="{% url 'gestion:lista_personas' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a la Lista
+        </a>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-house"></i> Ir al Inicio
+        </a>
+    </div>
+</div>
+{% endblock %}

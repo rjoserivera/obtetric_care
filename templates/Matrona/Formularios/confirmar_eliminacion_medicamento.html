@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Medicamento{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <!-- Card de Confirmación -->
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Confirmar Eliminación
+                    </h4>
+                </div>
+                <div class="card-body">
+                    
+                    <div class="alert alert-warning mb-4">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-info-circle"></i> Advertencia
+                        </h5>
+                        <p class="mb-0">
+                            Está a punto de eliminar permanentemente este medicamento de la ficha. 
+                            Esta acción <strong>no se puede deshacer</strong>.
+                        </p>
+                    </div>
+
+                    <!-- Información del Medicamento -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-danger mb-3">
+                                <i class="bi bi-capsule-pill"></i> Datos del Medicamento
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Medicamento:</strong><br>{{ medicamento.nombre_medicamento }}</p>
+                                    <p><strong>Dosis:</strong><br>{{ medicamento.dosis }}</p>
+                                    <p><strong>Vía:</strong><br>{{ medicamento.via_administracion }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Frecuencia:</strong><br>{{ medicamento.frecuencia }}</p>
+                                    <p><strong>Vigencia:</strong><br>
+                                        {{ medicamento.fecha_inicio|date:"d/m/Y" }} - {{ medicamento.fecha_termino|date:"d/m/Y" }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {% if medicamento.observaciones %}
+                            <div class="mt-3 p-2 bg-light rounded">
+                                <strong>Observaciones:</strong>
+                                <p class="mb-0">{{ medicamento.observaciones }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Información de la Ficha -->
+                    <div class="mb-3">
+                        <p><strong>Ficha:</strong> {{ ficha.numero_ficha }}</p>
+                        <p><strong>Paciente:</strong> 
+                            {{ ficha.paciente.persona.Nombre }} 
+                            {{ ficha.paciente.persona.Apellido_Paterno }} 
+                            {{ ficha.paciente.persona.Apellido_Materno }}
+                        </p>
+                    </div>
+
+                    <!-- Formulario de Confirmación -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="bi bi-trash"></i> Confirmar Eliminación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

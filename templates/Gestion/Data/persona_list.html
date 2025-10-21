@@ -1,0 +1,132 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-people-fill text-primary"></i> 
+            Lista de Personas
+        </h2>
+        <a href="{% url 'gestion:registrar_persona' %}" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i> Registrar Nueva Persona
+        </a>
+    </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Tabla de Personas -->
+    <div class="card shadow">
+        <div class="card-body">
+            {% if personas %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>RUT</th>
+                                <th>Nombre Completo</th>
+                                <th>Sexo</th>
+                                <th>Fecha Nacimiento</th>
+                                <th>Roles</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for persona in personas %}
+                                <tr>
+                                    <td>{{ persona.Rut }}</td>
+                                    <td>
+                                        <strong>{{ persona.Nombre }} {{ persona.Apellido_Paterno }} {{ persona.Apellido_Materno }}</strong>
+                                    </td>
+                                    <td>{{ persona.Sexo }}</td>
+                                    <td>{{ persona.Fecha_nacimiento|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if persona.paciente %}
+                                            <span class="badge bg-danger">Paciente</span>
+                                        {% endif %}
+                                        {% if persona.medico %}
+                                            <span class="badge bg-success">Médico</span>
+                                        {% endif %}
+                                        {% if persona.matrona %}
+                                            <span class="badge bg-info">Matrona</span>
+                                        {% endif %}
+                                        {% if persona.tens %}
+                                            <span class="badge bg-warning text-dark">TENS</span>
+                                        {% endif %}
+                                        {% if not persona.paciente and not persona.medico and not persona.matrona and not persona.tens %}
+                                            <span class="badge bg-secondary">Sin roles</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'gestion:detalle_persona' persona.pk %}" 
+                                               class="btn btn-sm btn-info" 
+                                               title="Ver detalle">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'gestion:gestionar_roles' persona.pk %}" 
+                                               class="btn btn-sm btn-warning" 
+                                               title="Gestionar roles">
+                                                <i class="bi bi-person-badge"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Estadísticas -->
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Total de personas registradas:</strong> {{ personas.count }}
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    No hay personas registradas en el sistema.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Botón Volver -->
+    <div class="mt-4">
+        <a href="{% url 'home' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Inicio
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        margin-right: 3px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('✅ Lista de personas cargada correctamente');
+console.log('Total personas: {{ personas.count }}');
+</script>
+{% endblock %}

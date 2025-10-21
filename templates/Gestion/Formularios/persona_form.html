@@ -1,0 +1,131 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}Registrar Persona - Sistema Obstétrico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-plus"></i> Registrar Nueva Persona
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <!-- RUT -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.Rut.id_for_label }}" class="form-label">
+                                    {{ form.Rut.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.Rut }}
+                                {% if form.Rut.errors %}
+                                    <div class="text-danger small">{{ form.Rut.errors }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">{{ form.Rut.help_text }}</small>
+                            </div>
+                            
+                            <!-- Nombre -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.Nombre.id_for_label }}" class="form-label">
+                                    {{ form.Nombre.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.Nombre }}
+                                {% if form.Nombre.errors %}
+                                    <div class="text-danger small">{{ form.Nombre.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Apellido -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.Apellido.id_for_label }}" class="form-label">
+                                    {{ form.Apellido.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.Apellido }}
+                                {% if form.Apellido.errors %}
+                                    <div class="text-danger small">{{ form.Apellido.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Sexo -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.Sexo.id_for_label }}" class="form-label">
+                                    {{ form.Sexo.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.Sexo }}
+                                {% if form.Sexo.errors %}
+                                    <div class="text-danger small">{{ form.Sexo.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Fecha de Nacimiento -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.Fecha_nacimiento.id_for_label }}" class="form-label">
+                                    {{ form.Fecha_nacimiento.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.Fecha_nacimiento }}
+                                {% if form.Fecha_nacimiento.errors %}
+                                    <div class="text-danger small">{{ form.Fecha_nacimiento.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Teléfono -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.Telefono.id_for_label }}" class="form-label">
+                                    {{ form.Telefono.label }}
+                                </label>
+                                {{ form.Telefono }}
+                                {% if form.Telefono.errors %}
+                                    <div class="text-danger small">{{ form.Telefono.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Dirección -->
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.Direccion.id_for_label }}" class="form-label">
+                                    {{ form.Direccion.label }}
+                                </label>
+                                {{ form.Direccion }}
+                                {% if form.Direccion.errors %}
+                                    <div class="text-danger small">{{ form.Direccion.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Email -->
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.Email.id_for_label }}" class="form-label">
+                                    {{ form.Email.label }}
+                                </label>
+                                {{ form.Email }}
+                                {% if form.Email.errors %}
+                                    <div class="text-danger small">{{ form.Email.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'home' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Registrar Persona
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

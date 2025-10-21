@@ -1,0 +1,133 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <!-- Encabezado -->
+            <div class="d-flex align-items-center mb-4">
+                <i class="bi bi-person-plus text-primary" style="font-size: 2.5rem;"></i>
+                <h2 class="ms-3 mb-0">Asignar Rol de {{ rol_nombre }}</h2>
+            </div>
+
+            <!-- Mensajes -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Información de la Persona -->
+            <div class="card shadow mb-4 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-circle"></i> Persona Seleccionada
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>RUT:</strong> {{ persona.Rut }}</p>
+                            <p class="mb-2"><strong>Nombre:</strong> {{ persona.Nombre }} {{ persona.Apellido_Paterno }} {{ persona.Apellido_Materno }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>Sexo:</strong> {{ persona.Sexo }}</p>
+                            <p class="mb-2"><strong>Fecha Nacimiento:</strong> {{ persona.Fecha_nacimiento|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario -->
+            <div class="card shadow">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-data"></i> Datos del Rol de {{ rol_nombre }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Errores del Formulario -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <h6 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Errores:</h6>
+                            <ul class="mb-0">
+                                {% for field, errors in form.errors.items %}
+                                    <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Campo oculto del RUT -->
+                        {{ form.rut_persona }}
+                        
+                        <!-- Renderizar todos los campos del formulario -->
+                        {% for field in form %}
+                            {% if field.name != 'rut_persona' %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">
+                                        {{ field.label }}
+                                        {% if field.field.required %}
+                                            <span class="text-danger">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'gestion:gestionar_roles' persona.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Asignar Rol de {{ rol_nombre }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Nota -->
+            <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle"></i>
+                <strong>Nota:</strong> Todos los campos marcados con <span class="text-danger">*</span> son obligatorios.
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Validación HTML5
+document.querySelector('.needs-validation').addEventListener('submit', function(e) {
+    if (!this.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    this.classList.add('was-validated');
+});
+
+console.log('✅ Formulario de asignación de rol cargado');
+</script>
+{% endblock %}

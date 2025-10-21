@@ -1,0 +1,125 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}Registrar Paciente - Sistema Obstétrico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-heart"></i> Registrar Paciente
+                    </h4>
+                </div>
+                
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Importante:</strong> La persona debe estar registrada previamente. 
+                        Ingrese el RUT para buscar y vincular.
+                    </div>
+                    
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- RUT de la Persona -->
+                        <div class="mb-3">
+                            <label for="{{ form.rut_persona.id_for_label }}" class="form-label">
+                                {{ form.rut_persona.label }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form.rut_persona }}
+                            {% if form.rut_persona.errors %}
+                                <div class="text-danger small">{{ form.rut_persona.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.rut_persona.help_text }}</small>
+                        </div>
+                        
+                        <!-- Contenedor para información de persona -->
+                        <div id="persona-info"></div>
+                        
+                        <hr>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.Edad.id_for_label }}" class="form-label">
+                                    Edad <span class="text-danger">*</span>
+                                </label>
+                                {{ form.Edad }}
+                                {% if form.Edad.errors %}
+                                    <div class="text-danger small">{{ form.Edad.errors }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">Entre 12 y 60 años</small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.Estado_civil.id_for_label }}" class="form-label">
+                                    Estado Civil <span class="text-danger">*</span>
+                                </label>
+                                {{ form.Estado_civil }}
+                                {% if form.Estado_civil.errors %}
+                                    <div class="text-danger small">{{ form.Estado_civil.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.Previcion.id_for_label }}" class="form-label">
+                                Previsión <span class="text-danger">*</span>
+                            </label>
+                            {{ form.Previcion }}
+                            {% if form.Previcion.errors %}
+                                <div class="text-danger small">{{ form.Previcion.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.Acompañante.id_for_label }}" class="form-label">
+                                Acompañante
+                            </label>
+                            {{ form.Acompañante }}
+                            {% if form.Acompañante.errors %}
+                                <div class="text-danger small">{{ form.Acompañante.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.Contacto_emergencia.id_for_label }}" class="form-label">
+                                Contacto de Emergencia
+                            </label>
+                            {{ form.Contacto_emergencia }}
+                            {% if form.Contacto_emergencia.errors %}
+                                <div class="text-danger small">{{ form.Contacto_emergencia.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'home' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-save"></i> Registrar Paciente
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6><i class="bi bi-question-circle"></i> ¿La persona no está registrada?</h6>
+                    <p class="mb-0">
+                        Primero debe <a href="{% url 'gestion:registrar_persona' %}" target="_blank">registrar los datos básicos</a> 
+                        antes de asignar el rol de paciente.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/buscar_persona.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <!-- Encabezado -->
+            <div class="d-flex align-items-center mb-4">
+                <i class="bi bi-folder-plus text-primary" style="font-size: 2.5rem;"></i>
+                <h2 class="ms-3 mb-0">Abrir Nueva Ficha Obstétrica</h2>
+            </div>
+
+            <!-- Mensajes -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Formulario de Búsqueda -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-search"></i> Buscar Paciente por RUT
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{% url 'matrona:seleccionar_paciente_ficha' %}">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="rut" class="form-label">RUT del Paciente</label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="rut" 
+                                    name="rut" 
+                                    placeholder="12345678-9"
+                                    value="{{ query }}"
+                                    required
+                                >
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Resultado de la Búsqueda -->
+            {% if query %}
+                {% if paciente %}
+                    <!-- Paciente Encontrado -->
+                    <div class="card shadow border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-check-circle"></i> Paciente Encontrado
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2">
+                                        <strong>RUT:</strong> {{ paciente.persona.Rut }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>Nombre:</strong> 
+                                        {{ paciente.persona.Nombre }} 
+                                        {{ paciente.persona.Apellido_Paterno }} 
+                                        {{ paciente.persona.Apellido_Materno }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>Edad:</strong> {{ paciente.Edad }} años
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-2">
+                                        <strong>Estado Civil:</strong> {{ paciente.get_Estado_civil_display }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>Previsión:</strong> {{ paciente.get_Previcion_display }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>Teléfono:</strong> {{ paciente.persona.Telefono|default:"No registrado" }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="{% url 'matrona:seleccionar_paciente_ficha' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <a href="{% url 'matrona:crear_ficha' paciente.pk %}" class="btn btn-success btn-lg">
+                                    <i class="bi bi-folder-plus"></i> Crear Ficha Obstétrica
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Paciente No Encontrado -->
+                    <div class="alert alert-warning">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle"></i> No se encontró el paciente
+                        </h5>
+                        <p class="mb-0">
+                            No se encontró ningún paciente activo con el RUT: <strong>{{ query }}</strong>
+                        </p>
+                        <hr>
+                        <p class="mb-0">
+                            <a href="{% url 'matrona:registrar_paciente' %}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-person-plus"></i> Registrar Nuevo Paciente
+                            </a>
+                        </p>
+                    </div>
+                {% endif %}
+            {% else %}
+                <!-- Instrucciones -->
+                <div class="alert alert-info">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-info-circle"></i> Instrucciones
+                    </h5>
+                    <ul class="mb-0">
+                        <li>Ingrese el RUT del paciente para crear su ficha obstétrica</li>
+                        <li>El paciente debe estar previamente registrado en el sistema</li>
+                        <li>Si el paciente no existe, primero debe registrarlo</li>
+                    </ul>
+                </div>
+            {% endif %}
+
+            <!-- Botones de Navegación -->
+            <div class="mt-4 text-center">
+                <a href="{% url 'matrona:menu_matrona' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Menú
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Formatear RUT mientras se escribe
+document.getElementById('rut').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/[^0-9kK]/g, '');
+    
+    if (value.length > 1) {
+        const cuerpo = value.slice(0, -1);
+        const dv = value.slice(-1);
+        value = cuerpo + '-' + dv;
+    }
+    
+    e.target.value = value.toUpperCase();
+});
+
+console.log('✅ Formulario de selección de paciente para ficha cargado');
+</script>
+{% endblock %}
