@@ -1,0 +1,36 @@
+# 0. Cargar base de datos principal y de legado
+obstetric_carebdd
+legacy_obtetric ------> en la carpeta utildad
+
+# Paso 1: Cargar usuarios
+python manage.py cargar_usuarios
+
+# Paso 2: Cargar pacientes normales
+python manage.py cargar_pacientes
+
+# Paso 3: Cargar paciente con historial legacy
+python manage.py cargar_paciente_legacy
+
+# Paso 4: Cargar patologías
+python manage.py cargar_patologias
+
+# Paso 5: Iniciar servidor
+python manage.py runserver
+
+
+
+ RESUMEN DE DATOS CARGADOS
+    2 Médicos: 12345678-5, 13456789-9
+    2 Matronas: 14567890-0, 15678901-1
+    2 TENS: 16789012-1, 17890123-0
+    4 Pacientes: 18901234-9, 19012345-6, 20123456-5, 21234567-9
+    10 Patologías activas
+
+
+
+
+    comandos test 
+
+   pytest -q
+   
+   pytest -v
