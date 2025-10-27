@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'tensApp',
     'gestionApp',
     'legacyApp',
+    'partoApp',
 ]
 
 MIDDLEWARE = [

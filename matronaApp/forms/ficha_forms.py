@@ -1,7 +1,3 @@
-# matronaApp/forms/ficha_forms.py
-"""
-Formularios para la gestión de Fichas Obstétricas
-"""
 from django import forms
 from django.core.exceptions import ValidationError
 from matronaApp.models import FichaObstetrica
@@ -9,11 +5,12 @@ from medicoApp.models import Patologias
 from gestionApp.models import Matrona, Paciente
 
 
+# ============================================
+# FORMULARIO: FICHA OBSTÉTRICA
+# ============================================
 class FichaObstetricaForm(forms.ModelForm):
-    """
-    Formulario para crear y editar fichas obstétricas
-    """
-    # Campo oculto para el ID del paciente
+    """Formulario para crear y editar fichas obstétricas"""
+    
     paciente_id = forms.IntegerField(
         widget=forms.HiddenInput(),
         required=True
@@ -24,23 +21,17 @@ class FichaObstetricaForm(forms.ModelForm):
         fields = [
             'paciente_id',
             'matrona_responsable',
+            'Origen_de_ingreso',
+            'Tipo_de_paciente',
             'nombre_acompanante',
-            'numero_gestas',
-            'numero_partos',
-            'partos_vaginales',
-            'partos_cesareas',
-            'numero_abortos',
-            'hijos_vivos',
+            'nacidos_vivos',
             'fecha_ultima_regla',
             'fecha_probable_parto',
             'edad_gestacional_semanas',
             'edad_gestacional_dias',
-            'peso_actual',
-            'talla',
             'patologias',
             'descripcion_patologias',
             'observaciones_generales',
-            'antecedentes_relevantes',
         ]
         
         widgets = {
@@ -48,41 +39,19 @@ class FichaObstetricaForm(forms.ModelForm):
                 'class': 'form-select',
                 'required': True
             }),
+            'Origen_de_ingreso': forms.Select(attrs={
+                'class': 'form-select',
+                'required': True
+            }),
+            'Tipo_de_paciente': forms.Select(attrs={
+                'class': 'form-select',
+                'required': True
+            }),
             'nombre_acompanante': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Nombre completo del acompañante'
             }),
-            'numero_gestas': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': '0',
-                'max': '20',
-                'value': '0'
-            }),
-            'numero_partos': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': '0',
-                'max': '20',
-                'value': '0'
-            }),
-            'partos_vaginales': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': '0',
-                'max': '20',
-                'value': '0'
-            }),
-            'partos_cesareas': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': '0',
-                'max': '20',
-                'value': '0'
-            }),
-            'numero_abortos': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': '0',
-                'max': '20',
-                'value': '0'
-            }),
-            'hijos_vivos': forms.NumberInput(attrs={
+            'nacidos_vivos': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': '0',
                 'max': '20',
@@ -98,80 +67,57 @@ class FichaObstetricaForm(forms.ModelForm):
             }, format='%Y-%m-%d'),
             'edad_gestacional_semanas': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'min': '0',
-                'max': '42',
-                'placeholder': '0-42'
+                'readonly': True,
+                'placeholder': 'Se calcula automáticamente'
             }),
             'edad_gestacional_dias': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'min': '0',
-                'max': '6',
-                'placeholder': '0-6'
-            }),
-            'peso_actual': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ej: 65.5',
-                'min': '30',
-                'max': '200',
-                'step': '0.1'
-            }),
-            'talla': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ej: 160',
-                'min': '120',
-                'max': '220',
-                'step': '0.1'
+                'readonly': True,
+                'placeholder': 'Se calcula automáticamente'
             }),
             'patologias': forms.CheckboxSelectMultiple(),
             'descripcion_patologias': forms.Textarea(attrs={
                 'class': 'form-control',
-                'rows': 3,
-                'placeholder': 'Describa las patologías y su estado actual'
+                'rows': 4,
+                'readonly': True,
+                'placeholder': 'Se genera automáticamente al seleccionar patologías'
             }),
             'observaciones_generales': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': 'Observaciones generales del embarazo'
-            }),
-            'antecedentes_relevantes': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3,
-                'placeholder': 'Antecedentes médicos, quirúrgicos, alergias, etc.'
+                'placeholder': 'Observaciones generales sobre el embarazo actual'
             }),
         }
         
         labels = {
             'matrona_responsable': 'Matrona Responsable',
+            'Origen_de_ingreso': 'Origen de Ingreso',
+            'Tipo_de_paciente': 'Tipo de Paciente',
             'nombre_acompanante': 'Nombre del Acompañante',
-            'numero_gestas': 'Número de Gestas',
-            'numero_partos': 'Número de Partos',
-            'partos_vaginales': 'Partos Vaginales',
-            'partos_cesareas': 'Cesáreas',
-            'numero_abortos': 'Número de Abortos',
-            'hijos_vivos': 'Hijos Vivos',
+            'nacidos_vivos': 'Nacidos Vivos',
             'fecha_ultima_regla': 'Fecha Última Regla (FUR)',
             'fecha_probable_parto': 'Fecha Probable de Parto (FPP)',
-            'edad_gestacional_semanas': 'Semanas',
-            'edad_gestacional_dias': 'Días',
-            'peso_actual': 'Peso Actual',
-            'talla': 'Talla',
+            'edad_gestacional_semanas': 'Edad Gestacional - Semanas',
+            'edad_gestacional_dias': 'Edad Gestacional - Días',
             'patologias': 'Patologías Asociadas',
             'descripcion_patologias': 'Descripción de Patologías',
             'observaciones_generales': 'Observaciones Generales',
-            'antecedentes_relevantes': 'Antecedentes Relevantes',
         }
         
         help_texts = {
-            'talla': 'Estatura en centímetros',
-            'peso_actual': 'Peso en kilogramos',
-            'edad_gestacional_semanas': 'Semanas completas de gestación (0-42)',
-            'edad_gestacional_dias': 'Días adicionales (0-6)',
+            'nacidos_vivos': 'Número de hijos nacidos vivos',
+            'fecha_ultima_regla': 'Primer día de la última menstruación',
+            'fecha_probable_parto': 'Se calculará la edad gestacional automáticamente',
+            'edad_gestacional_semanas': 'Calculado automáticamente desde FPP o FUR',
+            'edad_gestacional_dias': 'Días adicionales calculados automáticamente',
+            'patologias': 'Seleccione una o más patologías',
+            'descripcion_patologias': 'Se genera automáticamente al guardar',
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # ✅ IMPORTANTE: Configurar formato de fecha para input type="date"
+        # Configurar formato de fecha para input type="date"
         self.fields['fecha_ultima_regla'].input_formats = ['%Y-%m-%d', '%d/%m/%Y']
         self.fields['fecha_probable_parto'].input_formats = ['%Y-%m-%d', '%d/%m/%Y']
         
@@ -185,17 +131,19 @@ class FichaObstetricaForm(forms.ModelForm):
             estado='Activo'
         ).order_by('nivel_de_riesgo', 'nombre')
         
-        # Hacer algunos campos opcionales
+        # Hacer campos opcionales
         self.fields['nombre_acompanante'].required = False
         self.fields['fecha_ultima_regla'].required = False
         self.fields['fecha_probable_parto'].required = False
-        self.fields['peso_actual'].required = False
-        self.fields['talla'].required = False
         self.fields['edad_gestacional_semanas'].required = False
         self.fields['edad_gestacional_dias'].required = False
         self.fields['descripcion_patologias'].required = False
         self.fields['observaciones_generales'].required = False
-        self.fields['antecedentes_relevantes'].required = False
+        
+        # Edad gestacional y descripción patologías son readonly (se calculan auto)
+        self.fields['edad_gestacional_semanas'].disabled = True
+        self.fields['edad_gestacional_dias'].disabled = True
+        self.fields['descripcion_patologias'].disabled = True
     
     def clean_paciente_id(self):
         """Validar que el paciente exista"""
@@ -205,50 +153,29 @@ class FichaObstetricaForm(forms.ModelForm):
         except (Paciente.DoesNotExist, TypeError, ValueError):
             raise ValidationError('Debe seleccionar un paciente válido.')
         
-        # Guardar el objeto para usarlo en save()
         self._paciente_obj = paciente
         return pk
+    
+    def clean_nacidos_vivos(self):
+        """Validar nacidos vivos"""
+        nacidos = self.cleaned_data.get('nacidos_vivos')
+        if nacidos is not None and (nacidos < 0 or nacidos > 20):
+            raise ValidationError('El número de nacidos vivos debe estar entre 0 y 20.')
+        return nacidos
     
     def clean(self):
         """Validaciones cruzadas"""
         cleaned_data = super().clean()
         
-        # Validar que partos vaginales + cesáreas = número de partos
-        num_partos = cleaned_data.get('numero_partos', 0)
-        partos_vag = cleaned_data.get('partos_vaginales', 0)
-        partos_ces = cleaned_data.get('partos_cesareas', 0)
+        # Validar que al menos tenga FUR o FPP para calcular edad gestacional
+        fur = cleaned_data.get('fecha_ultima_regla')
+        fpp = cleaned_data.get('fecha_probable_parto')
         
-        if (partos_vag + partos_ces) > num_partos:
-            raise ValidationError({
-                'numero_partos': 'La suma de partos vaginales y cesáreas no puede ser mayor al número total de partos.'
-            })
-        
-        # Validar edad gestacional
-        semanas = cleaned_data.get('edad_gestacional_semanas')
-        if semanas is not None and (semanas < 0 or semanas > 42):
-            raise ValidationError({
-                'edad_gestacional_semanas': 'La edad gestacional debe estar entre 0 y 42 semanas.'
-            })
-        
-        dias = cleaned_data.get('edad_gestacional_dias')
-        if dias is not None and (dias < 0 or dias > 6):
-            raise ValidationError({
-                'edad_gestacional_dias': 'Los días deben estar entre 0 y 6.'
-            })
-        
-        # Validar talla
-        talla = cleaned_data.get('talla')
-        if talla is not None and (talla < 120 or talla > 220):
-            raise ValidationError({
-                'talla': 'La talla debe estar entre 120 y 220 cm.'
-            })
-        
-        # Validar peso
-        peso = cleaned_data.get('peso_actual')
-        if peso is not None and (peso < 30 or peso > 200):
-            raise ValidationError({
-                'peso_actual': 'El peso debe estar entre 30 y 200 kg.'
-            })
+        if not fur and not fpp:
+            raise ValidationError(
+                'Debe ingresar al menos la Fecha de Última Regla (FUR) o la Fecha Probable de Parto (FPP) '
+                'para calcular la edad gestacional.'
+            )
         
         return cleaned_data
     
@@ -267,3 +194,59 @@ class FichaObstetricaForm(forms.ModelForm):
             self.save_m2m()
         
         return ficha
+
+
+# ============================================
+# FORMULARIO: EDITAR FICHA OBSTÉTRICA
+# ============================================
+class EditarFichaObstetricaForm(FichaObstetricaForm):
+    """Formulario para editar fichas obstétricas existentes"""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # En edición, el paciente no se puede cambiar
+        if self.instance and self.instance.pk:
+            self.fields['paciente_id'].widget = forms.HiddenInput()
+
+
+# ============================================
+# FORMULARIO: BUSCAR FICHA
+# ============================================
+class BuscarFichaForm(forms.Form):
+    """Formulario para búsqueda de fichas por número"""
+    
+    numero_ficha = forms.CharField(
+        max_length=20,
+        label="Buscar Ficha",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'FO-00001',
+            'id': 'buscar_numero_ficha',
+            'autocomplete': 'off'
+        })
+    )
+    
+    def clean_numero_ficha(self):
+        """Validar formato de número de ficha"""
+        numero = self.cleaned_data.get('numero_ficha')
+        if numero:
+            numero = numero.strip().upper()
+            if not numero.startswith('FO-'):
+                numero = f'FO-{numero}'
+        return numero
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
