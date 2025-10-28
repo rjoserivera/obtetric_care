@@ -8,7 +8,7 @@ from django.utils import timezone
 from gestionApp.models import Tens, Persona, Paciente
 from matronaApp.models import (
     FichaObstetrica, MedicamentoFicha, AdministracionMedicamento,IngresoPaciente )
-from tensApp.forms.administracion_medicamentos import TensRegistrarAdministracionMedicamento
+from tensApp.forms.administracion_forms import AdministracionMedicamentoForm
 from gestionApp.forms.tens_forms import BuscarPacienteForm, RegistroTensForm
 from tensApp.models import  RegistroTens
 
@@ -183,7 +183,7 @@ def registrar_administracion(request, medicamento_pk):
     )
     
     if request.method == 'POST':
-        form = TensRegistrarAdministracionMedicamento(request.POST)
+        form = AdministracionMedicamentoForm(request.POST)
         
         if form.is_valid():
             administracion = form.save(commit=False)
@@ -208,7 +208,7 @@ def registrar_administracion(request, medicamento_pk):
             messages.error(request, "❌ Por favor corrige los errores en el formulario.")
     else:
         # Pre-cargar fecha y hora actual
-            form = TensRegistrarAdministracionMedicamento(initial={
+            form = AdministracionMedicamentoForm(initial={
             'fecha_hora_administracion': timezone.now()
             })
             
@@ -339,7 +339,7 @@ def registrar_administracion(request, medicamento_pk):
     )
 
     if request.method == 'POST':
-        form = TensRegistrarAdministracionMedicamento(request.POST)
+        form = AdministracionMedicamentoForm(request.POST)
         if form.is_valid():
             administracion = form.save(commit=False)
             administracion.medicamento_ficha = medicamento_ficha
@@ -360,7 +360,7 @@ def registrar_administracion(request, medicamento_pk):
         else:
             messages.error(request, "❌ Por favor corrige los errores en el formulario.")
     else:
-        form = TensRegistrarAdministracionMedicamento(initial={
+        form = AdministracionMedicamentoForm(initial={
             'fecha_hora_administracion': timezone.now()
         })
 

@@ -25,15 +25,9 @@ class PacienteForm(forms.ModelForm):
     
     class Meta:
         model = Paciente
-        fields = ['Edad', 'Estado_civil', 'Previcion', 'Acompañante', 'Contacto_emergencia']
+        fields = ['Estado_civil', 'Previcion', 'Acompañante', 'Contacto_emergencia']
         widgets = {
-            'Edad': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': '12',
-                'max': '60',
-                'placeholder': 'Entre 12 y 60 años',
-                'required': True
-            }),
+
             'Estado_civil': forms.Select(attrs={
                 'class': 'form-select',
                 'required': True

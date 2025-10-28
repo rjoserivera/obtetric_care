@@ -1,3 +1,4 @@
+# partosApp/__init__.py
 """
 Módulo de Partos - Sistema Obstétrico
 """
