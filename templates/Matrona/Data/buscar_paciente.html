@@ -49,14 +49,27 @@
                             <tbody>
                                 {% for paciente in pacientes %}
                                 <tr>
-                                    <td>{{ paciente.persona.Rut }}</td>
-                                    <td>{{ paciente.persona.Nombre }} {{ paciente.persona.Apellido }}</td>
+                                    <td><strong>{{ paciente.persona.Rut }}</strong></td>
+                                    <!-- ✅ CORREGIDO: Apellido_Paterno y Apellido_Materno -->
+                                    <td>
+                                        {{ paciente.persona.Nombre }} 
+                                        {{ paciente.persona.Apellido_Paterno }} 
+                                        {{ paciente.persona.Apellido_Materno }}
+                                    </td>
                                     <td>{{ paciente.Edad }} años</td>
-                                    <td>{{ paciente.get_Estado_civil_display }}</td>
-                                    <td>{{ paciente.get_Previcion_display }}</td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            {{ paciente.get_Estado_civil_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            {{ paciente.get_Previcion_display }}
+                                        </span>
+                                    </td>
                                     <td>
                                         <a href="{% url 'matrona:detalle_paciente' paciente.pk %}" 
-                                           class="btn btn-sm btn-info"
+                                           class="btn btn-sm btn-primary" 
                                            title="Ver detalle">
                                             <i class="bi bi-eye"></i> Ver
                                         </a>
@@ -69,25 +82,27 @@
                 {% else %}
                     <div class="alert alert-warning">
                         <i class="bi bi-exclamation-triangle"></i> 
-                        No se encontraron pacientes con el criterio de búsqueda: <strong>{{ query }}</strong>
+                        <strong>No se encontraron pacientes</strong> con el término: <em>"{{ query }}"</em>
                     </div>
                 {% endif %}
             {% else %}
                 <div class="alert alert-info">
                     <i class="bi bi-info-circle"></i> 
-                    Ingrese un RUT o nombre para buscar pacientes en el sistema.
+                    Ingrese un término de búsqueda para comenzar
                 </div>
             {% endif %}
         </div>
-    </div>
-    
-    <div class="mt-3">
-        <a href="{% url 'matrona:registrar_paciente' %}" class="btn btn-danger">
-            <i class="bi bi-person-plus"></i> Registrar Nuevo Paciente
-        </a>
-        <a href="{% url 'home' %}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Volver al Inicio
-        </a>
+        <div class="card-footer">
+            <a href="{% url 'matrona:menu_matrona' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('✅ Vista de búsqueda de pacientes cargada');
+</script>
 {% endblock %}

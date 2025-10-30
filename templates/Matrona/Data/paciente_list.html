@@ -37,11 +37,24 @@
                         <tbody>
                             {% for paciente in pacientes %}
                             <tr>
-                                <td>{{ paciente.persona.Rut }}</td>
-                                <td>{{ paciente.persona.Nombre }} {{ paciente.persona.Apellido }}</td>
+                                <td><strong>{{ paciente.persona.Rut }}</strong></td>
+                                <!-- ✅ CORREGIDO: Apellido_Paterno y Apellido_Materno -->
+                                <td>
+                                    {{ paciente.persona.Nombre }} 
+                                    {{ paciente.persona.Apellido_Paterno }} 
+                                    {{ paciente.persona.Apellido_Materno }}
+                                </td>
                                 <td>{{ paciente.Edad }} años</td>
-                                <td>{{ paciente.get_Estado_civil_display }}</td>
-                                <td>{{ paciente.get_Previcion_display }}</td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        {{ paciente.get_Estado_civil_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ paciente.get_Previcion_display }}
+                                    </span>
+                                </td>
                                 <td>{{ paciente.Contacto_emergencia|default:"-" }}</td>
                                 <td>
                                     <a href="{% url 'matrona:detalle_paciente' paciente.pk %}" 
@@ -58,16 +71,24 @@
             {% else %}
                 <div class="alert alert-info">
                     <i class="bi bi-info-circle"></i> No hay pacientes registrados en el sistema.
-                    <a href="{% url 'matrona:registrar_paciente' %}" class="alert-link">Registrar primer paciente</a>
+                    <hr>
+                    <a href="{% url 'matrona:registrar_paciente' %}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-person-plus"></i> Registrar Primer Paciente
+                    </a>
                 </div>
             {% endif %}
         </div>
-    </div>
-    
-    <div class="mt-3">
-        <a href="{% url 'home' %}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Volver al Inicio
-        </a>
+        <div class="card-footer">
+            <a href="{% url 'matrona:menu_matrona' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver al Menú
+            </a>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('✅ Lista de pacientes cargada');
+</script>
 {% endblock %}

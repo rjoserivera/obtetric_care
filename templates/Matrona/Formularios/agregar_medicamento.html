@@ -1,210 +1,466 @@
 {% extends 'Shared/base.html' %}
 {% load static %}
 
+{% block title %}Agregar Medicamento - Ficha {{ ficha.numero_ficha }}{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
+<div class="container mt-4">
+    
+    <!-- ============================================
+         SECCIÓN: Navegación (Breadcrumb)
+         ============================================ -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'matrona:menu_matrona' %}">
+                    <i class="bi bi-house-fill"></i> Menú Matrona
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'matrona:detalle_ficha' ficha.pk %}">
+                    Ficha {{ ficha.numero_ficha }}
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Agregar Medicamento
+            </li>
+        </ol>
+    </nav>
+
+    <!-- ============================================
+         SECCIÓN: Encabezado
+         ============================================ -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-primary">
+                <i class="bi bi-capsule-pill"></i> Prescribir Medicamento
+            </h2>
+            <p class="text-muted">
+                Agregue un nuevo medicamento a la ficha obstétrica
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- ============================================
+             COLUMNA IZQUIERDA: Info de la Paciente y Ficha
+             ============================================ -->
+        <div class="col-lg-4 mb-4">
             
-            <!-- Encabezado -->
-            <div class="d-flex align-items-center mb-4">
-                <i class="bi bi-capsule-pill text-danger" style="font-size: 2.5rem;"></i>
-                <h2 class="ms-3 mb-0">Asignar Medicamento a Ficha</h2>
-            </div>
-
-            <!-- Mensajes -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            <!-- Info del Paciente y Ficha -->
-            <div class="card shadow mb-4 border-primary">
-                <div class="card-header bg-primary text-white">
+            <!-- Card: Información de la Paciente -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-info text-white">
                     <h5 class="mb-0">
-                        <i class="bi bi-info-circle"></i> Información
+                        <i class="bi bi-person-fill"></i> Paciente
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-2"><strong>Paciente:</strong> 
-                                {{ paciente.persona.Nombre }} {{ paciente.persona.Apellido_Paterno }} {{ paciente.persona.Apellido_Materno }}
-                            </p>
-                            <p class="mb-2"><strong>RUT:</strong> {{ paciente.persona.Rut }}</p>
-                            <p class="mb-2"><strong>Edad:</strong> {{ paciente.Edad }} años</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-2"><strong>Ficha:</strong> {{ ficha.numero_ficha }}</p>
-                            <p class="mb-2"><strong>Estado:</strong> 
-                                <span class="badge bg-success">Activa</span>
-                            </p>
-                            <p class="mb-2"><strong>Fecha Creación:</strong> {{ ficha.fecha_creacion|date:"d/m/Y" }}</p>
-                        </div>
+                    <h5 class="mb-2">
+                        {{ ficha.paciente.persona.Nombre }} 
+                        {{ ficha.paciente.persona.Apellido_Paterno }}
+                    </h5>
+                    <div class="mb-2">
+                        <small class="text-muted">RUT:</small><br>
+                        <strong>{{ ficha.paciente.persona.Rut }}</strong>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Edad:</small><br>
+                        {{ ficha.paciente.Edad|default:"No registrada" }}
+                    </div>
+                    <div class="mb-0">
+                        <small class="text-muted">N° Ficha:</small><br>
+                        <span class="badge bg-primary">{{ ficha.numero_ficha }}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Formulario -->
-            <div class="card shadow">
-                <div class="card-header bg-danger text-white">
+            <!-- Card: Información de la Ficha -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-clipboard2-pulse"></i> Datos del Embarazo
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <small class="text-muted">Edad Gestacional:</small><br>
+                        <strong>
+                            {% if ficha.edad_gestacional_sem %}
+                                {{ ficha.edad_gestacional_sem }} semanas
+                            {% else %}
+                                No especificada
+                            {% endif %}
+                        </strong>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">FPP:</small><br>
+                        {% if ficha.fecha_probable_parto %}
+                            {{ ficha.fecha_probable_parto|date:"d/m/Y" }}
+                        {% else %}
+                            No especificada
+                        {% endif %}
+                    </div>
+                    <div class="mb-0">
+                        <small class="text-muted">Patologías:</small><br>
+                        {% if ficha.patologias.count > 0 %}
+                            <span class="badge bg-warning">
+                                {{ ficha.patologias.count }} registrada(s)
+                            </span>
+                        {% else %}
+                            <span class="text-muted small">Sin patologías</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Medicamentos actuales -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-list-check"></i> Medicamentos Actuales
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if medicamentos_actuales %}
+                        <ul class="list-unstyled mb-0">
+                            {% for med in medicamentos_actuales %}
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success"></i>
+                                    <strong>{{ med.nombre_medicamento }}</strong><br>
+                                    <small class="text-muted">
+                                        {{ med.dosis }} - {{ med.via_administracion }}
+                                    </small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0 small">
+                            <i class="bi bi-info-circle"></i>
+                            No hay medicamentos activos
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================
+             COLUMNA DERECHA: Formulario de Medicamento
+             ============================================ -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">
-                        <i class="bi bi-clipboard-data"></i> Datos del Medicamento
+                        <i class="bi bi-file-medical"></i> Datos del Medicamento
                     </h5>
                 </div>
                 <div class="card-body">
                     
-                    <!-- Errores del Formulario -->
+                    <!-- Mostrar errores del formulario -->
                     {% if form.errors %}
-                        <div class="alert alert-danger">
-                            <h6 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Errores:</h6>
-                            <ul class="mb-0">
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <strong>Error en el formulario</strong>
+                            <ul class="mb-0 mt-2">
                                 {% for field, errors in form.errors.items %}
-                                    <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+                                    {% for error in errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
                                 {% endfor %}
                             </ul>
                         </div>
                     {% endif %}
 
-                    <form method="POST" class="needs-validation" novalidate>
+                    <!-- Formulario de prescripción -->
+                    <form method="POST" id="formMedicamento">
                         {% csrf_token %}
-                        
-                        <!-- Medicamento -->
+
+                        <!-- ============================================
+                             SECCIÓN 1: Identificación del Medicamento
+                             ============================================ -->
                         <div class="mb-4">
-                            <label for="{{ form.nombre_medicamento.id_for_label }}" class="form-label">
-                                <i class="bi bi-capsule"></i> {{ form.nombre_medicamento.label }} 
-                                <span class="text-danger">*</span>
-                            </label>
-                            {{ form.nombre_medicamento }}
-                            {% if form.nombre_medicamento.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.nombre_medicamento.errors }}
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="bi bi-1-circle"></i> Identificación del Medicamento
+                            </h6>
+
+                            <div class="row g-3">
+                                <!-- Nombre del medicamento -->
+                                <div class="col-12">
+                                    <label for="{{ form.nombre_medicamento.id_for_label }}" class="form-label required">
+                                        <i class="bi bi-capsule"></i> {{ form.nombre_medicamento.label }}
+                                    </label>
+                                    {{ form.nombre_medicamento }}
+                                    {% if form.nombre_medicamento.help_text %}
+                                        <small class="form-text text-muted d-block">
+                                            {{ form.nombre_medicamento.help_text }}
+                                        </small>
+                                    {% endif %}
+                                    {% if form.nombre_medicamento.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ form.nombre_medicamento.errors }}
+                                        </div>
+                                    {% endif %}
                                 </div>
-                            {% endif %}
-                        </div>
 
-                        <div class="row">
-                            <!-- Dosis -->
-                            <div class="col-md-4 mb-3">
-                                <label for="{{ form.dosis.id_for_label }}" class="form-label">
-                                    {{ form.dosis.label }} <span class="text-danger">*</span>
-                                </label>
-                                {{ form.dosis }}
-                                {% if form.dosis.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.dosis.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <!-- Vía -->
-                            <div class="col-md-4 mb-3">
-                                <label for="{{ form.via_administracion.id_for_label }}" class="form-label">
-                                    {{ form.via_administracion.label }} <span class="text-danger">*</span>
-                                </label>
-                                {{ form.via_administracion }}
-                                {% if form.via_administracion.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.via_administracion.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <!-- Frecuencia -->
-                            <div class="col-md-4 mb-3">
-                                <label for="{{ form.frecuencia.id_for_label }}" class="form-label">
-                                    {{ form.frecuencia.label }} <span class="text-danger">*</span>
-                                </label>
-                                {{ form.frecuencia }}
-                                {% if form.frecuencia.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.frecuencia.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <!-- Fecha Inicio -->
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.fecha_inicio.id_for_label }}" class="form-label">
-                                    {{ form.fecha_inicio.label }} <span class="text-danger">*</span>
-                                </label>
-                                {{ form.fecha_inicio }}
-                                {% if form.fecha_inicio.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.fecha_inicio.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <!-- Fecha Término -->
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.fecha_termino.id_for_label }}" class="form-label">
-                                    {{ form.fecha_termino.label }} <span class="text-danger">*</span>
-                                </label>
-                                {{ form.fecha_termino }}
-                                {% if form.fecha_termino.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.fecha_termino.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- Observaciones -->
-                        <div class="mb-3">
-                            <label for="{{ form.observaciones.id_for_label }}" class="form-label">
-                                {{ form.observaciones.label }}
-                            </label>
-                            {{ form.observaciones }}
-                            {% if form.observaciones.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.observaciones.errors }}
+                                <!-- Presentación del medicamento -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.presentacion.id_for_label }}" class="form-label">
+                                        <i class="bi bi-box"></i> {{ form.presentacion.label }}
+                                    </label>
+                                    {{ form.presentacion }}
+                                    {% if form.presentacion.help_text %}
+                                        <small class="form-text text-muted d-block">
+                                            {{ form.presentacion.help_text }}
+                                        </small>
+                                    {% endif %}
                                 </div>
-                            {% endif %}
+
+                                <!-- Concentración -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.concentracion.id_for_label }}" class="form-label">
+                                        <i class="bi bi-clipboard-data"></i> {{ form.concentracion.label }}
+                                    </label>
+                                    {{ form.concentracion }}
+                                    {% if form.concentracion.help_text %}
+                                        <small class="form-text text-muted d-block">
+                                            {{ form.concentracion.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Botones -->
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" class="btn btn-secondary">
+                        <!-- ============================================
+                             SECCIÓN 2: Posología (Dosis y Frecuencia)
+                             ============================================ -->
+                        <div class="mb-4">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="bi bi-2-circle"></i> Posología
+                            </h6>
+
+                            <div class="row g-3">
+                                <!-- Dosis -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.dosis.id_for_label }}" class="form-label required">
+                                        <i class="bi bi-prescription2"></i> {{ form.dosis.label }}
+                                    </label>
+                                    {{ form.dosis }}
+                                    {% if form.dosis.help_text %}
+                                        <small class="form-text text-muted d-block">
+                                            {{ form.dosis.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Frecuencia -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.frecuencia.id_for_label }}" class="form-label required">
+                                        <i class="bi bi-clock"></i> {{ form.frecuencia.label }}
+                                    </label>
+                                    {{ form.frecuencia }}
+                                    {% if form.frecuencia.help_text %}
+                                        <small class="form-text text-muted d-block">
+                                            {{ form.frecuencia.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Vía de administración -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.via_administracion.id_for_label }}" class="form-label required">
+                                        <i class="bi bi-arrow-right-circle"></i> {{ form.via_administracion.label }}
+                                    </label>
+                                    {{ form.via_administracion }}
+                                </div>
+
+                                <!-- Duración del tratamiento -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.duracion_dias.id_for_label }}" class="form-label">
+                                        <i class="bi bi-calendar3"></i> {{ form.duracion_dias.label }}
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.duracion_dias }}
+                                        <span class="input-group-text">días</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ============================================
+                             SECCIÓN 3: Fechas del Tratamiento
+                             ============================================ -->
+                        <div class="mb-4">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="bi bi-3-circle"></i> Período del Tratamiento
+                            </h6>
+
+                            <div class="row g-3">
+                                <!-- Fecha de inicio -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.fecha_inicio.id_for_label }}" class="form-label required">
+                                        <i class="bi bi-calendar-check"></i> {{ form.fecha_inicio.label }}
+                                    </label>
+                                    {{ form.fecha_inicio }}
+                                </div>
+
+                                <!-- Fecha de término -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.fecha_termino.id_for_label }}" class="form-label">
+                                        <i class="bi bi-calendar-x"></i> {{ form.fecha_termino.label }}
+                                    </label>
+                                    {{ form.fecha_termino }}
+                                    <small class="form-text text-muted d-block">
+                                        Se calculará automáticamente según la duración
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ============================================
+                             SECCIÓN 4: Indicaciones
+                             ============================================ -->
+                        <div class="mb-4">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="bi bi-4-circle"></i> Indicaciones y Observaciones
+                            </h6>
+
+                            <!-- Indicaciones médicas -->
+                            <div class="mb-3">
+                                <label for="{{ form.indicaciones.id_for_label }}" class="form-label">
+                                    <i class="bi bi-file-text"></i> {{ form.indicaciones.label }}
+                                </label>
+                                {{ form.indicaciones }}
+                                <small class="form-text text-muted">
+                                    Instrucciones especiales para el paciente o el personal de enfermería
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- ============================================
+                             SECCIÓN: Botones de Acción
+                             ============================================ -->
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <a href="{% url 'matrona:detalle_ficha' ficha.pk %}" 
+                               class="btn btn-outline-secondary">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </a>
-                            <button type="submit" class="btn btn-danger btn-lg">
-                                <i class="bi bi-save"></i> Asignar Medicamento
+                            
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Prescribir Medicamento
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>
 
-            <!-- Nota -->
-            <div class="alert alert-info mt-3">
-                <i class="bi bi-info-circle"></i>
-                <strong>Nota:</strong> Los campos marcados con <span class="text-danger">*</span> son obligatorios.
-                El TENS podrá ver este medicamento y registrar cada vez que lo administra.
+            <!-- Card: Información importante -->
+            <div class="card shadow-sm mt-3">
+                <div class="card-body bg-light">
+                    <h6 class="text-muted">
+                        <i class="bi bi-lightbulb"></i> Información Importante
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li>Verifique las alergias y contraindicaciones de la paciente</li>
+                        <li>La dosis debe considerar el peso y edad gestacional</li>
+                        <li>El personal TENS será responsable de la administración</li>
+                        <li>Todos los campos marcados con * son obligatorios</li>
+                    </ul>
+                </div>
             </div>
-
         </div>
     </div>
+
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Estilos personalizados para el formulario */
+    
+    .form-label.required::after {
+        content: " *";
+        color: red;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 0.375rem;
+        border: 1px solid #ced4da;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    textarea.form-control {
+        min-height: 100px;
+    }
+    
+    .border-bottom {
+        border-bottom: 2px solid #e9ecef !important;
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Validación
-document.querySelector('.needs-validation').addEventListener('submit', function(e) {
-    if (!this.checkValidity()) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    this.classList.add('was-validated');
-});
-
-console.log('✅ Formulario de asignación de medicamento cargado');
+    // JavaScript para funcionalidades del formulario
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // Calcular fecha de término automáticamente
+        const inputFechaInicio = document.getElementById('id_fecha_inicio');
+        const inputDuracion = document.getElementById('id_duracion_dias');
+        const inputFechaTermino = document.getElementById('id_fecha_termino');
+        
+        function calcularFechaTermino() {
+            if (inputFechaInicio && inputDuracion && inputFechaTermino) {
+                const fechaInicio = new Date(inputFechaInicio.value);
+                const duracion = parseInt(inputDuracion.value);
+                
+                if (fechaInicio && duracion > 0) {
+                    // Calcular fecha de término
+                    const fechaTermino = new Date(fechaInicio);
+                    fechaTermino.setDate(fechaTermino.getDate() + duracion);
+                    
+                    // Formatear fecha para el input (YYYY-MM-DD)
+                    const year = fechaTermino.getFullYear();
+                    const month = String(fechaTermino.getMonth() + 1).padStart(2, '0');
+                    const day = String(fechaTermino.getDate()).padStart(2, '0');
+                    
+                    inputFechaTermino.value = `${year}-${month}-${day}`;
+                }
+            }
+        }
+        
+        // Event listeners para cálculo automático
+        if (inputFechaInicio && inputDuracion) {
+            inputFechaInicio.addEventListener('change', calcularFechaTermino);
+            inputDuracion.addEventListener('input', calcularFechaTermino);
+        }
+        
+        // Configurar inputs de fecha
+        if (inputFechaInicio) inputFechaInicio.type = 'date';
+        if (inputFechaTermino) inputFechaTermino.type = 'date';
+        
+        // Validación del formulario
+        const form = document.getElementById('formMedicamento');
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                // Validar que la fecha de término sea posterior a la de inicio
+                if (inputFechaInicio.value && inputFechaTermino.value) {
+                    const inicio = new Date(inputFechaInicio.value);
+                    const termino = new Date(inputFechaTermino.value);
+                    
+                    if (termino <= inicio) {
+                        alert('La fecha de término debe ser posterior a la fecha de inicio');
+                        event.preventDefault();
+                        inputFechaTermino.focus();
+                        return false;
+                    }
+                }
+            });
+        }
+    });
 </script>
 {% endblock %}
