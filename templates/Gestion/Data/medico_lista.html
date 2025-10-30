@@ -4,187 +4,168 @@
 {% block title %}Lista de Médicos - Sistema Obstétrico{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>
-                    <i class="bi bi-clipboard-pulse text-primary"></i>
-                    Lista de Médicos Registrados
-                </h2>
-                <a href="{% url 'gestion:registrar_medico' %}" class="btn btn-primary">
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-clipboard2-pulse"></i> Médicos Registrados
+                </h4>
+                <a href="{% url 'gestion:registrar_medico' %}" class="btn btn-light btn-sm">
                     <i class="bi bi-plus-circle"></i> Nuevo Médico
                 </a>
             </div>
-            
-            <!-- Filtros -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <form method="GET" class="row g-3">
-                        <div class="col-md-4">
-                            <label for="buscar_nombre" class="form-label">Buscar por Nombre</label>
-                            <input type="text" class="form-control" id="buscar_nombre" name="nombre" 
-                                   placeholder="Nombre o apellido" value="{{ request.GET.nombre }}">
-                        </div>
-                        <div class="col-md-3">
-                            <label for="filtro_especialidad" class="form-label">Especialidad</label>
-                            <select class="form-select" id="filtro_especialidad" name="especialidad">
-                                <option value="">Todas</option>
-                                <option value="OBSTETRICIA" {% if request.GET.especialidad == 'OBSTETRICIA' %}selected{% endif %}>
-                                    Obstetricia
-                                </option>
-                                <option value="GINECOLOGIA" {% if request.GET.especialidad == 'GINECOLOGIA' %}selected{% endif %}>
-                                    Ginecología
-                                </option>
-                                <option value="NEONATOLOGIA" {% if request.GET.especialidad == 'NEONATOLOGIA' %}selected{% endif %}>
-                                    Neonatología
-                                </option>
-                                <option value="MEDICINA_GENERAL" {% if request.GET.especialidad == 'MEDICINA_GENERAL' %}selected{% endif %}>
-                                    Medicina General
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="filtro_turno" class="form-label">Turno</label>
-                            <select class="form-select" id="filtro_turno" name="turno">
-                                <option value="">Todos</option>
-                                <option value="MAÑANA" {% if request.GET.turno == 'MAÑANA' %}selected{% endif %}>Mañana</option>
-                                <option value="TARDE" {% if request.GET.turno == 'TARDE' %}selected{% endif %}>Tarde</option>
-                                <option value="NOCHE" {% if request.GET.turno == 'NOCHE' %}selected{% endif %}>Noche</option>
-                                <option value="ROTATIVO" {% if request.GET.turno == 'ROTATIVO' %}selected{% endif %}>Rotativo</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary me-2">
-                                <i class="bi bi-search"></i> Buscar
-                            </button>
-                            <a href="{% url 'gestion:lista_medicos' %}" class="btn btn-secondary">
-                                <i class="bi bi-x-circle"></i>
-                            </a>
-                        </div>
-                    </form>
+        </div>
+        
+        <div class="card-body">
+            <!-- Buscador y Filtros -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control" id="buscar-medico" 
+                               placeholder="Buscar por nombre, RUT o especialidad...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="filtro-especialidad">
+                        <option value="">Todas las especialidades</option>
+                        <option value="Ginecología">Ginecología</option>
+                        <option value="Obstetricia">Obstetricia</option>
+                        <option value="Medicina General">Medicina General</option>
+                        <option value="Pediatría">Pediatría</option>
+                    </select>
+                </div>
+                <div class="col-md-3 text-end">
+                    <span class="badge bg-info text-dark fs-6">
+                        Total: {{ medicos.count }} médico{{ medicos.count|pluralize }}
+                    </span>
                 </div>
             </div>
-            
+
             <!-- Tabla de Médicos -->
-            <div class="card">
-                <div class="card-body">
-                    {% if medicos %}
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>RUT</th>
-                                    <th>Nombre Completo</th>
-                                    <th>Especialidad</th>
-                                    <th>Registro Médico</th>
-                                    <th>Experiencia</th>
-                                    <th>Turno</th>
-                                    <th>Estado</th>
-                                    <th class="text-center">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for medico in medicos %}
-                                <tr>
-                                    <td><strong>{{ medico.persona.Rut }}</strong></td>
-                                    <td>
-                                        <i class="bi bi-person-circle text-primary"></i>
-                                        Dr/a. {{ medico.persona.Nombre }} {{ medico.persona.Apellido }}
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-primary">
-                                            {{ medico.get_Especialidad_display }}
-                                        </span>
-                                    </td>
-                                    <td><code>{{ medico.Registro_medico }}</code></td>
-                                    <td>
-                                        <i class="bi bi-award"></i>
-                                        {{ medico.Años_experiencia }} año{{ medico.Años_experiencia|pluralize }}
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info">
-                                            {{ medico.get_Turno_display }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {% if medico.activo %}
-                                            <span class="badge bg-success">
-                                                <i class="bi bi-check-circle"></i> Activo
-                                            </span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">
-                                                <i class="bi bi-x-circle"></i> Inactivo
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="{% url 'gestion:detalle_persona' medico.persona.pk %}" 
-                                           class="btn btn-sm btn-outline-info" title="Ver detalle">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Paginación -->
-                    {% if is_paginated %}
-                    <nav aria-label="Paginación" class="mt-4">
-                        <ul class="pagination justify-content-center">
-                            {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page=1">Primera</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-                            </li>
-                            {% endif %}
-                            
-                            <li class="page-item active">
-                                <span class="page-link">
-                                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            {% if medicos %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-success">
+                        <tr>
+                            <th>RUT</th>
+                            <th>Nombre Completo</th>
+                            <th>Especialidad</th>
+                            <th>Registro Médico</th>
+                            <th>Años Experiencia</th>
+                            <th>Turno</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-medicos">
+                        {% for medico in medicos %}
+                        <tr data-nombre="{{ medico.rut_persona.Nombre|lower }} {{ medico.rut_persona.Apellido|lower }}"
+                            data-rut="{{ medico.rut_persona.Rut }}"
+                            data-especialidad="{{ medico.Especialidad }}">
+                            <td><strong>{{ medico.rut_persona.Rut }}</strong></td>
+                            <td>
+                                <i class="bi bi-person-fill text-success"></i>
+                                {{ medico.rut_persona.Nombre }} {{ medico.rut_persona.Apellido }}
+                            </td>
+                            <td>
+                                <span class="badge bg-success">{{ medico.Especialidad }}</span>
+                            </td>
+                            <td>{{ medico.Registro_medico }}</td>
+                            <td>
+                                <i class="bi bi-award"></i> {{ medico.Anos_experiencia }} años
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if medico.Turno == 'Diurno' %}bg-warning text-dark{% endif %}
+                                    {% if medico.Turno == 'Vespertino' %}bg-info{% endif %}
+                                    {% if medico.Turno == 'Nocturno' %}bg-dark{% endif %}
+                                    {% if medico.Turno == 'Rotativo' %}bg-primary{% endif %}">
+                                    {{ medico.Turno }}
                                 </span>
-                            </li>
-                            
-                            {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última</a>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                    {% endif %}
-                    
-                    <!-- Estadísticas -->
-                    <div class="row mt-4">
-                        <div class="col-md-12">
-                            <div class="alert alert-primary">
-                                <i class="bi bi-info-circle"></i>
-                                <strong>Total de médicos registrados:</strong> {{ medicos|length }}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {% else %}
-                    <div class="alert alert-info text-center" role="alert">
-                        <i class="bi bi-info-circle fs-1"></i>
-                        <h4 class="mt-3">No hay médicos registrados</h4>
-                        <p>Comience registrando un nuevo médico en el sistema.</p>
-                        <a href="{% url 'gestion:registrar_medico' %}" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Registrar Primer Médico
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
+                            </td>
+                            <td>
+                                {% if medico.rut_persona.Activo %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i> Activo
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i> Inactivo
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'gestion:detalle_persona' medico.rut_persona.pk %}" 
+                                       class="btn btn-outline-primary" 
+                                       title="Ver Perfil">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'gestion:gestionar_roles' medico.rut_persona.pk %}" 
+                                       class="btn btn-outline-warning" 
+                                       title="Gestionar Roles">
+                                        <i class="bi bi-person-gear"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-warning text-center">
+                <i class="bi bi-exclamation-triangle"></i>
+                <strong>No hay médicos registrados.</strong>
+                <br>
+                <a href="{% url 'gestion:registrar_medico' %}" class="btn btn-success btn-sm mt-2">
+                    <i class="bi bi-plus-circle"></i> Registrar Primer Médico
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="card-footer">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'gestion:lista_personas' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver a Personas
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-primary">
+                    <i class="bi bi-house"></i> Ir al Inicio
+                </a>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Búsqueda y filtros
+document.getElementById('buscar-medico').addEventListener('input', filtrarTabla);
+document.getElementById('filtro-especialidad').addEventListener('change', filtrarTabla);
+
+function filtrarTabla() {
+    const searchTerm = document.getElementById('buscar-medico').value.toLowerCase();
+    const especialidad = document.getElementById('filtro-especialidad').value;
+    const rows = document.querySelectorAll('#tabla-medicos tr');
+    
+    rows.forEach(row => {
+        const nombre = row.dataset.nombre || '';
+        const rut = row.dataset.rut || '';
+        const esp = row.dataset.especialidad || '';
+        
+        const matchSearch = nombre.includes(searchTerm) || rut.includes(searchTerm) || esp.toLowerCase().includes(searchTerm);
+        const matchEsp = !especialidad || esp === especialidad;
+        
+        row.style.display = (matchSearch && matchEsp) ? '' : 'none';
+    });
+}
+
+console.log('✅ Lista de médicos cargada');
+</script>
 {% endblock %}
