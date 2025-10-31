@@ -4,112 +4,395 @@
 {% block title %}Módulo Matrona - Sistema Obstétrico{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-4">
     
-    <!-- Encabezado -->
+    <!-- Encabezado Principal -->
     <div class="text-center mb-5">
         <h1 class="display-4">
-            <i class="bi bi-heart-pulse text-danger"></i>
+            <i class="bi bi-hospital text-primary"></i>
             Módulo de Matrona
         </h1>
         <p class="lead text-muted">
-            Gestión de Pacientes y Fichas Obstétricas
+            Sistema Integral de Gestión Obstétrica
         </p>
+        <hr class="my-4">
     </div>
 
-    <!-- Tarjetas de Acceso Rápido -->
-    <div class="row g-4">
-        
-        <!-- GESTIÓN DE PACIENTES -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-person-hearts"></i> Gestión de Pacientes
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text">
-                        Administrar pacientes, buscar por RUT o nombre, y gestionar su información básica.
-                    </p>
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'matrona:registrar_paciente' %}" class="btn btn-danger">
-                            <i class="bi bi-plus-circle"></i> Registrar Paciente
-                        </a>
-                        <a href="{% url 'matrona:lista_pacientes' %}" class="btn btn-outline-danger">
-                            <i class="bi bi-list-ul"></i> Ver Todos los Pacientes
-                        </a>
-                        <a href="{% url 'matrona:buscar_paciente' %}" class="btn btn-outline-danger">
-                            <i class="bi bi-search"></i> Buscar Paciente
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- FICHAS OBSTÉTRICAS -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-file-earmark-medical"></i> Fichas Obstétricas
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text">
-                        Crear y gestionar fichas obstétricas, registrar antecedentes y seguimiento del embarazo.
-                    </p>
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'matrona:seleccionar_paciente_ficha' %}" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Crear Nueva Ficha
-                        </a>
-                        <a href="{% url 'matrona:todas_fichas' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-folder-fill"></i> Ver Todas las Fichas
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    <!-- Mensaje de Bienvenida -->
+    {% if user.is_authenticated %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <h5 class="alert-heading">
+            <i class="bi bi-emoji-smile"></i> 
+            Bienvenida, {{ user.get_full_name|default:user.username }}
+        </h5>
+        <p class="mb-0">
+            <i class="bi bi-calendar-event"></i> 
+            <strong>Fecha:</strong> {% now "l, d \d\e F \d\e Y" %}
+            &nbsp;|&nbsp;
+            <i class="bi bi-clock"></i> 
+            <strong>Hora:</strong> {% now "H:i" %}
+        </p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
 
     <!-- Estadísticas Rápidas -->
-    <div class="row mt-5">
+    <div class="row mb-5">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center border-primary shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+                    <h2 class="mt-3 mb-0 text-primary">{{ total_pacientes|default:0 }}</h2>
+                    <p class="text-muted mb-0">Pacientes Activos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center border-success shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-file-medical-fill text-success" style="font-size: 3rem;"></i>
+                    <h2 class="mt-3 mb-0 text-success">{{ total_fichas_activas|default:0 }}</h2>
+                    <p class="text-muted mb-0">Fichas Activas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center border-warning shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-hospital text-warning" style="font-size: 3rem;"></i>
+                    <h2 class="mt-3 mb-0 text-warning">{{ ingresos_activos|default:0 }}</h2>
+                    <p class="text-muted mb-0">Ingresos Activos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center border-info shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-capsule text-info" style="font-size: 3rem;"></i>
+                    <h2 class="mt-3 mb-0 text-info">{{ medicamentos_activos|default:0 }}</h2>
+                    <p class="text-muted mb-0">Tratamientos Activos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos Rápidos Principales -->
+    <div class="row mb-4">
         <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white">
+            <h3 class="mb-3">
+                <i class="bi bi-lightning-charge text-warning"></i> 
+                Accesos Rápidos
+            </h3>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        
+        <!-- BÚSQUEDA DE PACIENTES -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-primary card-hover">
+                <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">
-                        <i class="bi bi-graph-up"></i> Estadísticas Rápidas
+                        <i class="bi bi-search"></i> Buscar Paciente
+                    </h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <p class="card-text flex-grow-1">
+                        Buscar pacientes por RUT o nombre para ver su información, fichas y tratamientos.
+                    </p>
+                    <div class="d-grid">
+                        <a href="{% url 'matrona:buscar_paciente' %}" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Buscar Ahora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REGISTRAR PACIENTE -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-success card-hover">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-plus-fill"></i> Registrar Paciente
+                    </h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <p class="card-text flex-grow-1">
+                        Registrar una nueva paciente en el sistema con todos sus datos personales y médicos.
+                    </p>
+                    <div class="d-grid">
+                        <a href="{% url 'matrona:registrar_paciente' %}" class="btn btn-success">
+                            <i class="bi bi-plus-circle"></i> Registrar Nuevo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CREAR FICHA OBSTÉTRICA -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-info card-hover">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-earmark-medical"></i> Nueva Ficha Obstétrica
+                    </h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <p class="card-text flex-grow-1">
+                        Crear una nueva ficha obstétrica para seguimiento de embarazo y control prenatal.
+                    </p>
+                    <div class="d-grid">
+                        <a href="{% url 'matrona:seleccionar_paciente_ficha' %}" class="btn btn-info">
+                            <i class="bi bi-file-earmark-plus"></i> Crear Ficha
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gestión de Pacientes y Fichas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">
+                <i class="bi bi-folder2-open text-primary"></i> 
+                Gestión de Pacientes y Fichas
+            </h3>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        
+        <!-- LISTAR PACIENTES -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-primary card-hover">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-primary">
+                        <i class="bi bi-list-ul"></i> Listar Pacientes
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-md-3">
-                            <div class="p-3">
-                                <i class="bi bi-people-fill text-danger" style="font-size: 3rem;"></i>
-                                <h3 class="mt-2">{{ total_pacientes|default:"0" }}</h3>
-                                <p class="text-muted">Pacientes Activos</p>
-                            </div>
+                    <p class="card-text">
+                        Ver el listado completo de todas las pacientes registradas en el sistema.
+                    </p>
+                    <ul class="mb-3">
+                        <li>Ver datos personales</li>
+                        <li>Acceder a fichas obstétricas</li>
+                        <li>Historial de ingresos</li>
+                        <li>Estado de tratamientos</li>
+                    </ul>
+                    <div class="d-grid">
+                        <a href="{% url 'matrona:listar_pacientes' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-list-ul"></i> Ver Listado
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TODAS LAS FICHAS -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-success card-hover">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-success">
+                        <i class="bi bi-folder-fill"></i> Todas las Fichas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Acceder a todas las fichas obstétricas del sistema con búsqueda y filtros.
+                    </p>
+                    <ul class="mb-3">
+                        <li>Fichas activas y cerradas</li>
+                        <li>Filtrar por fecha</li>
+                        <li>Buscar por paciente</li>
+                        <li>Exportar reportes</li>
+                    </ul>
+                    <div class="d-grid">
+                        <a href="{% url 'matrona:todas_fichas' %}" class="btn btn-outline-success">
+                            <i class="bi bi-folder2-open"></i> Ver Fichas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gestión de Medicamentos e Ingresos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">
+                <i class="bi bi-capsule-pill text-danger"></i> 
+                Medicamentos e Ingresos
+            </h3>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        
+        <!-- GESTIÓN DE MEDICAMENTOS -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-danger card-hover">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-danger">
+                        <i class="bi bi-capsule"></i> Gestión de Medicamentos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Administrar medicamentos asignados a las fichas obstétricas.
+                    </p>
+                    <ul class="mb-3">
+                        <li>Agregar nuevos medicamentos</li>
+                        <li>Modificar dosis y frecuencia</li>
+                        <li>Ver tratamientos activos</li>
+                        <li>Desactivar medicamentos</li>
+                    </ul>
+                    <div class="d-grid">
+                        <a href="{% url 'matrona:listar_medicamentos' %}" class="btn btn-outline-danger">
+                            <i class="bi bi-clipboard2-pulse"></i> Ver Medicamentos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GESTIÓN DE INGRESOS -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-warning card-hover">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-warning">
+                        <i class="bi bi-hospital"></i> Gestión de Ingresos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Administrar ingresos hospitalarios de las pacientes.
+                    </p>
+                    <ul class="mb-3">
+                        <li>Registrar nuevos ingresos</li>
+                        <li>Ver ingresos activos</li>
+                        <li>Dar de alta pacientes</li>
+                        <li>Historial de hospitalizaciones</li>
+                    </ul>
+                    <div class="d-grid">
+                        <a href="{% url 'matrona:listar_ingresos' %}" class="btn btn-outline-warning">
+                            <i class="bi bi-building"></i> Ver Ingresos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reportes y Configuración -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">
+                <i class="bi bi-gear-fill text-secondary"></i> 
+                Reportes y Configuración
+            </h3>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        
+        <!-- REPORTES -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-info card-hover">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-info">
+                        <i class="bi bi-file-earmark-bar-graph"></i> Reportes
+                    </h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <p class="card-text flex-grow-1">
+                        Generar reportes estadísticos y exportar datos del sistema.
+                    </p>
+                    <div class="d-grid">
+                        <a href="{% url 'matrona:reportes' %}" class="btn btn-outline-info">
+                            <i class="bi bi-graph-up"></i> Ver Reportes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESTADÍSTICAS -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-primary card-hover">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-primary">
+                        <i class="bi bi-bar-chart-fill"></i> Estadísticas
+                    </h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <p class="card-text flex-grow-1">
+                        Ver estadísticas detalladas del servicio de obstetricia.
+                    </p>
+                    <div class="d-grid">
+                        <a href="{% url 'matrona:estadisticas' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-pie-chart"></i> Ver Estadísticas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MI PERFIL -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-secondary card-hover">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-secondary">
+                        <i class="bi bi-person-circle"></i> Mi Perfil
+                    </h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <p class="card-text flex-grow-1">
+                        Ver y actualizar tu información personal y configuración.
+                    </p>
+                    <div class="d-grid">
+                        <a href="{% url 'matrona:mi_perfil' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-gear"></i> Configuración
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ayuda y Recursos -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-question-circle"></i> Ayuda y Recursos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6><i class="bi bi-book"></i> Documentación</h6>
+                            <p class="small">Consulte el manual de usuario para instrucciones detalladas.</p>
+                            <a href="#" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-file-text"></i> Ver Manual
+                            </a>
                         </div>
-                        <div class="col-md-3">
-                            <div class="p-3">
-                                <i class="bi bi-folder-fill text-primary" style="font-size: 3rem;"></i>
-                                <h3 class="mt-2">{{ total_fichas|default:"0" }}</h3>
-                                <p class="text-muted">Fichas Obstétricas</p>
-                            </div>
+                        <div class="col-md-4">
+                            <h6><i class="bi bi-play-circle"></i> Tutoriales</h6>
+                            <p class="small">Videos explicativos sobre el uso del sistema.</p>
+                            <a href="#" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-camera-video"></i> Ver Videos
+                            </a>
                         </div>
-                        <div class="col-md-3">
-                            <div class="p-3">
-                                <i class="bi bi-folder-check text-success" style="font-size: 3rem;"></i>
-                                <h3 class="mt-2">{{ fichas_activas|default:"0" }}</h3>
-                                <p class="text-muted">Fichas Activas</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="p-3">
-                                <i class="bi bi-calendar-event text-info" style="font-size: 3rem;"></i>
-                                <h3 class="mt-2">{{ ingresos_hoy|default:"0" }}</h3>
-                                <p class="text-muted">Ingresos Hoy</p>
-                            </div>
+                        <div class="col-md-4">
+                            <h6><i class="bi bi-headset"></i> Soporte Técnico</h6>
+                            <p class="small">¿Necesita ayuda? Contacte al equipo de soporte.</p>
+                            <a href="#" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-envelope"></i> Contactar
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -118,9 +401,9 @@
     </div>
 
     <!-- Botón Volver -->
-    <div class="mt-4 text-center">
-        <a href="{% url 'home' %}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Volver al Inicio
+    <div class="text-center mb-5">
+        <a href="{% url 'home' %}" class="btn btn-secondary btn-lg">
+            <i class="bi bi-arrow-left-circle"></i> Volver al Inicio
         </a>
     </div>
 </div>
@@ -128,16 +411,158 @@
 
 {% block extra_css %}
 <style>
+    /* Animaciones suaves para las tarjetas */
+    .card-hover {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Efecto en los iconos grandes */
+    .card-body i[style*="font-size: 3rem"] {
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover i[style*="font-size: 3rem"] {
+        transform: scale(1.1);
+    }
+    
+    /* Estilo para badges de estadísticas */
+    .card h2 {
+        font-weight: 700;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* Animación de entrada */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
     .card {
-        transition: transform 0.2s;
+        animation: fadeInUp 0.5s ease;
     }
     
-    .card:hover {
-        transform: translateY(-5px);
+    /* Separadores personalizados */
+    hr.my-4 {
+        border-top: 3px solid #007bff;
+        opacity: 0.5;
+        width: 60%;
+        margin: 2rem auto;
     }
     
-    .display-4 {
-        font-weight: 600;
+    /* Mejorar legibilidad de listas */
+    .card-body ul {
+        padding-left: 1.2rem;
+    }
+    
+    .card-body ul li {
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Responsividad */
+    @media (max-width: 768px) {
+        .display-4 {
+            font-size: 2rem;
+        }
+        
+        .card-body i[style*="font-size: 3rem"] {
+            font-size: 2rem !important;
+        }
     }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Actualizar hora en tiempo real
+function actualizarHora() {
+    const ahora = new Date();
+    const opciones = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    const horaActual = ahora.toLocaleTimeString('es-CL', opciones);
+    
+    // Buscar el elemento de hora si existe
+    const elementoHora = document.querySelector('.alert-info p');
+    if (elementoHora) {
+        const textoOriginal = elementoHora.innerHTML;
+        const nuevoTexto = textoOriginal.replace(/\d{2}:\d{2}(:\d{2})?/, horaActual);
+        elementoHora.innerHTML = nuevoTexto;
+    }
+}
+
+// Actualizar cada segundo
+setInterval(actualizarHora, 1000);
+
+// Efecto de clic en tarjetas
+document.querySelectorAll('.card-hover').forEach(card => {
+    card.addEventListener('click', function(e) {
+        // Si no se hizo clic en un enlace, buscar el enlace dentro de la tarjeta
+        if (!e.target.closest('a')) {
+            const link = this.querySelector('a.btn');
+            if (link) {
+                link.click();
+            }
+        }
+    });
+});
+
+// Animación de contador para las estadísticas
+function animarContadores() {
+    document.querySelectorAll('.card h2').forEach(elemento => {
+        const valorFinal = parseInt(elemento.textContent) || 0;
+        let valorActual = 0;
+        const incremento = Math.ceil(valorFinal / 50);
+        
+        const timer = setInterval(() => {
+            valorActual += incremento;
+            if (valorActual >= valorFinal) {
+                elemento.textContent = valorFinal;
+                clearInterval(timer);
+            } else {
+                elemento.textContent = valorActual;
+            }
+        }, 30);
+    });
+}
+
+// Ejecutar animación al cargar
+document.addEventListener('DOMContentLoaded', animarContadores);
+
+// Tooltips de Bootstrap
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+// Log de carga
+console.log('✅ Menú de Matrona cargado correctamente');
+console.log('📊 Estadísticas:', {
+    pacientes: {{ total_pacientes|default:0 }},
+    fichas: {{ total_fichas_activas|default:0 }},
+    ingresos: {{ ingresos_activos|default:0 }},
+    medicamentos: {{ medicamentos_activos|default:0 }}
+});
+
+// Easter egg - mensaje motivacional
+const mensajes = [
+    '¡Excelente trabajo cuidando a las pacientes! 👩‍⚕️',
+    'Tu dedicación hace la diferencia 💙',
+    'Cada día es una oportunidad para ayudar 🌟',
+    'Gracias por tu profesionalismo ⭐'
+];
+
+setTimeout(() => {
+    const mensajeAleatorio = mensajes[Math.floor(Math.random() * mensajes.length)];
+    console.log(`💝 ${mensajeAleatorio}`);
+}, 2000);
+</script>
 {% endblock %}

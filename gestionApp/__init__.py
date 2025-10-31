@@ -1,11 +1,3 @@
-from gestionApp.forms import TensForm
-from medicoApp.forms import MedicoForm
-from matronaApp.forms import MatronaForm
+default_app_config = 'gestionApp.apps.GestionappConfig'
 
-__all__ = [
-    'PersonaForm',
-    'PacienteForm',
-    'MedicoForm',
-    'MatronaForm',
-    'TensForm',
-]
+
