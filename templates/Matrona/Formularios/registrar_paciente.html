@@ -1,267 +1,432 @@
 {% extends 'Shared/base.html' %}
 {% load static %}
 
-{% block title %}Registrar Paciente - Sistema Obstétrico{% endblock %}
+{% block title %}Registrar Nuevo Paciente - Sistema Obstétrico{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <!-- Encabezado -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="text-success">
-                <i class="bi bi-person-plus-fill"></i> Registrar Nuevo Paciente
-            </h2>
-            <hr>
-        </div>
-    </div>
-
-    <!-- Formulario de Registro -->
-    <div class="card shadow-sm">
+    <div class="card mb-3 border-success">
         <div class="card-header bg-success text-white">
-            <h5 class="mb-0"><i class="bi bi-person-lines-fill"></i> Datos del Paciente</h5>
-        </div>
-        <div class="card-body">
-            <form method="post" id="formRegistrarPaciente">
-                {% csrf_token %}
-                
-                <!-- Mostrar errores -->
-                {% if form.errors %}
-                <div class="alert alert-danger" role="alert">
-                    <h5><i class="bi bi-exclamation-triangle"></i> Corrija los siguientes errores:</h5>
-                    {{ form.errors }}
-                </div>
-                {% endif %}
-
-                <!-- Datos Personales -->
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0">👤 Información Personal</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- RUT -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_rut" class="form-label">
-                                    RUT <span class="text-danger">*</span>
-                                </label>
-                                {{ form.rut }}
-                                <small class="form-text text-muted">Formato: 12345678-9</small>
-                                <button type="button" class="btn btn-sm btn-outline-primary mt-1" id="btnBuscarRut">
-                                    <i class="bi bi-search"></i> Buscar RUT
-                                </button>
-                            </div>
-
-                            <!-- Nombres -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_nombre" class="form-label">
-                                    Nombres <span class="text-danger">*</span>
-                                </label>
-                                {{ form.nombre }}
-                            </div>
-
-                            <!-- Apellido Paterno -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_apellido_paterno" class="form-label">
-                                    Apellido Paterno <span class="text-danger">*</span>
-                                </label>
-                                {{ form.apellido_paterno }}
-                            </div>
-
-                            <!-- Apellido Materno -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_apellido_materno" class="form-label">
-                                    Apellido Materno <span class="text-danger">*</span>
-                                </label>
-                                {{ form.apellido_materno }}
-                            </div>
-
-                            <!-- Fecha de Nacimiento -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_fecha_nacimiento" class="form-label">
-                                    Fecha de Nacimiento <span class="text-danger">*</span>
-                                </label>
-                                {{ form.fecha_nacimiento }}
-                            </div>
-
-                            <!-- Sexo -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_sexo" class="form-label">
-                                    Sexo <span class="text-danger">*</span>
-                                </label>
-                                {{ form.sexo }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Datos de Contacto -->
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0">📞 Información de Contacto</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Teléfono -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_telefono" class="form-label">
-                                    Teléfono <span class="text-danger">*</span>
-                                </label>
-                                {{ form.telefono }}
-                                <small class="form-text text-muted">Ej: +56912345678</small>
-                            </div>
-
-                            <!-- Email -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_email" class="form-label">
-                                    Email
-                                </label>
-                                {{ form.email }}
-                            </div>
-
-                            <!-- Dirección -->
-                            <div class="col-md-12 mb-3">
-                                <label for="id_direccion" class="form-label">
-                                    Dirección <span class="text-danger">*</span>
-                                </label>
-                                {{ form.direccion }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Datos Médicos Básicos -->
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0">🩺 Información Médica</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Prevision -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_prevision" class="form-label">
-                                    Previsión <span class="text-danger">*</span>
-                                </label>
-                                {{ form.prevision }}
-                            </div>
-
-                            <!-- Alergias -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_alergias" class="form-label">
-                                    Alergias Conocidas
-                                </label>
-                                {{ form.alergias }}
-                                <small class="form-text text-muted">Medicamentos, alimentos, etc.</small>
-                            </div>
-
-                            <!-- Grupo Sanguíneo -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_grupo_sanguineo" class="form-label">
-                                    Grupo Sanguíneo
-                                </label>
-                                {{ form.grupo_sanguineo }}
-                            </div>
-
-                            <!-- Factor RH -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_factor_rh" class="form-label">
-                                    Factor RH
-                                </label>
-                                {{ form.factor_rh }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contacto de Emergencia -->
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0">🚨 Contacto de Emergencia</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Nombre del Acompañante -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_acompanante" class="form-label">
-                                    Nombre del Acompañante
-                                </label>
-                                {{ form.acompanante }}
-                            </div>
-
-                            <!-- Teléfono de Emergencia -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_contacto_emergencia" class="form-label">
-                                    Teléfono de Emergencia <span class="text-danger">*</span>
-                                </label>
-                                {{ form.contacto_emergencia }}
-                                <small class="form-text text-muted">Contacto en caso de emergencia</small>
-                            </div>
-
-                            <!-- Relación con el Paciente -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_relacion_acompanante" class="form-label">
-                                    Relación con el Paciente
-                                </label>
-                                {{ form.relacion_acompanante }}
-                                <small class="form-text text-muted">Ej: Esposo, Madre, Hermana</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Observaciones -->
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0">📝 Observaciones</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12 mb-3">
-                                <label for="id_observaciones" class="form-label">
-                                    Observaciones Generales
-                                </label>
-                                {{ form.observaciones }}
-                                <small class="form-text text-muted">
-                                    Antecedentes relevantes, condiciones especiales, etc.
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Botones de Acción -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="bi bi-check-circle"></i> Registrar Paciente
-                        </button>
-                        <a href="{% url 'matrona:buscar_paciente' %}" class="btn btn-secondary btn-lg">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </a>
-                        <button type="reset" class="btn btn-outline-warning btn-lg">
-                            <i class="bi bi-arrow-clockwise"></i> Limpiar Formulario
-                        </button>
-                    </div>
-                </div>
-            </form>
+            <h4 class="mb-0">
+                <i class="bi bi-person-plus"></i> Registrar Nuevo Paciente
+            </h4>
         </div>
     </div>
 
-    <!-- Información Importante -->
-    <div class="alert alert-info mt-4" role="alert">
-        <h6><i class="bi bi-info-circle"></i> Información Importante</h6>
-        <ul class="mb-0">
-            <li>Los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
-            <li>El RUT debe ser válido y único en el sistema</li>
-            <li>Verifique que todos los datos estén correctos antes de guardar</li>
-            <li>Después del registro, podrá crear una ficha obstétrica para el paciente</li>
-        </ul>
-    </div>
+    <!-- Formulario -->
+    <form method="post" id="formRegistrarPaciente">
+        {% csrf_token %}
+        
+        <!-- Mostrar errores globales -->
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <!-- SECCIÓN 1: Datos Personales (Persona) -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 text-success">
+                    <i class="bi bi-person"></i> Datos Personales
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- RUT -->
+                    <div class="col-md-4 mb-3">
+                        <label for="id_rut" class="form-label">
+                            RUT <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="id_rut" 
+                               name="rut"
+                               placeholder="12345678-9"
+                               required>
+                        <small class="form-text text-muted">Formato: 12345678-9</small>
+                    </div>
+
+                    <!-- Nombres -->
+                    <div class="col-md-4 mb-3">
+                        <label for="id_nombre" class="form-label">
+                            Nombres <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="id_nombre" 
+                               name="nombre"
+                               placeholder="Ingrese nombre"
+                               required>
+                    </div>
+
+                    <!-- Apellido Paterno -->
+                    <div class="col-md-4 mb-3">
+                        <label for="id_apellido_paterno" class="form-label">
+                            Apellido Paterno <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="id_apellido_paterno" 
+                               name="apellido_paterno"
+                               placeholder="Apellido paterno"
+                               required>
+                    </div>
+
+                    <!-- Apellido Materno -->
+                    <div class="col-md-4 mb-3">
+                        <label for="id_apellido_materno" class="form-label">
+                            Apellido Materno <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="id_apellido_materno" 
+                               name="apellido_materno"
+                               placeholder="Apellido materno"
+                               required>
+                    </div>
+
+                    <!-- Fecha de Nacimiento -->
+                    <div class="col-md-4 mb-3">
+                        <label for="id_fecha_nacimiento" class="form-label">
+                            Fecha de Nacimiento <span class="text-danger">*</span>
+                        </label>
+                        <input type="date" 
+                               class="form-control" 
+                               id="id_fecha_nacimiento" 
+                               name="fecha_nacimiento"
+                               required>
+                    </div>
+
+                    <!-- Sexo -->
+                    <div class="col-md-4 mb-3">
+                        <label for="id_sexo" class="form-label">
+                            Sexo <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" 
+                                id="id_sexo" 
+                                name="sexo"
+                                required>
+                            <option value="">---------</option>
+                            <option value="F">Femenino</option>
+                            <option value="M">Masculino</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: Información de Contacto -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 text-primary">
+                    <i class="bi bi-telephone"></i> Información de Contacto
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Teléfono -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_telefono" class="form-label">
+                            Teléfono <span class="text-danger">*</span>
+                        </label>
+                        <input type="tel" 
+                               class="form-control" 
+                               id="id_telefono" 
+                               name="telefono"
+                               placeholder="+56912345678"
+                               required>
+                        <small class="form-text text-muted">Ej: +56912345678</small>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_email" class="form-label">
+                            Email
+                        </label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="id_email" 
+                               name="email"
+                               placeholder="correo@ejemplo.com">
+                    </div>
+
+                    <!-- Dirección -->
+                    <div class="col-md-12 mb-3">
+                        <label for="id_direccion" class="form-label">
+                            Dirección <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="id_direccion" 
+                               name="direccion"
+                               placeholder="Calle, número, comuna"
+                               required>
+                        <small class="form-text text-muted">Ej: Av. Libertad 123, Dpto 4B, Chillán</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: Información del Paciente -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 text-danger">
+                    <i class="bi bi-heart-pulse"></i> Información del Paciente
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Estado Civil -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_estado_civil" class="form-label">
+                            Estado Civil <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" 
+                                id="id_estado_civil" 
+                                name="estado_civil"
+                                required>
+                            <option value="">---------</option>
+                            <option value="SOLTERA">Soltera</option>
+                            <option value="CASADA">Casada</option>
+                            <option value="CONVIVIENTE">Conviviente</option>
+                            <option value="DIVORCIADA">Divorciada</option>
+                            <option value="VIUDA">Viuda</option>
+                        </select>
+                    </div>
+
+                    <!-- Previsión -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_prevision" class="form-label">
+                            Previsión <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" 
+                                id="id_prevision" 
+                                name="prevision"
+                                required>
+                            <option value="">---------</option>
+                            <option value="FONASA_A">FONASA A</option>
+                            <option value="FONASA_B">FONASA B</option>
+                            <option value="FONASA_C">FONASA C</option>
+                            <option value="FONASA_D">FONASA D</option>
+                            <option value="ISAPRE">Isapre</option>
+                            <option value="PARTICULAR">Particular</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: Antecedentes Obstétricos -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 text-info">
+                    <i class="bi bi-clipboard-heart"></i> Antecedentes Obstétricos
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Paridad -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_paridad" class="form-label">
+                            Paridad
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="id_paridad" 
+                               name="paridad"
+                               placeholder="Ejemplo: G3P2A0">
+                        <small class="form-text text-muted">
+                            Formato: G (Gestas) P (Partos) A (Abortos). Ej: G3P2A0
+                        </small>
+                    </div>
+
+                    <!-- Control Prenatal -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label d-block">Control Prenatal</label>
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="id_control_prenatal" 
+                                   name="control_prenatal"
+                                   checked>
+                            <label class="form-check-label" for="id_control_prenatal">
+                                ¿Tuvo Control Prenatal?
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Ductus Venosus -->
+                    <div class="col-md-12 mb-3">
+                        <label for="id_ductus_venosus" class="form-label">
+                            Ductus Venosus
+                        </label>
+                        <select class="form-select" 
+                                id="id_ductus_venosus" 
+                                name="ductus_venosus">
+                            <option value="SIN_ESPECIFICAR" selected>Sin Especificar</option>
+                            <option value="DUCTUS_VENOSUS">Ductus Venosus</option>
+                            <option value="DUCTUS_VENOSUS_SIN_CONTROL">Ductus Venosus Sin Control</option>
+                            <option value="DUCTUS_VENOSUS_CONTROL">Ductus Venosus Con Control</option>
+                            <option value="DUCTUS_VENOSUS_CONTROL_SIN_PREVENCION">Con Control Sin Prevención</option>
+                            <option value="DUCTUS_VENOSUS_CONTROL_PREVENCION">Con Control Con Prevención</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 5: Centro de Salud -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 text-secondary">
+                    <i class="bi bi-hospital"></i> Centro de Salud
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Consultorio de Origen -->
+                    <div class="col-md-12 mb-3">
+                        <label for="id_consultorio" class="form-label">
+                            Consultorio / CESFAM de Origen
+                        </label>
+                        <select class="form-select" 
+                                id="id_consultorio" 
+                                name="consultorio_inscrito">
+                            <option value="SIN_ESPECIFICAR" selected>Sin Especificar</option>
+                            <option value="CESFAM_ULTRAESTACION_DR_RAUL_SAN_MARTIN">CESFAM Ultraestación Dr. Raúl San Martín (Chillán)</option>
+                            <option value="CESFAM_LOS_VOLCANES">CESFAM Los Volcanes (Chillán)</option>
+                            <option value="CESFAM_ISABEL_RIQUELME">CESFAM Isabel Riquelme (Chillán)</option>
+                            <option value="CESFAM_QUINCHAMALI">CESFAM Quinchamalí (Chillán)</option>
+                            <option value="CESFAM_TERESA_BALDECHI">CESFAM Teresa Baldechi (San Carlos)</option>
+                            <option value="CESFAM_DR_ALBERTO_GYHRA_SOTO">CESFAM Dr. Alberto Gyhra Soto (Quillón)</option>
+                            <option value="CESFAM_MICHELL_CHANDIA_ALARCON">CESFAM Michell Chandia Alarcon (Coihueco)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 6: Datos Antropométricos -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 text-warning">
+                    <i class="bi bi-activity"></i> Datos Antropométricos
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Peso -->
+                    <div class="col-md-4 mb-3">
+                        <label for="id_peso" class="form-label">
+                            Peso (kg)
+                        </label>
+                        <input type="number" 
+                               step="0.1"
+                               class="form-control" 
+                               id="id_peso" 
+                               name="peso"
+                               placeholder="65.5"
+                               min="30"
+                               max="200">
+                    </div>
+
+                    <!-- Talla -->
+                    <div class="col-md-4 mb-3">
+                        <label for="id_talla" class="form-label">
+                            Talla (cm)
+                        </label>
+                        <input type="number" 
+                               step="0.1"
+                               class="form-control" 
+                               id="id_talla" 
+                               name="talla"
+                               placeholder="165"
+                               min="100"
+                               max="220">
+                    </div>
+
+                    <!-- IMC (calculado automáticamente) -->
+                    <div class="col-md-4 mb-3">
+                        <label for="id_imc" class="form-label">
+                            IMC (Índice de Masa Corporal)
+                        </label>
+                        <input type="number" 
+                               step="0.01"
+                               class="form-control" 
+                               id="id_imc" 
+                               name="imc"
+                               readonly>
+                        <small class="form-text text-muted" id="imc_categoria"></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 7: Contacto de Emergencia -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 text-danger">
+                    <i class="bi bi-telephone-forward"></i> Contacto de Emergencia
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Nombre del Acompañante -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_acompanante" class="form-label">
+                            Nombre del Acompañante
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="id_acompanante" 
+                               name="acompanante"
+                               placeholder="Nombre completo del acompañante"
+                               maxlength="200">
+                    </div>
+
+                    <!-- Contacto de Emergencia -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_contacto_emergencia" class="form-label">
+                            Contacto de Emergencia <span class="text-danger">*</span>
+                        </label>
+                        <input type="tel" 
+                               class="form-control" 
+                               id="id_contacto_emergencia" 
+                               name="contacto_emergencia"
+                               placeholder="+56912345678"
+                               required
+                               maxlength="15">
+                        <small class="form-text text-muted">
+                            Teléfono de contacto en caso de emergencia
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-check-circle"></i> Registrar Paciente
+                </button>
+                <a href="{% url 'matrona:buscar_paciente' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+                <button type="reset" class="btn btn-outline-warning btn-lg">
+                    <i class="bi bi-arrow-clockwise"></i> Limpiar Formulario
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Validación de RUT chileno
+// Validar RUT chileno
 function validarRut(rut) {
     rut = rut.replace(/\./g, '').replace(/-/g, '');
     if (rut.length < 2) return false;
@@ -283,22 +448,68 @@ function validarRut(rut) {
     return dv === dvCalculado;
 }
 
-// Buscar RUT (simulado - requiere implementación AJAX en producción)
-document.getElementById('btnBuscarRut')?.addEventListener('click', function() {
-    const rut = document.getElementById('id_rut').value;
-    if (!rut) {
-        alert('⚠️ Ingrese un RUT para buscar');
-        return;
-    }
+// Formatear RUT mientras se escribe
+const inputRut = document.getElementById('id_rut');
+if (inputRut) {
+    inputRut.addEventListener('input', function(e) {
+        let rut = this.value.replace(/\./g, '').replace(/-/g, '');
+        rut = rut.replace(/[^0-9kK]/g, '');
+        
+        if (rut.length > 1) {
+            rut = rut.slice(0, -1) + '-' + rut.slice(-1);
+        }
+        
+        this.value = rut.toUpperCase();
+        
+        if (rut.length >= 9) {
+            if (validarRut(rut)) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        }
+    });
+}
+
+// Calcular IMC automáticamente
+function calcularIMC() {
+    const peso = parseFloat(document.getElementById('id_peso').value);
+    const talla = parseFloat(document.getElementById('id_talla').value) / 100; // Convertir cm a metros
     
-    if (!validarRut(rut)) {
-        alert('❌ El RUT ingresado no es válido');
-        return;
+    if (peso && talla && talla > 0) {
+        const imc = peso / (talla * talla);
+        document.getElementById('id_imc').value = imc.toFixed(2);
+        
+        // Categoría del IMC
+        let categoria = '';
+        let color = '';
+        
+        if (imc < 18.5) {
+            categoria = 'Bajo peso';
+            color = 'text-warning';
+        } else if (imc >= 18.5 && imc < 25) {
+            categoria = 'Normal';
+            color = 'text-success';
+        } else if (imc >= 25 && imc < 30) {
+            categoria = 'Sobrepeso';
+            color = 'text-warning';
+        } else {
+            categoria = 'Obesidad';
+            color = 'text-danger';
+        }
+        
+        document.getElementById('imc_categoria').innerHTML = `<span class="${color}">${categoria}</span>`;
+    } else {
+        document.getElementById('id_imc').value = '';
+        document.getElementById('imc_categoria').innerHTML = '';
     }
-    
-    // Aquí iría la llamada AJAX para buscar si existe la persona
-    alert('✅ Buscando información del RUT... (Funcionalidad a implementar)');
-});
+}
+
+// Agregar eventos para calcular IMC
+document.getElementById('id_peso')?.addEventListener('input', calcularIMC);
+document.getElementById('id_talla')?.addEventListener('input', calcularIMC);
 
 // Validar formulario antes de enviar
 document.getElementById('formRegistrarPaciente').addEventListener('submit', function(e) {
@@ -306,34 +517,23 @@ document.getElementById('formRegistrarPaciente').addEventListener('submit', func
     
     if (!validarRut(rut)) {
         e.preventDefault();
-        alert('❌ El RUT ingresado no es válido. Por favor verifique.');
+        alert('❌ El RUT ingresado no es válido');
         document.getElementById('id_rut').focus();
         return false;
     }
     
-    // Validar edad mínima (debe ser mayor de edad para ser paciente obstétrica)
-    const fechaNac = new Date(document.getElementById('id_fecha_nacimiento').value);
-    const hoy = new Date();
-    const edad = Math.floor((hoy - fechaNac) / (365.25 * 24 * 60 * 60 * 1000));
+    // Validar campos obligatorios del paciente
+    const estadoCivil = document.getElementById('id_estado_civil').value;
+    const prevision = document.getElementById('id_prevision').value;
+    const contactoEmergencia = document.getElementById('id_contacto_emergencia').value;
     
-    if (edad < 12 || edad > 60) {
-        const confirmacion = confirm(`⚠️ La edad calculada es ${edad} años. ¿Desea continuar?`);
-        if (!confirmacion) {
-            e.preventDefault();
-            return false;
-        }
+    if (!estadoCivil || !prevision || !contactoEmergencia) {
+        e.preventDefault();
+        alert('❌ Por favor complete todos los campos obligatorios:\n- Estado Civil\n- Previsión\n- Contacto de Emergencia');
+        return false;
     }
 });
 
-// Formatear RUT mientras se escribe
-document.getElementById('id_rut')?.addEventListener('input', function(e) {
-    let rut = this.value.replace(/\./g, '').replace(/-/g, '');
-    if (rut.length > 1) {
-        rut = rut.slice(0, -1) + '-' + rut.slice(-1);
-    }
-    this.value = rut;
-});
-
-console.log('✅ Formulario de registrar paciente cargado');
+console.log('✅ Formulario completo de registrar paciente cargado');
 </script>
 {% endblock %}
