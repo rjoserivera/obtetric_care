@@ -2,6 +2,7 @@
 """
 Aplicación para gestionar el PROCESO DE PARTO
 Contiene toda la información DURANTE el parto
+MODELO COMPLETO Y ACTUALIZADO
 """
 
 from django.db import models
@@ -65,7 +66,7 @@ class RegistroParto(models.Model):
     # SECCIÓN 1: TRABAJO DE PARTO
     # ============================================
     
-    # Edad Gestacional
+    # Edad Gestacional al momento del parto
     edad_gestacional_semanas = models.IntegerField(
         validators=[MinValueValidator(20), MaxValueValidator(42)],
         verbose_name='Semanas de Embarazo',
@@ -98,11 +99,12 @@ class RegistroParto(models.Model):
         help_text='¿Se aceleró el trabajo de parto?'
     )
     
+    # 🆕 CAMPO AGREGADO: Número de Tactos Vaginales
     numero_tactos_vaginales = models.IntegerField(
         default=0,
         validators=[MinValueValidator(0)],
-        verbose_name='Nº de Tactos Vaginales',
-        help_text='Número de TV realizados'
+        verbose_name='Nº de Tactos Vaginales (TV)',
+        help_text='Cantidad total de tactos vaginales realizados durante el trabajo de parto'
     )
     
     # Rotura de Membranas
@@ -268,7 +270,7 @@ class RegistroParto(models.Model):
     
     # Estado del Periné
     ESTADO_PERINE_CHOICES = [
-        ('INDEPNE', 'INDEPNE (Indemne)'),
+        ('INDEMNE', 'INDEMNE (Indemne)'),
         ('DESGARRO_G1', 'DESGARRO GRADO 1'),
         ('DESGARRO_G2', 'DESGARRO GRADO 2'),
         ('DESGARRO_G3A', 'DESGARRO GRADO 3A'),
@@ -509,3 +511,7 @@ class RegistroParto(models.Model):
             self.histerectomia_obstetrica or
             self.transfusion_sanguinea
         )
+    
+    def edad_gestacional_completa(self):
+        """Retorna edad gestacional en formato legible"""
+        return f"{self.edad_gestacional_semanas} semanas + {self.edad_gestacional_dias} días"
