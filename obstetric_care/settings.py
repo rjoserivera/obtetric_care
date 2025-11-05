@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'gestionApp',
     'legacyApp',
     'partosApp',
+    'ingresoPartoApp',
+    'recienNacidoApp',
 ]
 
 MIDDLEWARE = [
