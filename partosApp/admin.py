@@ -6,7 +6,11 @@ ACTUALIZADO: Con FichaParto y campos nuevos
 
 from django.contrib import admin
 from django.utils.html import format_html
-from partosApp.models import FichaParto, RegistroParto, RegistroRecienNacido, DocumentosParto
+from partosApp.models import RegistroParto 
+from ingresoPartoApp.models import FichaParto
+from partosApp.models import RegistroParto
+from recienNacidoApp.models import RegistroRecienNacido, DocumentosParto
+
 
 
 # ============================================

@@ -1,5 +1,4 @@
 from django.db import models
-from matronaApp.models import FichaObstetrica
 from gestionApp.models import Tens
 from django.utils import timezone
 
@@ -21,7 +20,7 @@ class RegistroTens(models.Model):
     # ============================================
     
     ficha = models.ForeignKey(
-        FichaObstetrica,
+        'matronaApp.Ficha_Obstetrica',
         on_delete=models.CASCADE,
         related_name='registros_tens',
         verbose_name='Ficha Obstétrica'

@@ -4,12 +4,7 @@ from django.utils import timezone
 
 
 class RegistroParto(models.Model):
-    """
-    Registro del proceso de parto
-    Se crea durante el trabajo de parto
-    Contiene TODO lo que sucede DURANTE el parto
-    """
-    
+
     # ============================================
     # RELACIONES
     # ============================================

@@ -1,8 +1,3 @@
-"""
-FORMULARIOS MEDICO APP
-Formularios para gestión de patologías y consulta de historial clínico
-"""
-
 from django import forms
 from django.core.exceptions import ValidationError
 from medicoApp.models import Patologias

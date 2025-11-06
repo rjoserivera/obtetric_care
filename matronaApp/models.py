@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
+from gestionApp.models import Paciente
 
 
 class FichaParto(models.Model):
@@ -11,14 +12,14 @@ class FichaParto(models.Model):
     """
     
     # ============================================
-    # RELACIÓN CON FICHA OBSTÉTRICA
+    # RELACIÓN CON FICHA OBsSTÉTRICA
     # ============================================
     
     ficha_obstetrica = models.ForeignKey(
-        'matronaApp.FichaObstetrica',
+        'matronaApp.Ficha_Obstetrica',
         on_delete=models.PROTECT,
         related_name='fichas_ingreso_parto',
-        verbose_name='Ficha Obstétrica'
+        verbose_name='Ficha_Obstetrica'
     )
     
     numero_ficha_parto = models.CharField(
