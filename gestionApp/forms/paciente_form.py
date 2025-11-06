@@ -1,173 +1,241 @@
+"""
+FORMULARIO DE PACIENTE - VERSIÓN ACTUALIZADA
+Formulario para vincular rol de Paciente a una Persona existente
+Incluye validación de RUT y campos específicos de paciente
+"""
+
 from django import forms
 from django.core.exceptions import ValidationError
-from gestionApp.models import Persona, Paciente
-from utilidad.rut_validator import normalizar_rut
+from gestionApp.models import Persona
+from matronaApp.models import Paciente
+from utilidad.rut_validator import normalizar_rut, RutValidator
+from datetime import date
 
 
-# ============================================
-# FORMULARIO: PACIENTE
-# ============================================
 class PacienteForm(forms.ModelForm):
-    """Formulario para vincular paciente a una persona existente"""
-
-    rut_persona = forms.CharField(
-        max_length=12,
-        label="RUT de la Persona",
+    """
+    Formulario para registrar un paciente vinculado a una persona existente.
+    El paciente debe estar previamente registrado como Persona.
+    """
+    
+    # Campo para buscar la persona por RUT
+    rut_persona_cuerpo = forms.CharField(
+        max_length=8,
+        required=True,
+        label='RUT de la Persona',
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': '12345678-9',
-            'id': 'rut_persona_paciente'
+            'placeholder': '12345678',
+            'id': 'rut_persona_cuerpo',
+            'pattern': '[0-9]{7,8}'
         }),
-        help_text="Ingrese el RUT de la persona a vincular como paciente"
+        help_text='Ingrese el RUT de la persona a vincular como paciente'
     )
     
-    peso_kg = forms.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        required=False,
-        label="Peso (kg)",
-        widget=forms.NumberInput(attrs={
+    rut_persona_dv = forms.CharField(
+        max_length=1,
+        required=True,
+        label='DV',
+        widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Ej: 65.5',
-            'min': '30',
-            'max': '200',
-            'step': '0.1',
-            'id': 'id_peso'
+            'placeholder': 'K',
+            'id': 'rut_persona_dv',
+            'maxlength': '1',
+            'pattern': '[0-9Kk]',
+            'style': 'text-transform: uppercase;'
         }),
-        help_text="Peso en kilogramos para calcular IMC"
+        help_text='DV'
     )
     
-    talla_cm = forms.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        required=False,
-        label="Talla (cm)",
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Ej: 165',
-            'min': '120',
-            'max': '220',
-            'step': '0.1',
-            'id': 'id_talla'
-        }),
-        help_text="Estatura en centímetros para calcular IMC"
-    )
-
     class Meta:
         model = Paciente
         fields = [
-            'rut_persona',
             'Estado_civil',
             'Previcion',
             'paridad',
             'Ductus_Venosus',
             'control_prenatal',
-            'Consultorio',
-            'peso_kg',
-            'talla_cm',
+            'consultorio',
             'imc',
-            'Preeclampsia_Severa',
-            'Eclampsia',
-            'Sepsis_o_Infeccion_SiST',
-            'Infeccion_Ovular_o_Corioamnionitis',
-            'Acompañante',
-            'Contacto_emergencia'
+            'alergias',
+            'observaciones'
         ]
+        
         widgets = {
-            'Estado_civil': forms.Select(attrs={'class': 'form-select', 'required': True}),
-            'Previcion': forms.Select(attrs={'class': 'form-select', 'required': True}),
-            'paridad': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: G3P2A0'}),
-            'Ductus_Venosus': forms.Select(attrs={'class': 'form-select'}),
-            'control_prenatal': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'Consultorio': forms.Select(attrs={'class': 'form-select'}),
+            'Estado_civil': forms.Select(attrs={
+                'class': 'form-select',
+                'required': True
+            }),
+            'Previcion': forms.Select(attrs={
+                'class': 'form-select',
+                'required': True
+            }),
+            'paridad': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej: G3P2A0',
+                'title': 'Formato: G(gestas)P(partos)A(abortos)'
+            }),
+            'Ductus_Venosus': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'control_prenatal': forms.CheckboxInput(attrs={
+                'class': 'form-check-input',
+                'id': 'id_control_prenatal'
+            }),
+            'consultorio': forms.Select(attrs={
+                'class': 'form-select'
+            }),
             'imc': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'readonly': True,
-                'id': 'id_imc',
-                'placeholder': 'Se calcula automáticamente'
+                'placeholder': 'Ej: 24.5',
+                'step': '0.1',
+                'min': '10',
+                'max': '60'
             }),
-            'Preeclampsia_Severa': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'Eclampsia': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'Sepsis_o_Infeccion_SiST': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'Infeccion_Ovular_o_Corioamnionitis': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'Acompañante': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre completo'}),
-            'Contacto_emergencia': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+56912345678'}),
+            'alergias': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 2,
+                'placeholder': 'Alergias conocidas (medicamentos, alimentos, etc.)'
+            }),
+            'observaciones': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Información médica adicional relevante...'
+            })
         }
+        
         labels = {
             'Estado_civil': 'Estado Civil',
-            'Previcion': 'Previsión',
+            'Previcion': 'Previsión de Salud',
             'paridad': 'Paridad',
             'Ductus_Venosus': 'Ductus Venosus',
             'control_prenatal': '¿Tuvo Control Prenatal?',
-            'Consultorio': 'Consultorio de Origen',
+            'consultorio': 'Consultorio de Atención',
             'imc': 'IMC (Índice de Masa Corporal)',
-            'Preeclampsia_Severa': 'Preeclampsia Severa',
-            'Eclampsia': 'Eclampsia',
-            'Sepsis_o_Infeccion_SiST': 'Sepsis o Infección Sistémica Grave',
-            'Infeccion_Ovular_o_Corioamnionitis': 'Infección Ovular o Corioamnionitis',
-            'Acompañante': 'Acompañante',
-            'Contacto_emergencia': 'Contacto de Emergencia'
+            'alergias': 'Alergias',
+            'observaciones': 'Observaciones Médicas'
         }
-
+    
     def __init__(self, *args, **kwargs):
+        """
+        Inicializa el formulario.
+        Si se está editando un paciente existente, muestra su RUT.
+        """
         super().__init__(*args, **kwargs)
-        self.fields['imc'].required = False
-        self.fields['paridad'].required = False
-        self.fields['Acompañante'].required = False
-        self.fields['Contacto_emergencia'].required = False
-
-    def clean_rut_persona(self):
-        """Validar que la persona exista y no sea ya paciente"""
-        rut = self.cleaned_data.get('rut_persona')
-        if rut:
-            rut_normalizado = normalizar_rut(rut)
+        
+        # Si estamos editando un paciente existente
+        if self.instance and self.instance.pk and hasattr(self.instance, 'persona'):
+            datos_rut = RutValidator.separar(self.instance.persona.Rut)
+            self.fields['rut_persona_cuerpo'].initial = datos_rut['cuerpo']
+            self.fields['rut_persona_dv'].initial = datos_rut['dv']
+            
+            # Deshabilitar campos de RUT al editar
+            self.fields['rut_persona_cuerpo'].disabled = True
+            self.fields['rut_persona_dv'].disabled = True
+            self.fields['rut_persona_cuerpo'].widget.attrs['class'] += ' bg-light'
+            self.fields['rut_persona_dv'].widget.attrs['class'] += ' bg-light'
+            self.fields['rut_persona_cuerpo'].help_text = 'El RUT no se puede modificar'
+    
+    def clean_rut_persona_cuerpo(self):
+        """Validar el cuerpo del RUT"""
+        rut_cuerpo = self.cleaned_data.get('rut_persona_cuerpo', '').strip()
+        
+        if not rut_cuerpo:
+            raise ValidationError('El RUT de la persona es obligatorio.')
+        
+        if not rut_cuerpo.isdigit():
+            raise ValidationError('El RUT debe contener solo números.')
+        
+        if len(rut_cuerpo) < 7 or len(rut_cuerpo) > 8:
+            raise ValidationError('El RUT debe tener 7 u 8 dígitos.')
+        
+        return rut_cuerpo
+    
+    def clean_rut_persona_dv(self):
+        """Validar el dígito verificador"""
+        rut_dv = self.cleaned_data.get('rut_persona_dv', '').strip().upper()
+        
+        if not rut_dv:
+            raise ValidationError('El dígito verificador es obligatorio.')
+        
+        if len(rut_dv) != 1:
+            raise ValidationError('El dígito verificador debe ser un solo carácter.')
+        
+        if not (rut_dv.isdigit() or rut_dv == 'K'):
+            raise ValidationError('El dígito verificador debe ser un número o K.')
+        
+        return rut_dv
+    
+    def clean(self):
+        """
+        Validación completa del formulario.
+        Verifica que la persona exista y no sea ya paciente.
+        """
+        cleaned_data = super().clean()
+        
+        # No validar RUT si estamos editando
+        if self.instance and self.instance.pk:
+            return cleaned_data
+        
+        rut_cuerpo = cleaned_data.get('rut_persona_cuerpo')
+        rut_dv = cleaned_data.get('rut_persona_dv')
+        
+        if rut_cuerpo and rut_dv:
+            rut_completo = f"{rut_cuerpo}-{rut_dv}"
+            rut_normalizado = normalizar_rut(rut_completo)
+            
+            # Validar que la persona exista
             try:
                 persona = Persona.objects.get(Rut=rut_normalizado)
+                
+                # Verificar que no sea ya paciente
                 if hasattr(persona, 'paciente'):
-                    raise ValidationError('Esta persona ya está registrada como paciente.')
-                return persona
+                    raise ValidationError({
+                        'rut_persona_cuerpo': f'Esta persona ya está registrada como paciente.'
+                    })
+                
+                # Guardar la persona para usarla en save()
+                self._persona_obj = persona
+                
             except Persona.DoesNotExist:
-                raise ValidationError('No existe una persona registrada con este RUT. Por favor, registre primero los datos básicos de la persona.')
-        return rut
-
-    def clean_peso_kg(self):
-        """Validar peso"""
-        peso = self.cleaned_data.get('peso_kg')
-        if peso is not None:
-            if peso < 30 or peso > 200:
-                raise ValidationError('El peso debe estar entre 30 y 200 kg.')
-        return peso
-
-    def clean_talla_cm(self):
-        """Validar talla"""
-        talla = self.cleaned_data.get('talla_cm')
-        if talla is not None:
-            if talla < 120 or talla > 220:
-                raise ValidationError('La talla debe estar entre 120 y 220 cm.')
-        return talla
-
-    def clean(self):
-        """Validaciones cruzadas y cálculo de IMC"""
-        cleaned_data = super().clean()
-        peso = cleaned_data.get('peso_kg')
-        talla = cleaned_data.get('talla_cm')
+                raise ValidationError({
+                    'rut_persona_cuerpo': (
+                        'No existe una persona registrada con este RUT. '
+                        'Por favor, registre primero los datos básicos de la persona.'
+                    )
+                })
         
-        # Calcular IMC si hay peso y talla
-        if peso and talla:
-            talla_m = talla / 100
-            imc = round(peso / (talla_m ** 2), 2)
+        # Validar IMC si se proporciona
+        imc = cleaned_data.get('imc')
+        if imc:
             if imc < 10 or imc > 60:
-                raise ValidationError({'imc': f'El IMC calculado ({imc}) está fuera del rango válido (10-60).'})
-            cleaned_data['imc'] = imc
+                raise ValidationError({
+                    'imc': 'El IMC debe estar entre 10 y 60.'
+                })
+        
+        # Validar formato de paridad si se proporciona
+        paridad = cleaned_data.get('paridad')
+        if paridad:
+            import re
+            # Formato válido: G#P#A# (ej: G3P2A0)
+            if not re.match(r'^G\d+P\d+A\d+$', paridad.upper().replace(' ', '')):
+                raise ValidationError({
+                    'paridad': 'Formato inválido. Use: G(gestas)P(partos)A(abortos). Ej: G3P2A0'
+                })
         
         return cleaned_data
-
+    
     def save(self, commit=True):
-        """Guardar paciente con persona asociada"""
+        """
+        Guarda el paciente vinculándolo a la persona.
+        """
         paciente = super().save(commit=False)
-        persona = self.cleaned_data.get('rut_persona')
-        if isinstance(persona, Persona):
-            paciente.persona = persona
+        
+        # Si es nuevo, vincular con la persona
+        if not self.instance.pk:
+            persona = getattr(self, '_persona_obj', None)
+            if persona:
+                paciente.persona = persona
         
         if commit:
             paciente.save()
@@ -175,26 +243,62 @@ class PacienteForm(forms.ModelForm):
         return paciente
 
 
-# ============================================
-# FORMULARIO: BUSCAR PACIENTE
-# ============================================
-class BuscarPacienteForm(forms.Form):
-    """Formulario para búsqueda rápida de pacientes por RUT"""
+class PacienteBuscarForm(forms.Form):
+    """
+    Formulario simple para buscar un paciente por RUT.
+    Útil para búsquedas rápidas en el sistema.
+    """
     
-    rut = forms.CharField(
-        max_length=12,
-        label="Buscar Paciente por RUT",
+    rut_cuerpo = forms.CharField(
+        max_length=8,
+        required=True,
+        label='RUT',
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': '12345678-9',
-            'id': 'buscar_rut_paciente',
-            'autocomplete': 'off'
+            'placeholder': '12345678',
+            'autofocus': True,
+            'pattern': '[0-9]{7,8}'
         })
     )
     
-    def clean_rut(self):
-        """Normalizar RUT para búsqueda"""
-        rut = self.cleaned_data.get('rut')
-        if rut:
-            return normalizar_rut(rut)
-        return rut
+    rut_dv = forms.CharField(
+        max_length=1,
+        required=True,
+        label='DV',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'K',
+            'maxlength': '1',
+            'pattern': '[0-9Kk]',
+            'style': 'text-transform: uppercase;'
+        })
+    )
+    
+    def clean(self):
+        """Valida y busca el paciente"""
+        cleaned_data = super().clean()
+        
+        rut_cuerpo = cleaned_data.get('rut_cuerpo')
+        rut_dv = cleaned_data.get('rut_dv')
+        
+        if rut_cuerpo and rut_dv:
+            rut_completo = f"{rut_cuerpo}-{rut_dv}"
+            rut_normalizado = normalizar_rut(rut_completo)
+            
+            try:
+                persona = Persona.objects.get(Rut=rut_normalizado)
+                
+                if not hasattr(persona, 'paciente'):
+                    raise ValidationError(
+                        'Esta persona no está registrada como paciente.'
+                    )
+                
+                # Guardar el paciente encontrado
+                cleaned_data['paciente'] = persona.paciente
+                
+            except Persona.DoesNotExist:
+                raise ValidationError(
+                    'No se encontró ninguna persona con este RUT.'
+                )
+        
+        return cleaned_data
