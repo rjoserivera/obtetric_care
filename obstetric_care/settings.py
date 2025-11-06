@@ -38,6 +38,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # ✅ Apps de terceros (AGREGAR)
+    'crispy_forms',              # Formularios con Bootstrap
+    'crispy_bootstrap5',         # Templates de Bootstrap 5
+    'widget_tweaks',             # Widgets personalizados
+    'phonenumber_field',         # Validación de teléfonos
+    'django_filters',            # Filtros avanzados
+    'rest_framework',            # API REST
+    'debug_toolbar',             # Barra de debug (solo desarrollo)
+    'django_extensions',         # Extensiones de Django    
+
+    # ✅ Apps de Obtetric Care
     'inicioApp',
     'matronaApp',
     'medicoApp',
@@ -57,6 +69,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # Barra de debug (solo desarrollo)
 ]
 
 ROOT_URLCONF = 'obstetric_care.urls'

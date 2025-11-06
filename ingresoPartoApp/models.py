@@ -1,9 +1,3 @@
-# ingresoPartoApp/models.py
-"""
-Aplicación para gestionar el INGRESO y ADMISIÓN de pacientes para el parto
-Contiene toda la información ANTES del parto: tamizajes, patologías, etc.
-"""
-
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
@@ -39,16 +33,19 @@ class FichaParto(models.Model):
     # ============================================
     
     TIPO_PACIENTE_CHOICES = [
-        ('NORMAL', 'Normal'),
-        ('ARO', 'Alto Riesgo Obstétrico (ARO)'),
+        ('INSTITUCIONAL', 'Institucional'),
+        ('PREHOSPITALARIO', 'Prehospitalario'),
+        ('FUERA_RED', 'Fuera de la Red Asistencial'),
+        ('DOMICILIO_CON_PROF', 'Domicilio con Atención Profesional'),
+        ('DOMICILIO_SIN_PROF', 'Domicilio sin Atención Profesional'),
     ]
     
     tipo_paciente = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=TIPO_PACIENTE_CHOICES,
-        default='NORMAL',
+        default='INSTITUCIONAL',
         verbose_name='Tipo de Paciente',
-        help_text='Clasificación de riesgo'
+        help_text='Clasificación según origen'
     )
     
     ORIGEN_INGRESO_CHOICES = [
@@ -85,26 +82,21 @@ class FichaParto(models.Model):
         help_text='¿Hizo visita previa a la unidad?'
     )
     
-    # ============================================
-    # SECCIÓN 2: DATOS ADICIONALES
-    # ============================================
-    
-    control_prenatal = models.CharField(
-        max_length=200,
-        blank=True,
-        verbose_name='Control Prenatal',
-        help_text='Descripción de controles prenatales'
+    control_prenatal = models.BooleanField(
+        default=True,
+        verbose_name='¿Tuvo Control Prenatal?',
+        help_text='¿Asistió a controles durante el embarazo?'
     )
     
     consultorio_origen = models.CharField(
         max_length=200,
         blank=True,
         verbose_name='Consultorio de Origen',
-        help_text='Centro de salud de procedencia'
+        help_text='Nombre del consultorio o CESFAM'
     )
     
     # ============================================
-    # SECCIÓN 3: PATOLOGÍAS AL INGRESO
+    # SECCIÓN 2: PATOLOGÍAS AL INGRESO
     # ============================================
     
     preeclampsia_severa = models.BooleanField(
@@ -117,139 +109,125 @@ class FichaParto(models.Model):
         verbose_name='Eclampsia'
     )
     
-    sepsis_infeccion_sistemica = models.BooleanField(
+    sepsis_infeccion_grave = models.BooleanField(
         default=False,
         verbose_name='Sepsis o Infección Sistémica Grave'
     )
     
-    infeccion_ovular_corioamnionitis = models.BooleanField(
+    infeccion_ovular = models.BooleanField(
         default=False,
         verbose_name='Infección Ovular o Corioamnionitis'
     )
     
-    otra_patologia_texto = models.TextField(
+    otra_patologia = models.CharField(
+        max_length=300,
         blank=True,
         verbose_name='Otra Patología',
-        help_text='Descripción de otras patologías'
+        help_text='Especificar otra patología si aplica'
     )
     
+    # ============================================
+    # ✅ SECCIÓN 3: TAMIZAJE VIH (MOVIDO DESDE partosApp)
+    # ============================================
+    
     numero_aro = models.CharField(
-        max_length=50,
+        max_length=20,
         blank=True,
-        verbose_name='Nº ARO',
+        verbose_name='Número ARO',
         help_text='Número de Alto Riesgo Obstétrico'
     )
     
-    # ============================================
-    # SECCIÓN 4: TAMIZAJE VIH
-    # ============================================
+    vih_tomado_prepartos = models.BooleanField(
+        default=False,
+        verbose_name='Se tomó VIH en Prepartos',
+        help_text='¿Se realizó test de VIH al ingresar a prepartos?'
+    )
     
-    VIH_RESULTADO_CHOICES = [
-        ('NO_TOMADO', 'No Tomado'),
-        ('PRIMERO', '1° (Primer Examen)'),
-        ('SEGUNDO', '2° (Segundo Examen)'),
-        ('TERCERO', '3° (Tercer Examen)'),
+    vih_tomado_sala = models.BooleanField(
+        default=False,
+        verbose_name='Se tomó VIH en Sala',
+        help_text='¿Se realizó test de VIH en sala de parto?'
+    )
+    
+    VIH_ORDEN_CHOICES = [
+        ('1', 'Primera vez (1°)'),
+        ('2', 'Segunda vez (2°)'),
+        ('3', 'Tercera vez (3°)'),
     ]
     
-    se_toma_vih_prepartos = models.BooleanField(
-        default=False,
-        verbose_name='Se toma VIH en Prepartos'
-    )
-    
-    se_tomo_vih_sala = models.CharField(
-        max_length=20,
-        choices=VIH_RESULTADO_CHOICES,
-        default='NO_TOMADO',
-        verbose_name='Se tomó VIH en Sala (1°-2°-3°)'
+    vih_orden_toma = models.CharField(
+        max_length=1,
+        choices=VIH_ORDEN_CHOICES,
+        blank=True,
+        verbose_name='Orden de Toma (1°-2°-3°)',
+        help_text='Número de vez que se toma el VIH'
     )
     
     # ============================================
-    # SECCIÓN 5: TAMIZAJE SGB
+    # SECCIÓN 4: TAMIZAJE SGB (Streptococcus Grupo B)
     # ============================================
     
     sgb_pesquisa = models.BooleanField(
         default=False,
-        verbose_name='SGB - Pesquisa',
-        help_text='¿Se realizó pesquisa de Streptococcus Grupo B?'
+        verbose_name='Pesquisa SGB Realizada',
+        help_text='¿Se realizó cultivo para SGB?'
     )
     
     SGB_RESULTADO_CHOICES = [
-        ('NO_REALIZADO', 'No Realizado'),
         ('POSITIVO', 'Positivo'),
         ('NEGATIVO', 'Negativo'),
     ]
     
     sgb_resultado = models.CharField(
-        max_length=20,
+        max_length=10,
         choices=SGB_RESULTADO_CHOICES,
-        default='NO_REALIZADO',
-        verbose_name='SGB - Resultado'
+        blank=True,
+        verbose_name='Resultado SGB'
     )
     
-    sgb_antibiotico = models.BooleanField(
+    antibiotico_sgb = models.BooleanField(
         default=False,
-        verbose_name='Antibiótico por SGB (NO por RPM)',
-        help_text='ATB por SGB positivo (no por rotura prematura)'
+        verbose_name='Antibiótico por SGB (NO POR RPM)',
+        help_text='¿Se administró antibiótico profiláctico por SGB positivo?'
     )
     
     # ============================================
-    # SECCIÓN 6: TAMIZAJE VDRL (SÍFILIS)
+    # SECCIÓN 5: TAMIZAJE VDRL (Sífilis)
     # ============================================
     
     VDRL_RESULTADO_CHOICES = [
-        ('NO_REALIZADO', 'No Realizado'),
-        ('REACTIVO', 'Reactivo'),
         ('NO_REACTIVO', 'No Reactivo'),
+        ('REACTIVO', 'Reactivo'),
     ]
     
     vdrl_resultado = models.CharField(
-        max_length=20,
+        max_length=15,
         choices=VDRL_RESULTADO_CHOICES,
-        default='NO_REALIZADO',
-        verbose_name='VDRL - Resultado durante embarazo'
+        blank=True,
+        verbose_name='Resultado VDRL durante embarazo',
+        help_text='Resultado del test VDRL para sífilis'
     )
     
-    vdrl_tratamiento_atb = models.BooleanField(
+    tratamiento_sifilis = models.BooleanField(
         default=False,
-        verbose_name='Tratamiento ATB por Sífilis',
-        help_text='¿Recibió tratamiento antibiótico?'
+        verbose_name='Tratamiento ATB por Sífilis al momento del Parto',
+        help_text='¿Se administró tratamiento antibiótico para sífilis?'
     )
     
     # ============================================
-    # SECCIÓN 7: TAMIZAJE HEPATITIS B
+    # SECCIÓN 6: TAMIZAJE HEPATITIS B
     # ============================================
     
     hepatitis_b_tomado = models.BooleanField(
         default=False,
-        verbose_name='Examen Hepatitis B - Tomado'
+        verbose_name='Examen Hepatitis B - Tomado',
+        help_text='¿Se realizó serología para Hepatitis B?'
     )
     
-    HEPATITIS_B_RESULTADO_CHOICES = [
-        ('NO_REALIZADO', 'No Realizado'),
-        ('POSITIVO', 'Positivo'),
-        ('NEGATIVO', 'Negativo'),
-    ]
-    
-    hepatitis_b_resultado = models.CharField(
-        max_length=20,
-        choices=HEPATITIS_B_RESULTADO_CHOICES,
-        default='NO_REALIZADO',
-        verbose_name='Hepatitis B - Resultado'
-    )
-    
-    hepatitis_b_derivacion = models.BooleanField(
+    derivacion_gastro = models.BooleanField(
         default=False,
-        verbose_name='Derivación a Especialista',
-        help_text='¿Se derivó a Gastro-Hepatólogo?'
-    )
-    
-    # ============================================
-    # OBSERVACIONES
-    # ============================================
-    
-    observaciones_ingreso = models.TextField(
-        blank=True,
-        verbose_name='Observaciones de Ingreso'
+        verbose_name='Derivación a Gastro-Hepatólogo',
+        help_text='¿Requiere derivación a especialista?'
     )
     
     # ============================================
@@ -258,41 +236,38 @@ class FichaParto(models.Model):
     
     fecha_creacion = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Fecha de Creación'
+        verbose_name='Fecha de Creación del Registro'
     )
     
     fecha_modificacion = models.DateTimeField(
         auto_now=True,
-        verbose_name='Última Modificación'
+        verbose_name='Fecha de Última Modificación'
     )
     
     activa = models.BooleanField(
         default=True,
-        verbose_name='Ficha Activa',
-        help_text='¿Está en proceso activo?'
+        verbose_name='Ficha Activa'
     )
     
     class Meta:
-        ordering = ['-fecha_ingreso', '-hora_ingreso']
-        verbose_name = 'Ficha de Ingreso al Parto'
-        verbose_name_plural = 'Fichas de Ingreso al Parto'
+        ordering = ['-fecha_creacion']
+        verbose_name = 'Ficha de Parto (Ingreso)'
+        verbose_name_plural = 'Fichas de Parto (Ingresos)'
         indexes = [
             models.Index(fields=['numero_ficha_parto']),
-            models.Index(fields=['ficha_obstetrica', 'activa']),
-            models.Index(fields=['-fecha_ingreso']),
+            models.Index(fields=['ficha_obstetrica', '-fecha_ingreso']),
         ]
     
     def __str__(self):
-        paciente = self.ficha_obstetrica.paciente.persona
-        return f"{self.numero_ficha_parto} - {paciente.Nombre} {paciente.Apellido_Paterno}"
+        return f"{self.numero_ficha_parto} - {self.ficha_obstetrica.paciente.persona.Nombre}"
     
     def save(self, *args, **kwargs):
         """Generar número automático si no existe"""
         if not self.numero_ficha_parto:
-            ultima_ficha = FichaParto.objects.order_by('-id').first()
-            if ultima_ficha:
+            ultima = FichaParto.objects.order_by('-id').first()
+            if ultima:
                 try:
-                    numero = int(ultima_ficha.numero_ficha_parto.split('-')[1]) + 1
+                    numero = int(ultima.numero_ficha_parto.split('-')[1]) + 1
                 except (IndexError, ValueError):
                     numero = 1
             else:
@@ -300,23 +275,38 @@ class FichaParto(models.Model):
             self.numero_ficha_parto = f"FP-{numero:06d}"
         super().save(*args, **kwargs)
     
-    def tiene_patologias_criticas(self):
-        """Verifica si tiene alguna patología crítica"""
-        return (
-            self.preeclampsia_severa or 
-            self.eclampsia or 
-            self.sepsis_infeccion_sistemica or 
-            self.infeccion_ovular_corioamnionitis
-        )
+    def tiene_tamizajes_completos(self):
+        """Verifica si todos los tamizajes están completos"""
+        return all([
+            self.sgb_pesquisa,
+            self.vdrl_resultado,
+            self.hepatitis_b_tomado,
+            self.vih_tomado_prepartos or self.vih_tomado_sala,
+        ])
     
-    def tamizajes_completos(self):
-        """Verifica si todos los tamizajes están realizados"""
-        return (
-            self.se_toma_vih_prepartos or self.se_tomo_vih_sala != 'NO_TOMADO'
-        ) and (
-            self.sgb_pesquisa
-        ) and (
-            self.vdrl_resultado != 'NO_REALIZADO'
-        ) and (
-            self.hepatitis_b_tomado
-        )
+    def tiene_patologias_graves(self):
+        """Verifica si tiene patologías que requieren atención especial"""
+        return any([
+            self.preeclampsia_severa,
+            self.eclampsia,
+            self.sepsis_infeccion_grave,
+            self.infeccion_ovular,
+        ])
+    
+    def resumen_tamizajes(self):
+        """Retorna un resumen de los tamizajes realizados"""
+        resumen = []
+        
+        if self.sgb_pesquisa:
+            resumen.append(f"SGB: {self.sgb_resultado or 'Pendiente'}")
+        
+        if self.vdrl_resultado:
+            resumen.append(f"VDRL: {self.get_vdrl_resultado_display()}")
+        
+        if self.hepatitis_b_tomado:
+            resumen.append("Hepatitis B: Realizado")
+        
+        if self.vih_tomado_prepartos or self.vih_tomado_sala:
+            resumen.append(f"VIH: Toma {self.vih_orden_toma or '1'}°")
+        
+        return " | ".join(resumen) if resumen else "Sin tamizajes registrados"

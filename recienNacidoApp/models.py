@@ -1,13 +1,11 @@
-# recienNacidoApp/models.py
-"""
-Aplicación para gestionar el POST-PARTO
-Contiene toda la información DESPUÉS del parto: RN, documentos, placenta
-"""
-
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 
+
+# ============================================
+# ✅ REGISTRO DE RECIÉN NACIDO (ÚNICO LUGAR)
+# ============================================
 
 class RegistroRecienNacido(models.Model):
     """
@@ -40,37 +38,38 @@ class RegistroRecienNacido(models.Model):
     sexo = models.CharField(
         max_length=20,
         choices=SEXO_CHOICES,
-        verbose_name='Sexo'
+        verbose_name='Sexo',
+        help_text='Sexo del recién nacido'
     )
     
     peso = models.IntegerField(
         validators=[MinValueValidator(500), MaxValueValidator(8000)],
         verbose_name='Peso (gramos)',
-        help_text='Peso al nacer'
+        help_text='Peso al nacer en gramos'
     )
     
     talla = models.IntegerField(
         validators=[MinValueValidator(30), MaxValueValidator(70)],
         verbose_name='Talla (cm)',
-        help_text='Longitud al nacer'
+        help_text='Longitud al nacer en centímetros'
     )
     
     ligadura_tardia_cordon = models.BooleanField(
         default=False,
         verbose_name='Ligadura Tardía del Cordón (> 1 minuto)',
-        help_text='¿Se hizo ligadura tardía?'
+        help_text='¿Se realizó ligadura tardía del cordón umbilical?'
     )
     
     apgar_1_minuto = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(10)],
         verbose_name='Apgar al Minuto',
-        help_text='Puntaje al 1er minuto'
+        help_text='Puntaje de Apgar al primer minuto de vida'
     )
     
     apgar_5_minutos = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(10)],
         verbose_name='Apgar a los 5 Minutos',
-        help_text='Puntaje a los 5 minutos'
+        help_text='Puntaje de Apgar a los 5 minutos de vida'
     )
     
     fecha_nacimiento = models.DateTimeField(
@@ -93,7 +92,7 @@ class RegistroRecienNacido(models.Model):
     apego_canguro = models.BooleanField(
         default=False,
         verbose_name='Apego Canguro',
-        help_text='¿Se hizo método canguro?'
+        help_text='¿Se realizó método canguro?'
     )
     
     # ============================================
@@ -102,60 +101,60 @@ class RegistroRecienNacido(models.Model):
     
     acompanamiento_preparto = models.BooleanField(
         default=False,
-        verbose_name='Acompañamiento Preparto'
+        verbose_name='Acompañamiento en Preparto',
+        help_text='¿Hubo acompañante en preparto?'
     )
     
     acompanamiento_parto = models.BooleanField(
         default=False,
-        verbose_name='Acompañamiento Parto'
+        verbose_name='Acompañamiento en Parto',
+        help_text='¿Hubo acompañante durante el parto?'
     )
     
     acompanamiento_rn = models.BooleanField(
         default=False,
-        verbose_name='Acompañamiento RN'
+        verbose_name='Acompañamiento del RN',
+        help_text='¿Hubo acompañante con el recién nacido?'
     )
     
-    # Motivo NO acompañado
-    MOTIVO_NO_ACOMPANADO_CHOICES = [
-        ('', '---'),
-        ('NO_DESEA', 'NO DESEA'),
-        ('NO_LLEGA', 'NO LLEGA'),
-        ('URGENCIA', 'URGENCIA'),
-        ('NO_TIENE', 'NO TIENE ACOMPAÑANTE'),
-        ('RURALIDAD', 'RURALIDAD'),
-        ('SIN_PASE', 'SIN PASE DE MOVILIDAD'),
+    MOTIVO_NO_ACOMP_CHOICES = [
+        ('NO_DESEA', 'No desea'),
+        ('NO_LLEGA', 'No llega acompañante'),
+        ('URGENCIA', 'Urgencia'),
+        ('NO_TIENE', 'No tiene acompañante'),
+        ('RURALIDAD', 'Ruralidad'),
+        ('SIN_PASE', 'Sin pase de movilidad'),
     ]
     
-    motivo_parto_no_acompanado = models.CharField(
+    motivo_no_acompanado = models.CharField(
         max_length=20,
-        choices=MOTIVO_NO_ACOMPANADO_CHOICES,
+        choices=MOTIVO_NO_ACOMP_CHOICES,
         blank=True,
-        verbose_name='Motivo Parto NO Acompañado'
+        verbose_name='Motivo Parto NO Acompañado',
+        help_text='Razón por la cual no hubo acompañamiento'
     )
     
-    # Persona acompañante
-    PERSONA_ACOMPANANTE_CHOICES = [
-        ('', '---'),
-        ('PAREJA', 'PAREJA'),
-        ('MADRE', 'MADRE'),
-        ('PADRE', 'PADRE'),
-        ('HERMANA', 'HERMANA'),
-        ('AMIGA', 'AMIGA'),
-        ('OTRO', 'OTRO'),
-        ('NADIE', 'NADIE'),
+    PERSONA_ACOMP_CHOICES = [
+        ('PAREJA', 'Pareja'),
+        ('MADRE', 'Madre'),
+        ('HERMANA', 'Hermana'),
+        ('AMIGA', 'Amiga'),
+        ('OTRO', 'Otro'),
+        ('NADIE', 'Nadie'),
     ]
     
     persona_acompanante = models.CharField(
-        max_length=20,
-        choices=PERSONA_ACOMPANANTE_CHOICES,
+        max_length=10,
+        choices=PERSONA_ACOMP_CHOICES,
         blank=True,
-        verbose_name='Persona Acompañante'
+        verbose_name='Persona Acompañante',
+        help_text='Quién acompañó a la paciente'
     )
     
     acompanante_secciona_cordon = models.BooleanField(
         default=False,
         verbose_name='Acompañante Secciona Cordón',
-        help_text='¿El acompañante cortó el cordón?'
+        help_text='¿El acompañante cortó el cordón umbilical?'
     )
     
     # ============================================
@@ -164,7 +163,7 @@ class RegistroRecienNacido(models.Model):
     
     fecha_creacion = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Fecha de Creación'
+        verbose_name='Fecha de Creación del Registro'
     )
     
     class Meta:
@@ -176,65 +175,68 @@ class RegistroRecienNacido(models.Model):
         ]
     
     def __str__(self):
-        return f"RN {self.sexo} - {self.registro_parto.numero_registro} - {self.peso}g"
+        return f"RN - {self.registro_parto.numero_registro} - {self.sexo}"
     
     def clasificacion_peso(self):
-        """Clasifica el peso según OMS"""
+        """Clasifica el peso del RN según OMS"""
         if self.peso < 2500:
             return "Bajo peso al nacer"
-        elif self.peso <= 4000:
-            return "Peso adecuado"
+        elif 2500 <= self.peso <= 4000:
+            return "Peso normal"
         else:
             return "Macrosómico"
     
     def estado_apgar(self):
-        """Evalúa el estado según Apgar"""
-        apgar_5 = self.apgar_5_minutos
-        if apgar_5 >= 7:
+        """Evalúa el estado según Apgar a los 5 minutos"""
+        if self.apgar_5_minutos >= 7:
             return "Normal"
-        elif apgar_5 >= 4:
+        elif 4 <= self.apgar_5_minutos <= 6:
             return "Asfixia moderada"
         else:
             return "Asfixia severa"
+    
+    def tuvo_acompanamiento_completo(self):
+        """Verifica si hubo acompañamiento en todas las etapas"""
+        return all([
+            self.acompanamiento_preparto,
+            self.acompanamiento_parto,
+            self.acompanamiento_rn,
+        ])
 
+
+# ============================================
+# ✅ DOCUMENTOS DE PARTO (MOVIDO DESDE partosApp)
+# ============================================
 
 class DocumentosParto(models.Model):
     """
-    Documentos legales y administrativos del parto
-    Se crean después del parto
-    Incluye Ley Dominga, placenta y registro civil
+    Documentos y procedimientos post-parto
+    Incluye: placenta, registro civil, Ley Dominga
     """
     
     # ============================================
     # RELACIÓN
     # ============================================
     
-    registro_parto = models.OneToOneField(
-        'partosApp.RegistroParto',
+    registro_recien_nacido = models.OneToOneField(
+        RegistroRecienNacido,
         on_delete=models.CASCADE,
         related_name='documentos',
-        verbose_name='Registro de Parto'
+        verbose_name='Registro de Recién Nacido'
     )
     
     # ============================================
-    # SECCIÓN 1: LEY N° 21.372 DOMINGA
+    # LEY N° 21.372 DOMINGA (Recuerdos)
     # ============================================
     
-    recuerdos_entregados = models.CharField(
-        max_length=200,
+    recuerdos_entregados = models.TextField(
         blank=True,
-        verbose_name='Recuerdos Entregados',
-        help_text='Lista de recuerdos según Ley Dominga'
-    )
-    
-    motivo_no_entrega_recuerdos = models.TextField(
-        blank=True,
-        verbose_name='Motivo de No Entrega',
-        help_text='Justificación si no se entregaron'
+        verbose_name='Cuales Recuerdos (De no entregar justificar motivo)',
+        help_text='Descripción de recuerdos entregados según Ley Dominga'
     )
     
     # ============================================
-    # SECCIÓN 2: PLACENTA
+    # PLACENTA
     # ============================================
     
     retira_placenta = models.BooleanField(
@@ -246,35 +248,35 @@ class DocumentosParto(models.Model):
     estampado_placenta = models.BooleanField(
         default=False,
         verbose_name='Estampado de Placenta',
-        help_text='¿Se hizo estampado?'
+        help_text='¿Se realizó estampado de placenta?'
     )
     
     # ============================================
-    # SECCIÓN 3: REGISTRO CIVIL
+    # REGISTRO CIVIL
     # ============================================
     
     folio_valido = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name='Folio Válido',
-        help_text='Número de folio del Registro Civil'
+        verbose_name='FOLIO VÁLIDO',
+        help_text='Número de folio válido del Registro Civil'
     )
     
     folios_nulos = models.CharField(
         max_length=200,
         blank=True,
-        verbose_name='Folio/s Nulo/s',
+        verbose_name='FOLIO/S NULO/S',
         help_text='Folios anulados (si aplica)'
     )
     
     # ============================================
-    # SECCIÓN 4: MANEJO DEL DOLOR NO FARMACOLÓGICO
+    # OTROS
     # ============================================
     
     manejo_dolor_no_farmacologico = models.TextField(
         blank=True,
         verbose_name='Manejo del Dolor No Farmacológico',
-        help_text='Descripción de métodos usados'
+        help_text='Descripción de métodos no farmacológicos utilizados'
     )
     
     # ============================================
@@ -288,7 +290,7 @@ class DocumentosParto(models.Model):
     
     fecha_modificacion = models.DateTimeField(
         auto_now=True,
-        verbose_name='Última Modificación'
+        verbose_name='Fecha de Última Modificación'
     )
     
     class Meta:
@@ -296,4 +298,26 @@ class DocumentosParto(models.Model):
         verbose_name_plural = 'Documentos de Partos'
     
     def __str__(self):
-        return f"Documentos - {self.registro_parto.numero_registro}"
+        return f"Documentos - RN {self.registro_recien_nacido.id}"
+    
+    def tiene_documentacion_completa(self):
+        """Verifica si la documentación está completa"""
+        return bool(self.folio_valido)
+    
+    def resumen_documentos(self):
+        """Retorna un resumen de la documentación"""
+        docs = []
+        
+        if self.folio_valido:
+            docs.append(f"Folio RC: {self.folio_valido}")
+        
+        if self.retira_placenta:
+            docs.append("Placenta retirada")
+        
+        if self.estampado_placenta:
+            docs.append("Estampado realizado")
+        
+        if self.recuerdos_entregados:
+            docs.append("Recuerdos Ley Dominga entregados")
+        
+        return " | ".join(docs) if docs else "Sin documentación registrada"

@@ -1,10 +1,3 @@
-# partosApp/models.py
-"""
-Aplicación para gestionar el PROCESO DE PARTO
-Contiene toda la información DURANTE el parto
-MODELO COMPLETO Y ACTUALIZADO
-"""
-
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
@@ -66,7 +59,7 @@ class RegistroParto(models.Model):
     # SECCIÓN 1: TRABAJO DE PARTO
     # ============================================
     
-    # Edad Gestacional al momento del parto
+    # Edad Gestacional
     edad_gestacional_semanas = models.IntegerField(
         validators=[MinValueValidator(20), MaxValueValidator(42)],
         verbose_name='Semanas de Embarazo',
@@ -99,20 +92,19 @@ class RegistroParto(models.Model):
         help_text='¿Se aceleró el trabajo de parto?'
     )
     
-    # 🆕 CAMPO AGREGADO: Número de Tactos Vaginales
     numero_tactos_vaginales = models.IntegerField(
         default=0,
         validators=[MinValueValidator(0)],
-        verbose_name='Nº de Tactos Vaginales (TV)',
-        help_text='Cantidad total de tactos vaginales realizados durante el trabajo de parto'
+        verbose_name='Número de Tactos Vaginales (TV)',
+        help_text='Número total de exámenes vaginales realizados'
     )
     
     # Rotura de Membranas
     ROTURA_MEMBRANA_CHOICES = [
-        ('IOP', 'IOP (Inicio Parto)'),
-        ('RAM', 'RAM (Rotura Artificial)'),
-        ('REM', 'REM (Rotura Espontánea)'),
-        ('RPM', 'RPM (Rotura Prematura)'),
+        ('IOP', 'Inicio Espontáneo (IOP)'),
+        ('RAM', 'Rotura Artificial de Membranas (RAM)'),
+        ('REM', 'Rotura Espontánea de Membranas (REM)'),
+        ('RPM', 'Rotura Prematura de Membranas (RPM)'),
     ]
     
     rotura_membrana = models.CharField(
@@ -127,15 +119,16 @@ class RegistroParto(models.Model):
         blank=True,
         validators=[MinValueValidator(0)],
         verbose_name='Tiempo Membranas Rotas (minutos)',
-        help_text='Desde rotura hasta parto'
+        help_text='Tiempo transcurrido con membranas rotas'
     )
     
+    # Tiempos del Parto
     tiempo_dilatacion = models.IntegerField(
         null=True,
         blank=True,
         validators=[MinValueValidator(0)],
         verbose_name='Tiempo Dilatación (minutos)',
-        help_text='Duración período dilatación'
+        help_text='Duración de la fase de dilatación'
     )
     
     tiempo_expulsivo = models.IntegerField(
@@ -143,162 +136,134 @@ class RegistroParto(models.Model):
         blank=True,
         validators=[MinValueValidator(0)],
         verbose_name='Tiempo Expulsivo (minutos)',
-        help_text='Duración período expulsivo'
+        help_text='Duración de la fase expulsiva'
     )
     
     # ============================================
-    # SECCIÓN 2: CONDICIONES DEL PARTO
+    # SECCIÓN 2: INFORMACIÓN DEL PARTO
     # ============================================
     
     libertad_movimiento = models.BooleanField(
-        default=False,
-        verbose_name='Libertad de Movimiento',
-        help_text='¿Se permitió moverse libremente?'
+        default=True,
+        verbose_name='Libertad de Movimiento en Trabajo de Parto',
+        help_text='¿La paciente tuvo libertad de movimiento?'
     )
     
-    TIPO_REGIMEN_CHOICES = [
-        ('CERO', 'CERO (Ayuno)'),
-        ('LIQUIDO', 'LÍQUIDO'),
-        ('COMUN', 'COMÚN'),
-        ('OTRO', 'OTRO'),
+    REGIMEN_CHOICES = [
+        ('CERO', 'Cero (ayuno absoluto)'),
+        ('LIQUIDO', 'Líquido'),
+        ('COMUN', 'Común'),
+        ('OTRO', 'Otro'),
     ]
     
     tipo_regimen = models.CharField(
-        max_length=20,
-        choices=TIPO_REGIMEN_CHOICES,
-        default='CERO',
-        verbose_name='Tipo de Régimen',
-        help_text='Alimentación durante trabajo de parto'
+        max_length=10,
+        choices=REGIMEN_CHOICES,
+        default='LIQUIDO',
+        verbose_name='Tipo de Régimen en Trabajo de Parto'
     )
-    
-    # VIH durante el parto
-    vih_tomado_prepartos = models.BooleanField(
-        default=False,
-        verbose_name='VIH tomado en Prepartos'
-    )
-    
-    VIH_SALA_CHOICES = [
-        ('NO', 'No'),
-        ('SALA_1', 'Sala 1'),
-        ('SALA_2', 'Sala 2'),
-        ('SALA_3', 'Sala 3'),
-    ]
-    
-    vih_tomado_sala = models.CharField(
-        max_length=20,
-        choices=VIH_SALA_CHOICES,
-        default='NO',
-        verbose_name='VIH tomado en Sala'
-    )
-    
-    # ============================================
-    # SECCIÓN 3: TIPO E INFORMACIÓN DEL PARTO
-    # ============================================
     
     TIPO_PARTO_CHOICES = [
-        ('EUTOCICO', 'EUTÓCICO (Normal)'),
-        ('DISTOCICO', 'DISTÓCICO (Instrumental)'),
-        ('CESAREA_URGENCIA', 'CESÁREA DE URGENCIA'),
-        ('CESAREA_ELECTIVA', 'CESÁREA ELECTIVA'),
+        ('EUTOCICO', 'Eutócico (normal)'),
+        ('DISTOCICO', 'Distócico (con complicaciones)'),
+        ('CESAREA_URGENCIA', 'Cesárea de Urgencia'),
+        ('CESAREA_ELECTIVA', 'Cesárea Electiva'),
     ]
     
     tipo_parto = models.CharField(
-        max_length=30,
+        max_length=20,
         choices=TIPO_PARTO_CHOICES,
         verbose_name='Tipo de Parto'
     )
     
     alumbramiento_dirigido = models.BooleanField(
-        default=False,
-        verbose_name='Alumbramiento Dirigido'
+        default=True,
+        verbose_name='Alumbramiento Dirigido',
+        help_text='¿Se realizó alumbramiento dirigido?'
     )
     
     # Clasificación de Robson
-    CLASIFICACION_ROBSON_CHOICES = [
-        ('GRUPO_1', 'GRUPO 1'),
-        ('GRUPO_2A', 'GRUPO 2.A'),
-        ('GRUPO_2B', 'GRUPO 2.B'),
-        ('GRUPO_3', 'GRUPO 3'),
-        ('GRUPO_4', 'GRUPO 4'),
-        ('GRUPO_5_1', 'GRUPO 5.1'),
-        ('GRUPO_5_2', 'GRUPO 5.2'),
-        ('GRUPO_6', 'GRUPO 6'),
-        ('GRUPO_7', 'GRUPO 7'),
-        ('GRUPO_8', 'GRUPO 8'),
-        ('GRUPO_9', 'GRUPO 9'),
-        ('GRUPO_10', 'GRUPO 10'),
+    ROBSON_CHOICES = [
+        ('Grupo 1', 'Grupo 1 - Nulíparas, único, cefálico, ≥37 sem, espontáneo'),
+        ('Grupo 2.A', 'Grupo 2.A - Nulíparas, único, cefálico, ≥37 sem, inducción'),
+        ('Grupo 2.B', 'Grupo 2.B - Nulíparas, único, cefálico, ≥37 sem, cesárea antes trabajo'),
+        ('Grupo 3', 'Grupo 3 - Multíparas, único, cefálico, ≥37 sem, espontáneo'),
+        ('Grupo 4', 'Grupo 4 - Multíparas, único, cefálico, ≥37 sem, inducción o cesárea'),
+        ('Grupo 5.1', 'Grupo 5.1 - Multíparas, único, cefálico, ≥37 sem, cesárea previa, espontáneo'),
+        ('Grupo 5.2', 'Grupo 5.2 - Multíparas, único, cefálico, ≥37 sem, cesárea previa, inducción'),
+        ('Grupo 6', 'Grupo 6 - Nulíparas, único, podálica'),
+        ('Grupo 7', 'Grupo 7 - Multíparas, único, podálica'),
+        ('Grupo 8', 'Grupo 8 - Embarazos múltiples'),
+        ('Grupo 9', 'Grupo 9 - Único, transversa u oblicua'),
+        ('Grupo 10', 'Grupo 10 - Único, cefálico, ≤36 sem'),
     ]
     
     clasificacion_robson = models.CharField(
-        max_length=20,
-        choices=CLASIFICACION_ROBSON_CHOICES,
-        blank=True,
+        max_length=30,
+        choices=ROBSON_CHOICES,
         verbose_name='Clasificación de Robson',
-        help_text='Para clasificación de cesáreas'
+        help_text='Clasificación de Robson para cesáreas'
     )
     
     # Posición Materna
-    POSICION_MATERNA_CHOICES = [
-        ('SEMISENTADA', 'SEMISENTADA'),
-        ('SENTADA', 'SENTADA'),
-        ('LITOTOMIA', 'LITOTOMÍA'),
-        ('DORSAL', 'DECÚBITO DORSAL'),
-        ('CUADRUPEDA', 'CUADRÚPEDA'),
-        ('LATERAL', 'DECÚBITO LATERAL'),
-        ('DE_PIE', 'DE PIE'),
-        ('CUCLILLAS', 'CUCLILLAS'),
-        ('OTRO', 'OTRO'),
+    POSICION_CHOICES = [
+        ('SEMISENTADA', 'Semisentada'),
+        ('SENTADA', 'Sentada'),
+        ('LITOTOMIA', 'Litotomía (acostada)'),
+        ('D_DORSAL', 'Decúbito Dorsal'),
+        ('D_LATERAL', 'Decúbito Lateral'),
+        ('CUADRUPEDA', 'Cuadrúpeda'),
+        ('CUCLILLAS', 'Cuclillas'),
+        ('DE_PIE', 'De Pie'),
+        ('OTRO', 'Otro'),
     ]
     
-    posicion_materna_parto = models.CharField(
+    posicion_materna = models.CharField(
         max_length=20,
-        choices=POSICION_MATERNA_CHOICES,
-        blank=True,
-        verbose_name='Posición Materna',
-        help_text='Posición durante el parto'
+        choices=POSICION_CHOICES,
+        verbose_name='Posición Materna en el Parto'
     )
     
-    # ============================================
-    # SECCIÓN 4: PUERPERIO / COMPLICACIONES
-    # ============================================
-    
-    ofrecimiento_posiciones_alternativas = models.BooleanField(
-        default=False,
-        verbose_name='Ofrecimiento de Posiciones Alternativas',
+    ofrecimiento_posiciones = models.BooleanField(
+        default=True,
+        verbose_name='Ofrecimiento de Posiciones Alternativas del Parto',
         help_text='¿Se ofrecieron posiciones alternativas?'
     )
     
-    # Estado del Periné
+    # ============================================
+    # SECCIÓN 3: PUERPERIO
+    # ============================================
+    
     ESTADO_PERINE_CHOICES = [
-        ('INDEMNE', 'INDEMNE (Indemne)'),
-        ('DESGARRO_G1', 'DESGARRO GRADO 1'),
-        ('DESGARRO_G2', 'DESGARRO GRADO 2'),
-        ('DESGARRO_G3A', 'DESGARRO GRADO 3A'),
-        ('DESGARRO_G3B', 'DESGARRO GRADO 3B'),
-        ('DESGARRO_G3C', 'DESGARRO GRADO 3C'),
-        ('DESGARRO_G4', 'DESGARRO GRADO 4'),
-        ('FISURA', 'FISURA'),
-        ('EPISIOTOMIA', 'EPISIOTOMÍA'),
+        ('INDEMNE', 'Indemne (sin lesión)'),
+        ('DESGARRO_G1', 'Desgarro Grado 1'),
+        ('DESGARRO_G2', 'Desgarro Grado 2'),
+        ('DESGARRO_G3_A', 'Desgarro Grado 3A'),
+        ('DESGARRO_G3_B', 'Desgarro Grado 3B'),
+        ('DESGARRO_G3_C', 'Desgarro Grado 3C'),
+        ('DESGARRO_G4', 'Desgarro Grado 4'),
+        ('FISURA', 'Fisura'),
+        ('EPISIOTOMIA', 'Episiotomía'),
     ]
     
     estado_perine = models.CharField(
         max_length=20,
         choices=ESTADO_PERINE_CHOICES,
-        verbose_name='Estado del Periné',
-        help_text='Condición post-parto'
+        verbose_name='Estado del Periné'
     )
     
-    # Complicaciones
     esterilizacion = models.BooleanField(
         default=False,
-        verbose_name='Esterilización'
+        verbose_name='Esterilización',
+        help_text='¿Se realizó esterilización?'
     )
     
-    revision = models.BooleanField(
-        default=False,
-        verbose_name='Revisión'
+    revision_canal_parto = models.BooleanField(
+        default=True,
+        verbose_name='Revisión del Canal del Parto'
     )
     
+    # Complicaciones del Puerperio
     inercia_uterina = models.BooleanField(
         default=False,
         verbose_name='Inercia Uterina'
@@ -321,25 +286,24 @@ class RegistroParto(models.Model):
     
     manejo_quirurgico_inercia = models.BooleanField(
         default=False,
-        verbose_name='Manejo Quirúrgico de Inercia'
+        verbose_name='Manejo Quirúrgico de Inercia Uterina'
     )
     
     histerectomia_obstetrica = models.BooleanField(
         default=False,
-        verbose_name='Histerectomía Obstétrica',
-        help_text='¿Se realizó histerectomía?'
+        verbose_name='Histerectomía Obstétrica'
     )
     
     transfusion_sanguinea = models.BooleanField(
         default=False,
-        verbose_name='Transfusión Sanguínea',
-        help_text='¿Requirió transfusión?'
+        verbose_name='Transfusión Sanguínea'
     )
     
     # ============================================
-    # SECCIÓN 5: ANESTESIA Y ANALGESIA
+    # SECCIÓN 4: ANESTESIA Y ANALGESIA
     # ============================================
     
+    # Anestesia
     anestesia_neuroaxial = models.BooleanField(
         default=False,
         verbose_name='Anestesia Neuroaxial'
@@ -411,42 +375,43 @@ class RegistroParto(models.Model):
         null=True,
         blank=True,
         validators=[MinValueValidator(0)],
-        verbose_name='Tiempo Espera Peridural (minutos)',
-        help_text='Entre indicación y administración'
+        verbose_name='Tiempo de espera entre indicación y administración (minutos)',
+        help_text='Tiempo de espera para administración de peridural'
     )
     
     # ============================================
-    # SECCIÓN 6: INFORMACIÓN PROFESIONALES
+    # SECCIÓN 5: INFORMACIÓN DE LOS PROFESIONALES
     # ============================================
     
     profesional_responsable = models.CharField(
         max_length=200,
-        verbose_name='Profesional Responsable',
-        help_text='Nombre completo del responsable'
+        verbose_name='Profesional Responsable (Nombre - apellido)',
+        help_text='Profesional a cargo del parto'
     )
     
-    alumno = models.CharField(
+    alumno_participante = models.CharField(
         max_length=200,
         blank=True,
-        verbose_name='Alumno',
-        help_text='Nombre del alumno (si aplica)'
+        verbose_name='Alumno (Nombre - apellido)',
+        help_text='Estudiante que participó en el parto'
     )
     
     causa_cesarea = models.TextField(
         blank=True,
         verbose_name='Causa de Cesárea',
-        help_text='Indicación médica'
+        help_text='Motivo por el cual se realizó cesárea'
     )
     
     observaciones = models.TextField(
         blank=True,
-        verbose_name='Observaciones'
+        verbose_name='Observaciones',
+        help_text='Observaciones generales del parto'
     )
     
     uso_sala_saip = models.BooleanField(
         default=False,
-        verbose_name='Uso de Sala SAIP',
-        help_text='¿Se usó Sala Atención Integral?'
+        verbose_name='USO DE SALA SAIP (SI/NO)',
+        help_text='¿Se usó la sala SAIP (Sala de Atención Integral del Parto)?'
     )
     
     # ============================================
@@ -512,6 +477,21 @@ class RegistroParto(models.Model):
             self.transfusion_sanguinea
         )
     
-    def edad_gestacional_completa(self):
-        """Retorna edad gestacional en formato legible"""
-        return f"{self.edad_gestacional_semanas} semanas + {self.edad_gestacional_dias} días"
+    def tipo_analgesia_utilizada(self):
+        """Retorna lista de tipos de analgesia utilizados"""
+        analgesias = []
+        
+        if self.anestesia_neuroaxial:
+            analgesias.append('Neuroaxial')
+        if self.oxido_nitroso:
+            analgesias.append('Óxido Nitroso')
+        if self.analgesia_endovenosa:
+            analgesias.append('Endovenosa')
+        if self.anestesia_general:
+            analgesias.append('General')
+        if self.anestesia_local:
+            analgesias.append('Local')
+        if self.analgesia_no_farmacologica:
+            analgesias.append('No Farmacológica')
+        
+        return ', '.join(analgesias) if analgesias else 'Sin analgesia registrada'
