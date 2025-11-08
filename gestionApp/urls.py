@@ -6,6 +6,11 @@ app_name = 'gestion'
 
 urlpatterns = [
     # ============================================
+    # DASHBOARD ADMINISTRATIVO
+    # ============================================
+    path('dashboard/', views.dashboard_admin, name='dashboard_admin'),
+    
+    # ============================================
     # PERSONAS
     # ============================================
     path('personas/', views.PersonaListView.as_view(), name='lista_personas'),

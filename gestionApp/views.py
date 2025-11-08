@@ -1,3 +1,4 @@
+# gestionApp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.generic import ListView, DetailView
@@ -5,7 +6,7 @@ from django.http import JsonResponse
 from .forms.Gestion_form import PersonaForm, PacienteForm, MedicoForm, MatronaForm, TensForm
 from .models import Persona, Medico, Matrona, Tens
 from matronaApp.models import Paciente
-
+from datetime import datetime
 
 
 # ============================================
@@ -157,9 +158,7 @@ def buscar_persona_api(request):
             'encontrado': False,
             'mensaje': f'Error al buscar: {str(e)}'
         }, status=400)
-    
 
-    # AGREGAR ESTAS FUNCIONES AL FINAL DE gestionApp/views.py
 
 # ============================================
 # GESTIÓN DE ROLES
@@ -194,29 +193,17 @@ def asignar_rol_paciente(request, pk):
         messages.warning(request, "⚠️ Esta persona ya tiene el rol de Paciente.")
         return redirect('gestion:gestionar_roles', pk=pk)
     
-    if request.method == 'POST':
-        form = PacienteForm(request.POST)
-        # Pre-llenar el RUT
-        request.POST = request.POST.copy()
-        request.POST['rut_persona'] = persona.Rut
-        form = PacienteForm(request.POST)
-        
-        if form.is_valid():
-            try:
-                paciente = form.save()
-                messages.success(request, f"✅ Rol de Paciente asignado exitosamente a {persona.Nombre} {persona.Apellido_Paterno}.")
-                return redirect('gestion:gestionar_roles', pk=pk)
-            except Exception as e:
-                messages.error(request, f"❌ Error: {str(e)}")
-    else:
-        # Pre-cargar el formulario con el RUT de la persona
-        form = PacienteForm(initial={'rut_persona': persona.Rut})
+    # Crear rol de paciente
+    try:
+        Paciente.objects.create(
+            persona=persona,
+            activo=True
+        )
+        messages.success(request, "✅ Rol de Paciente asignado correctamente.")
+    except Exception as e:
+        messages.error(request, f"❌ Error al asignar rol: {str(e)}")
     
-    return render(request, 'Gestion/Formularios/asignar_rol.html', {
-        'form': form,
-        'persona': persona,
-        'rol_nombre': 'Paciente'
-    })
+    return redirect('gestion:gestionar_roles', pk=pk)
 
 
 def asignar_rol_medico(request, pk):
@@ -227,25 +214,21 @@ def asignar_rol_medico(request, pk):
         messages.warning(request, "⚠️ Esta persona ya tiene el rol de Médico.")
         return redirect('gestion:gestionar_roles', pk=pk)
     
+    # Formulario para datos del médico
     if request.method == 'POST':
-        request.POST = request.POST.copy()
-        request.POST['rut_persona'] = persona.Rut
         form = MedicoForm(request.POST)
-        
         if form.is_valid():
-            try:
-                medico = form.save()
-                messages.success(request, f"✅ Rol de Médico asignado exitosamente.")
-                return redirect('gestion:gestionar_roles', pk=pk)
-            except Exception as e:
-                messages.error(request, f"❌ Error: {str(e)}")
+            medico = form.save(commit=False)
+            medico.persona = persona
+            medico.save()
+            messages.success(request, "✅ Rol de Médico asignado correctamente.")
+            return redirect('gestion:gestionar_roles', pk=pk)
     else:
-        form = MedicoForm(initial={'rut_persona': persona.Rut})
+        form = MedicoForm(initial={'persona': persona})
     
-    return render(request, 'Gestion/Formularios/asignar_rol.html', {
+    return render(request, 'Gestion/Formularios/asignar_rol_medico.html', {
         'form': form,
-        'persona': persona,
-        'rol_nombre': 'Médico'
+        'persona': persona
     })
 
 
@@ -258,24 +241,19 @@ def asignar_rol_matrona(request, pk):
         return redirect('gestion:gestionar_roles', pk=pk)
     
     if request.method == 'POST':
-        request.POST = request.POST.copy()
-        request.POST['rut_persona'] = persona.Rut
         form = MatronaForm(request.POST)
-        
         if form.is_valid():
-            try:
-                matrona = form.save()
-                messages.success(request, f"✅ Rol de Matrona asignado exitosamente.")
-                return redirect('gestion:gestionar_roles', pk=pk)
-            except Exception as e:
-                messages.error(request, f"❌ Error: {str(e)}")
+            matrona = form.save(commit=False)
+            matrona.persona = persona
+            matrona.save()
+            messages.success(request, "✅ Rol de Matrona asignado correctamente.")
+            return redirect('gestion:gestionar_roles', pk=pk)
     else:
-        form = MatronaForm(initial={'rut_persona': persona.Rut})
+        form = MatronaForm(initial={'persona': persona})
     
-    return render(request, 'Gestion/Formularios/asignar_rol.html', {
+    return render(request, 'Gestion/Formularios/asignar_rol_matrona.html', {
         'form': form,
-        'persona': persona,
-        'rol_nombre': 'Matrona'
+        'persona': persona
     })
 
 
@@ -288,22 +266,53 @@ def asignar_rol_tens(request, pk):
         return redirect('gestion:gestionar_roles', pk=pk)
     
     if request.method == 'POST':
-        request.POST = request.POST.copy()
-        request.POST['rut_persona'] = persona.Rut
         form = TensForm(request.POST)
-        
         if form.is_valid():
-            try:
-                tens = form.save()
-                messages.success(request, f"✅ Rol de TENS asignado exitosamente.")
-                return redirect('gestion:gestionar_roles', pk=pk)
-            except Exception as e:
-                messages.error(request, f"❌ Error: {str(e)}")
+            tens = form.save(commit=False)
+            tens.persona = persona
+            tens.save()
+            messages.success(request, "✅ Rol de TENS asignado correctamente.")
+            return redirect('gestion:gestionar_roles', pk=pk)
     else:
-        form = TensForm(initial={'rut_persona': persona.Rut})
+        form = TensForm(initial={'persona': persona})
     
-    return render(request, 'Gestion/Formularios/asignar_rol.html', {
+    return render(request, 'Gestion/Formularios/asignar_rol_tens.html', {
         'form': form,
-        'persona': persona,
-        'rol_nombre': 'TENS'
+        'persona': persona
     })
+
+
+# ============================================
+# DASHBOARD ADMINISTRATIVO
+# ============================================
+
+def dashboard_admin(request):
+    """
+    Vista principal del dashboard administrativo.
+    Muestra estadísticas generales y accesos rápidos.
+    """
+    
+    # Contar todos los roles activos
+    total_medicos = Medico.objects.filter(Activo=True).count()
+    total_matronas = Matrona.objects.filter(Activo=True).count()
+    total_tens = Tens.objects.filter(Activo=True).count()
+    total_pacientes = Paciente.objects.filter(activo=True).count()
+    
+    # Total de usuarios en el sistema
+    total_usuarios = total_medicos + total_matronas + total_tens + total_pacientes
+    
+    # Total de personas registradas
+    total_personas = Persona.objects.filter(Activo=True).count()
+    
+    # Contexto para el template
+    context = {
+        'total_medicos': total_medicos,
+        'total_matronas': total_matronas,
+        'total_tens': total_tens,
+        'total_pacientes': total_pacientes,
+        'total_usuarios': total_usuarios,
+        'total_personas': total_personas,
+        'fecha_actual': datetime.now().strftime('%d/%m/%Y'),
+    }
+    
+    return render(request, 'Gestion/dashboard_admin.html', context)
