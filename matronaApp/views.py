@@ -1,8 +1,3 @@
-# matronaApp/views.py
-"""
-Vistas para el módulo de Matrona
-Gestión de pacientes, ingresos y fichas obstétricas
-"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.generic import ListView, DetailView
@@ -12,8 +7,7 @@ from django.db.models import Q, Count, Prefetch
 from matronaApp.models import IngresoPaciente, FichaObstetrica, MedicamentoFicha
 from gestionApp.models import Persona, Paciente, Matrona
 from gestionApp.forms.Gestion_form import PacienteForm
-from matronaApp.forms.ingreso_forms import IngresoPacienteForm
-from matronaApp.forms.ficha_forms import FichaObstetricaForm
+from matronaApp.forms import IngresoPacienteForm, FichaObstetricaForm  # <-- ESTA LÍNEA ES LA IMPORTANTE
 from legacyApp.models import ControlesPrevios
 
 

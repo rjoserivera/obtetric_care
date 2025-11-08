@@ -1,11 +1,23 @@
-from .paciente_forms import PacienteForm
-from .busqueda_forms import BuscarPacienteForm
-from .ingreso_forms import IngresoPacienteForm
-from .ficha_forms import FichaObstetricaForm
+from .matrona_app_forms import (
+    BuscarPacienteFichaForm,
+    FichaObstetricaForm,
+    FichaObstetricaSimpleForm,
+    MedicamentoFichaForm,
+    AsignarPatologiasFichaForm,
+    BuscarPatologiaForm,
+    IngresoPacienteForm,
+    FichaObstetricaEdicionRapidaForm,
+)
+
+# Nota: PacienteForm está en gestionApp.forms.Gestion_form, no aquí
 
 __all__ = [
-    "PacienteForm",
-    "BuscarPacienteForm", 
-    "IngresoPacienteForm",
-    "FichaObstetricaForm",
+    'BuscarPacienteFichaForm',
+    'FichaObstetricaForm',
+    'FichaObstetricaSimpleForm',
+    'MedicamentoFichaForm',
+    'AsignarPatologiasFichaForm',
+    'BuscarPatologiaForm',
+    'IngresoPacienteForm',
+    'FichaObstetricaEdicionRapidaForm',
 ]

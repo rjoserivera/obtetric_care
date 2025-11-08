@@ -1,5 +1,10 @@
+# partosApp/forms/documentos_forms.py
+"""
+Formularios para Documentos del Parto
+CORREGIDO: Usar registro_recien_nacido en lugar de registro_parto
+"""
 from django import forms
-from partosApp.models import DocumentosParto, RegistroParto
+from recienNacidoApp.models import DocumentosParto, RegistroRecienNacido  # ✅ Importación corregida
 
 
 class DocumentosPartoForm(forms.ModelForm):
@@ -9,10 +14,9 @@ class DocumentosPartoForm(forms.ModelForm):
     class Meta:
         model = DocumentosParto
         fields = [
-            'registro_parto',
+            'registro_recien_nacido',  # ✅ Campo corregido
             # Ley Dominga
             'recuerdos_entregados',
-            'motivo_no_entrega_recuerdos',
             # Placenta
             'retira_placenta',
             'estampado_placenta',
@@ -23,19 +27,15 @@ class DocumentosPartoForm(forms.ModelForm):
             'manejo_dolor_no_farmacologico',
         ]
         widgets = {
-            'registro_parto': forms.Select(attrs={
+            'registro_recien_nacido': forms.Select(attrs={  # ✅ Corregido
                 'class': 'form-select',
                 'required': True
             }),
             # Ley Dominga
-            'recuerdos_entregados': forms.TextInput(attrs={
+            'recuerdos_entregados': forms.Textarea(attrs={  # ✅ Cambiado a Textarea
                 'class': 'form-control',
+                'rows': 3,
                 'placeholder': 'Ej: Huella, foto, mechas de cabello'
-            }),
-            'motivo_no_entrega_recuerdos': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 2,
-                'placeholder': 'Justifique si no se entregaron recuerdos'
             }),
             # Placenta
             'retira_placenta': forms.CheckboxInput(attrs={
@@ -61,9 +61,8 @@ class DocumentosPartoForm(forms.ModelForm):
             }),
         }
         labels = {
-            'registro_parto': 'Registro de Parto',
-            'recuerdos_entregados': 'Recuerdos Entregados (Ley Dominga)',
-            'motivo_no_entrega_recuerdos': 'Motivo de No Entrega',
+            'registro_recien_nacido': 'Registro de Recién Nacido',  # ✅ Corregido
+            'recuerdos_entregados': 'Recuerdos Entregados (Ley N° 21.372 Dominga)',
             'retira_placenta': '¿Retira Placenta?',
             'estampado_placenta': '¿Estampado de Placenta?',
             'folio_valido': 'Folio Válido Registro Civil',
@@ -72,28 +71,27 @@ class DocumentosPartoForm(forms.ModelForm):
         }
         help_texts = {
             'recuerdos_entregados': 'Lista de recuerdos entregados según Ley N° 21.372',
-            'motivo_no_entrega_recuerdos': 'Completar solo si NO se entregaron recuerdos',
             'folio_valido': 'Número de folio del certificado de nacimiento',
         }
     
     def __init__(self, *args, **kwargs):
-        # Permitir pasar el registro_parto como parámetro
-        registro_parto = kwargs.pop('registro_parto', None)
+        # Permitir pasar el registro_recien_nacido como parámetro
+        registro_rn = kwargs.pop('registro_rn', None)
         super().__init__(*args, **kwargs)
         
-        # Si se pasa registro_parto, preseleccionarlo y ocultarlo
-        if registro_parto:
-            self.fields['registro_parto'].initial = registro_parto
-            self.fields['registro_parto'].widget = forms.HiddenInput()
+        # Si se pasa registro_rn, preseleccionarlo y ocultarlo
+        if registro_rn:
+            self.fields['registro_recien_nacido'].initial = registro_rn
+            self.fields['registro_recien_nacido'].widget = forms.HiddenInput()
         
-        # Filtrar solo registros activos
-        self.fields['registro_parto'].queryset = RegistroParto.objects.filter(
-            activo=True
-        ).select_related('ficha__paciente__persona')
+        # Filtrar solo registros de RN
+        self.fields['registro_recien_nacido'].queryset = RegistroRecienNacido.objects.select_related(
+            'registro_parto__ficha__paciente__persona'
+        )
         
-        # Todos los campos son opcionales excepto registro_parto
+        # Todos los campos son opcionales excepto registro_recien_nacido
         for field_name in self.fields:
-            if field_name != 'registro_parto':
+            if field_name != 'registro_recien_nacido':
                 self.fields[field_name].required = False
 
 
@@ -105,22 +103,16 @@ class LeyDomingaForm(forms.ModelForm):
         model = DocumentosParto
         fields = [
             'recuerdos_entregados',
-            'motivo_no_entrega_recuerdos',
         ]
         widgets = {
-            'recuerdos_entregados': forms.TextInput(attrs={
+            'recuerdos_entregados': forms.Textarea(attrs={
                 'class': 'form-control',
+                'rows': 3,
                 'placeholder': 'Lista de recuerdos entregados'
-            }),
-            'motivo_no_entrega_recuerdos': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 2,
-                'placeholder': 'Justificación (solo si no se entregaron)'
             }),
         }
         labels = {
             'recuerdos_entregados': 'Recuerdos Entregados',
-            'motivo_no_entrega_recuerdos': 'Motivo de No Entrega',
         }
 
 

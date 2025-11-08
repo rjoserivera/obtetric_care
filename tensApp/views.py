@@ -1,4 +1,3 @@
-# tensApp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
@@ -7,18 +6,17 @@ from django.utils import timezone
 
 from gestionApp.models import Tens, Persona, Paciente
 from matronaApp.models import (
-    FichaObstetrica, MedicamentoFicha, AdministracionMedicamento,IngresoPaciente )
+    FichaObstetrica, MedicamentoFicha, AdministracionMedicamento, IngresoPaciente )
 from tensApp.forms.administracion_forms import AdministracionMedicamentoForm
-from gestionApp.forms.tens_forms import BuscarPacienteForm, RegistroTensForm
+# from gestionApp.forms.tens_forms import BuscarPacienteForm, RegistroTensForm  # ❌ COMENTAR ESTA LÍNEA
 from tensApp.models import  RegistroTens
 
 # de registro de tratamientos
 from tensApp.models import Tratamiento_aplicado
-from gestionApp.forms.tens_forms import FormularioTratamientoAplicado
+# from gestionApp.forms.tens_forms import FormularioTratamientoAplicado  # ❌ COMENTAR ESTA LÍNEA
 from tensApp.models import Tratamiento_aplicado
 from gestionApp.models import Paciente
 from matronaApp.models import FichaObstetrica,MedicamentoFicha, AdministracionMedicamento
-
 # ============================================
 # MENÚ PRINCIPAL TENS
 # ============================================

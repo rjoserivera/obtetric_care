@@ -5,7 +5,8 @@ from django.db.models import Q, Count, Prefetch
 from django.utils import timezone
 from django.core.paginator import Paginator
 
-from partosApp.models import RegistroParto, RegistroRecienNacido, DocumentosParto
+from partosApp.models import RegistroParto
+from recienNacidoApp.models import RegistroRecienNacido, DocumentosParto
 from matronaApp.models import FichaObstetrica
 from gestionApp.models import Paciente
 

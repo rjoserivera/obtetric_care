@@ -54,6 +54,28 @@ class RegistroParto(models.Model):
     # SECCIÓN 1: TRABAJO DE PARTO
     # ============================================
     
+    # VIH al Ingreso (CAMPOS FALTANTES AGREGADOS)
+    vih_tomado_prepartos = models.BooleanField(
+        default=False,
+        verbose_name='VIH tomado en Prepartos',
+        help_text='¿Se tomó VIH al ingresar a prepartos?'
+    )
+    
+    VIH_SALA_CHOICES = [
+        ('NO', 'No'),
+        ('SALA_1', 'Sala 1'),
+        ('SALA_2', 'Sala 2'),
+        ('SALA_3', 'Sala 3'),
+    ]
+    
+    vih_tomado_sala = models.CharField(
+        max_length=20,
+        choices=VIH_SALA_CHOICES,
+        default='NO',
+        verbose_name='VIH tomado en Sala',
+        help_text='Sala donde se tomó el VIH (si aplica)'
+    )
+    
     # Edad Gestacional
     edad_gestacional_semanas = models.IntegerField(
         validators=[MinValueValidator(20), MaxValueValidator(42)],
@@ -213,13 +235,13 @@ class RegistroParto(models.Model):
         ('OTRO', 'Otro'),
     ]
     
-    posicion_materna = models.CharField(
+    posicion_materna_parto = models.CharField(
         max_length=20,
         choices=POSICION_CHOICES,
         verbose_name='Posición Materna en el Parto'
     )
     
-    ofrecimiento_posiciones = models.BooleanField(
+    ofrecimiento_posiciones_alternativas = models.BooleanField(
         default=True,
         verbose_name='Ofrecimiento de Posiciones Alternativas del Parto',
         help_text='¿Se ofrecieron posiciones alternativas?'
@@ -253,7 +275,7 @@ class RegistroParto(models.Model):
         help_text='¿Se realizó esterilización?'
     )
     
-    revision_canal_parto = models.BooleanField(
+    revision = models.BooleanField(
         default=True,
         verbose_name='Revisión del Canal del Parto'
     )
@@ -384,7 +406,7 @@ class RegistroParto(models.Model):
         help_text='Profesional a cargo del parto'
     )
     
-    alumno_participante = models.CharField(
+    alumno = models.CharField(
         max_length=200,
         blank=True,
         verbose_name='Alumno (Nombre - apellido)',

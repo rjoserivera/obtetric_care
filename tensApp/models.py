@@ -1,7 +1,13 @@
 from django.db import models
-from gestionApp.models import Tens
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
+from gestionApp.models import Tens, Paciente
+from matronaApp.models import FichaObstetrica, MedicamentoFicha
 
+
+# ============================================
+# MODELO: REGISTRO TENS (Signos Vitales)
+# ============================================
 
 class RegistroTens(models.Model):
     """
@@ -15,12 +21,9 @@ class RegistroTens(models.Model):
         ('NOCHE', 'Noche'),
     ]
     
-    # ============================================
-    # RELACIONES
-    # ============================================
-    
+    # Relaciones
     ficha = models.ForeignKey(
-        'matronaApp.Ficha_Obstetrica',
+        FichaObstetrica,
         on_delete=models.CASCADE,
         related_name='registros_tens',
         verbose_name='Ficha Obstétrica'
@@ -35,13 +38,9 @@ class RegistroTens(models.Model):
         verbose_name='TENS Responsable'
     )
     
-    # ============================================
-    # DATOS DEL REGISTRO
-    # ============================================
-    
+    # Datos del registro
     fecha = models.DateField(
-        blank=True,
-        null=True,
+        default=timezone.now,
         verbose_name='Fecha del Registro'
     )
     
@@ -52,63 +51,63 @@ class RegistroTens(models.Model):
         verbose_name='Turno'
     )
     
-    # ============================================
-    # SIGNOS VITALES
-    # ============================================
-    
+    # Signos vitales
     temperatura = models.DecimalField(
         max_digits=4,
         decimal_places=1,
         blank=True,
         null=True,
         verbose_name='Temperatura (°C)',
-        help_text='Ej: 36.5'
+        help_text='Ej: 36.5',
+        validators=[MinValueValidator(30), MaxValueValidator(45)]
     )
     
     frecuencia_cardiaca = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name='Frecuencia Cardíaca (lpm)',
-        help_text='Latidos por minuto'
+        help_text='Latidos por minuto',
+        validators=[MinValueValidator(30), MaxValueValidator(200)]
     )
     
-    presion_arterial = models.CharField(
-        max_length=20,
+    presion_arterial_sistolica = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name='Presión Arterial',
-        help_text='Formato: 120/80'
+        verbose_name='Presión Arterial Sistólica',
+        help_text='Ej: 120'
+    )
+    
+    presion_arterial_diastolica = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        verbose_name='Presión Arterial Diastólica',
+        help_text='Ej: 80'
     )
     
     frecuencia_respiratoria = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name='Frecuencia Respiratoria (rpm)',
-        help_text='Respiraciones por minuto'
+        help_text='Respiraciones por minuto',
+        validators=[MinValueValidator(8), MaxValueValidator(40)]
     )
     
     saturacion_oxigeno = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name='Saturación de Oxígeno (%)',
-        help_text='Porcentaje de saturación (SpO2)'
+        help_text='Porcentaje de saturación (SpO2)',
+        validators=[MinValueValidator(50), MaxValueValidator(100)]
     )
     
-    # ============================================
-    # OBSERVACIONES
-    # ============================================
-    
+    # Observaciones
     observaciones = models.TextField(
         blank=True,
-        null=True,
         verbose_name='Observaciones',
         help_text='Observaciones adicionales del TENS'
     )
     
-    # ============================================
-    # METADATOS
-    # ============================================
-    
+    # Metadatos
     fecha_registro = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Fecha de Registro en Sistema'
@@ -124,66 +123,177 @@ class RegistroTens(models.Model):
         ]
     
     def __str__(self):
-        return f"Registro TENS - {self.ficha.numero_ficha} - {self.fecha}"
+        return f"Registro TENS - Ficha {self.ficha.numero_ficha} - {self.fecha}"
     
-    def signos_vitales_alterados(self):
-        """Verifica si hay signos vitales fuera de rango normal"""
-        alterados = []
-        
-        # Temperatura normal: 36.0 - 37.5°C
-        if self.temperatura:
-            if self.temperatura < 36.0:
-                alterados.append(f"Hipotermia ({self.temperatura}°C)")
-            elif self.temperatura > 37.5:
-                alterados.append(f"Fiebre ({self.temperatura}°C)")
-        
-        # Frecuencia cardíaca normal: 60-100 lpm
-        if self.frecuencia_cardiaca:
-            if self.frecuencia_cardiaca < 60:
-                alterados.append(f"Bradicardia ({self.frecuencia_cardiaca} lpm)")
-            elif self.frecuencia_cardiaca > 100:
-                alterados.append(f"Taquicardia ({self.frecuencia_cardiaca} lpm)")
-        
-        # Saturación normal: >95%
-        if self.saturacion_oxigeno and self.saturacion_oxigeno < 95:
-            alterados.append(f"Hipoxemia ({self.saturacion_oxigeno}%)")
-        
-        # Frecuencia respiratoria normal: 12-20 rpm
-        if self.frecuencia_respiratoria:
-            if self.frecuencia_respiratoria < 12:
-                alterados.append(f"Bradipnea ({self.frecuencia_respiratoria} rpm)")
-            elif self.frecuencia_respiratoria > 20:
-                alterados.append(f"Taquipnea ({self.frecuencia_respiratoria} rpm)")
-        
-        return alterados if alterados else None
-    
-    def estado_signos_vitales(self):
-        """Retorna el estado general de los signos vitales"""
-        alterados = self.signos_vitales_alterados()
-        
-        if alterados:
-            return f"⚠️ ALTERADOS: {', '.join(alterados)}"
-        return "✅ Normales"
-    
-    def resumen_signos_vitales(self):
-        """Retorna un resumen de los signos vitales"""
-        signos = []
-        
-        if self.temperatura:
-            signos.append(f"T: {self.temperatura}°C")
-        
-        if self.frecuencia_cardiaca:
-            signos.append(f"FC: {self.frecuencia_cardiaca} lpm")
-        
-        if self.presion_arterial:
-            signos.append(f"PA: {self.presion_arterial}")
-        
-        if self.frecuencia_respiratoria:
-            signos.append(f"FR: {self.frecuencia_respiratoria} rpm")
-        
-        if self.saturacion_oxigeno:
-            signos.append(f"SpO2: {self.saturacion_oxigeno}%")
-        
-        return " | ".join(signos) if signos else "Sin signos vitales registrados"
+    @property
+    def presion_arterial(self):
+        """Retorna la presión arterial en formato 120/80"""
+        if self.presion_arterial_sistolica and self.presion_arterial_diastolica:
+            return f"{self.presion_arterial_sistolica}/{self.presion_arterial_diastolica}"
+        return "No registrada"
 
 
+# ============================================
+# MODELO: TRATAMIENTO APLICADO
+# ============================================
+
+class Tratamiento_aplicado(models.Model):
+    """
+    Registro de tratamientos/medicamentos aplicados por TENS
+    Vinculado a una ficha obstétrica y opcionalmente a un medicamento prescrito
+    """
+    
+    VIA_ADMINISTRACION_CHOICES = [
+        ('oral', 'Oral'),
+        ('endovenosa', 'Endovenosa'),
+        ('intramuscular', 'Intramuscular'),
+        ('subcutanea', 'Subcutánea'),
+        ('topica', 'Tópica'),
+        ('inhalatoria', 'Inhalatoria'),
+    ]
+    
+    # ============================================
+    # RELACIONES
+    # ============================================
+    
+    ficha = models.ForeignKey(
+        FichaObstetrica,
+        on_delete=models.CASCADE,
+        related_name='tratamientos_aplicados',
+        verbose_name='Ficha Obstétrica'
+    )
+    
+    paciente = models.ForeignKey(
+        Paciente,
+        on_delete=models.CASCADE,
+        related_name='tratamientos_recibidos',
+        verbose_name='Paciente'
+    )
+    
+    tens = models.ForeignKey(
+        Tens,
+        on_delete=models.PROTECT,
+        related_name='tratamientos_aplicados',
+        verbose_name='TENS que Aplicó'
+    )
+    
+    medicamento_ficha = models.ForeignKey(
+        MedicamentoFicha,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='aplicaciones_tens',
+        verbose_name='Medicamento de Ficha',
+        help_text='Si aplica un medicamento prescrito en la ficha'
+    )
+    
+    # ============================================
+    # DATOS DEL TRATAMIENTO
+    # ============================================
+    
+    nombre_medicamento = models.CharField(
+        max_length=200,
+        verbose_name='Nombre del Medicamento/Tratamiento'
+    )
+    
+    dosis = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name='Dosis Aplicada',
+        help_text='Ej: 500mg, 10ml, 2 comprimidos'
+    )
+    
+    via_administracion = models.CharField(
+        max_length=50,
+        choices=VIA_ADMINISTRACION_CHOICES,
+        default='oral',
+        verbose_name='Vía de Administración'
+    )
+    
+    fecha_aplicacion = models.DateField(
+        default=timezone.now,
+        verbose_name='Fecha de Aplicación'
+    )
+    
+    hora_aplicacion = models.TimeField(
+        default=timezone.now,
+        verbose_name='Hora de Aplicación'
+    )
+    
+    # ============================================
+    # PROCEDIMIENTO
+    # ============================================
+    
+    se_realizo_lavado_manos = models.BooleanField(
+        default=False,
+        verbose_name='¿Se realizó lavado de manos?'
+    )
+    
+    aplicado_exitosamente = models.BooleanField(
+        default=True,
+        verbose_name='¿Se aplicó exitosamente?'
+    )
+    
+    motivo_no_aplicacion = models.TextField(
+        blank=True,
+        verbose_name='Motivo de No Aplicación',
+        help_text='Completar solo si no se aplicó'
+    )
+    
+    # ============================================
+    # OBSERVACIONES Y REACCIONES
+    # ============================================
+    
+    observaciones = models.TextField(
+        blank=True,
+        verbose_name='Observaciones',
+        help_text='Detalles adicionales sobre la aplicación'
+    )
+    
+    reacciones_adversas = models.TextField(
+        blank=True,
+        verbose_name='Reacciones Adversas',
+        help_text='Cualquier reacción adversa observada'
+    )
+    
+    # ============================================
+    # METADATOS
+    # ============================================
+    
+    activo = models.BooleanField(
+        default=True,
+        verbose_name='Activo',
+        help_text='Los tratamientos pueden desactivarse pero no eliminarse'
+    )
+    
+    fecha_registro = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Fecha de Registro en Sistema'
+    )
+    
+    fecha_modificacion = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Fecha de Última Modificación'
+    )
+    
+    class Meta:
+        ordering = ['-fecha_aplicacion', '-hora_aplicacion']
+        verbose_name = 'Tratamiento Aplicado'
+        verbose_name_plural = 'Tratamientos Aplicados'
+        indexes = [
+            models.Index(fields=['ficha', '-fecha_aplicacion']),
+            models.Index(fields=['paciente', '-fecha_aplicacion']),
+            models.Index(fields=['tens', '-fecha_aplicacion']),
+            models.Index(fields=['medicamento_ficha', '-fecha_aplicacion']),
+        ]
+    
+    def __str__(self):
+        return f"{self.nombre_medicamento} - {self.paciente.persona.Nombre} {self.paciente.persona.Apellido_Paterno} ({self.fecha_aplicacion})"
+    
+    @property
+    def fecha_hora_completa(self):
+        """Retorna fecha y hora combinadas"""
+        from datetime import datetime, time
+        if isinstance(self.hora_aplicacion, time):
+            return datetime.combine(self.fecha_aplicacion, self.hora_aplicacion)
+        return self.fecha_aplicacion
