@@ -1220,7 +1220,7 @@ ALTER TABLE `matronaapp_medicamentoficha`
 --
 ALTER TABLE `partosapp_registroparto`
   ADD CONSTRAINT `partosApp_registropa_ficha_id_0484eb4b_fk_matronaAp` FOREIGN KEY (`ficha_id`) REFERENCES `matronaapp_fichaobstetrica` (`id`),
-  ADD CONSTRAINT `partosApp_registropa_ficha_ingreso_id_d3fbde3d_fk_ingresoPa` FOREIGN KEY (`ficha_ingreso_id`) REFERENCES `ingresopartoapp_fichaparto` (`id`);
+  ADD CONSTRAINT `partosApp_regMarkdown Preview Mermaid Supportistropa_ficha_ingreso_id_d3fbde3d_fk_ingresoPa` FOREIGN KEY (`ficha_ingreso_id`) REFERENCES `ingresopartoapp_fichaparto` (`id`);
 
 --
 -- Filtros para la tabla `reciennacidoapp_documentosparto`
