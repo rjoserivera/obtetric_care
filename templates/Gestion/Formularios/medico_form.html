@@ -1,27 +1,27 @@
 {% extends 'Shared/base.html' %}
 {% load static %}
 
-{% block title %}{% if tens %}Editar{% else %}Registrar{% endif %} TENS{% endblock %}
+{% block title %}{% if medico %}Editar{% else %}Registrar{% endif %} Médico{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="card shadow">
-                <div class="card-header {% if tens %}bg-warning text-dark{% else %}bg-secondary text-white{% endif %}">
+                <div class="card-header {% if medico %}bg-warning text-dark{% else %}bg-info text-white{% endif %}">
                     <h4 class="mb-0">
-                        {% if tens %}
-                            <i class="bi bi-pencil-square"></i> Editar TENS
+                        {% if medico %}
+                            <i class="bi bi-pencil-square"></i> Editar Médico
                         {% else %}
-                            <i class="bi bi-person-plus"></i> Registrar Nuevo TENS
+                            <i class="bi bi-person-badge-fill"></i> Registrar Nuevo Médico
                         {% endif %}
                     </h4>
                 </div>
                 
                 <div class="card-body">
-                    {% if tens %}
+                    {% if medico %}
                     <div class="alert alert-light border mb-3">
-                        <strong>Editando TENS:</strong> {{ tens.persona.Nombre }} {{ tens.persona.Apellido_Paterno }} ({{ tens.persona.Rut }})
+                        <strong>Editando médico:</strong> Dr. {{ medico.persona.Nombre }} {{ medico.persona.Apellido_Paterno }} ({{ medico.persona.Rut }})
                     </div>
                     {% else %}
                     <div class="alert alert-info">
@@ -33,7 +33,7 @@
                     <form method="post" novalidate>
                         {% csrf_token %}
                         
-                        {% if not tens %}
+                        {% if not medico %}
                         <!-- Búsqueda de Persona por RUT (solo al crear) -->
                         <div class="card mb-4">
                             <div class="card-header bg-light">
@@ -74,7 +74,7 @@
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="{{ form.Especialidad.id_for_label }}" class="form-label">
-                                            Área de Especialización <span class="text-danger">*</span>
+                                            Especialidad Médica <span class="text-danger">*</span>
                                         </label>
                                         {{ form.Especialidad }}
                                         {% if form.Especialidad.errors %}
@@ -82,14 +82,14 @@
                                         {% endif %}
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="{{ form.Registro_tens.id_for_label }}" class="form-label">
-                                            Registro TENS <span class="text-danger">*</span>
+                                        <label for="{{ form.Registro_medico.id_for_label }}" class="form-label">
+                                            Registro Médico <span class="text-danger">*</span>
                                         </label>
-                                        {{ form.Registro_tens }}
-                                        {% if form.Registro_tens.errors %}
-                                            <div class="text-danger mt-1">{{ form.Registro_tens.errors }}</div>
+                                        {{ form.Registro_medico }}
+                                        {% if form.Registro_medico.errors %}
+                                            <div class="text-danger mt-1">{{ form.Registro_medico.errors }}</div>
                                         {% endif %}
-                                        <small class="form-text text-muted">Número de registro profesional</small>
+                                        <small class="form-text text-muted">Ej: RM-12345</small>
                                     </div>
                                 </div>
 
@@ -116,13 +116,13 @@
                             </div>
                         </div>
 
-                        {% if tens %}
+                        {% if medico %}
                         <!-- Estado (solo al editar) -->
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 {{ form.Activo }}
                                 <label class="form-check-label" for="{{ form.Activo.id_for_label }}">
-                                    TENS Activo
+                                    Médico Activo
                                 </label>
                             </div>
                         </div>
@@ -132,25 +132,25 @@
 
                         <!-- Botones -->
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="{% if tens %}{% url 'gestion:detalle_tens' tens.pk %}{% else %}{% url 'gestion:lista_tens' %}{% endif %}" 
+                            <a href="{% if medico %}{% url 'gestion:detalle_medico' medico.pk %}{% else %}{% url 'gestion:lista_medicos' %}{% endif %}" 
                                class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </a>
-                            <button type="submit" class="btn {% if tens %}btn-warning{% else %}btn-secondary{% endif %}">
+                            <button type="submit" class="btn {% if medico %}btn-warning{% else %}btn-info{% endif %}">
                                 <i class="bi bi-save"></i> 
-                                {% if tens %}Guardar Cambios{% else %}Registrar TENS{% endif %}
+                                {% if medico %}Guardar Cambios{% else %}Registrar Médico{% endif %}
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            {% if not tens %}
+            {% if not medico %}
             <div class="card mt-3">
                 <div class="card-body">
                     <h6><i class="bi bi-lightbulb"></i> Nota Importante</h6>
                     <p class="mb-0 small">
-                        TENS: Técnico de Nivel Superior en Enfermería. Si la persona no está registrada, debe crearla primero en el módulo de Personas.
+                        Si la persona no está registrada, debe crearla primero en el módulo de Personas.
                     </p>
                 </div>
             </div>
