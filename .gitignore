@@ -1,78 +1,165 @@
-gestionApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-gestionApp/migrations/0001_initial.py
-gestionApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-ingresoPartoApp/migrations/0001_initial.py
-ingresoPartoApp/migrations/__pycache__/__init__.cpython-313.pyc
-legacyApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-matronaApp/migrations/0001_initial.py
-ingresoPartoApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-legacyApp/migrations/0001_initial.py
-matronaApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-medicoApp/migrations/0001_initial.py
-partosApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-recienNacidoApp/migrations/0001_initial.py
-tensApp/migrations/0001_initial.py
-tensApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-partosApp/migrations/0001_initial.py
-medicoApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-matronaApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-partosApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-gestionApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-legacyApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-matronaApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-medicoApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-partosApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-recienNacidoApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-tensApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-recienNacidoApp/migrations/__pycache__/__init__.cpython-313.pyc
-gestionApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-tensApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-gestionApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-matronaApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-gestionApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-legacyApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-matronaApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-medicoApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-partosApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-tensApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-gestionApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-legacyApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-matronaApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-medicoApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-partosApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-tensApp/migrations/__pycache__/0001_initial.cpython-313.pyc
-tests/test old/__pycache__/test_urls_exist.cpython-313-pytest-8.4.2.pyc
-tests/test old/__pycache__/test_paciente_detail.cpython-313-pytest-8.4.2.pyc
-tests/test old/__pycache__/test_legacy_smoke.cpython-313-pytest-8.4.2.pyc
-tests/test old/__pycache__/test_healthcheck.cpython-313-pytest-8.4.2.pyc
-tests/__pycache__/test_plan_completo.cpython-313-pytest-8.4.2.pyc
-tensApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-recienNacidoApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-partosApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-matronaApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-medicoApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-legacyApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-inicioApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-ingresoPartoApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-gestionApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-__pycache__/locustfile.cpython-313.pyc
-gestionApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-inicioApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-legacyApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-xevaluacion 2/test/README_TESTING.md
-xevaluacion 2/test/PLANTILLA_REPORTE_EJECUTIVO.md
-xevaluacion 2/test/Plan_Pruebas_Sistema_Obstetrico_PARTE1.docx
-xevaluacion 2/test/Plan_Pruebas_Sistema_Obstetrico_PARTE2_CODIGO.docx
-xevaluacion 2/test/Plan_de_Pruebas_Sistema_Obstetrico.md
-xevaluacion 2/test/Plan_Pruebas_Completo_FINAL.docx
-locustfile.py
-tensApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-medicoApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-legacyApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-medicoApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-legacyApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-inicioApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
-gestionApp/forms/__pycache__/persona_forms.cpython-313.pyc
-gestionApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
+# ========================
+# PYTHON + DJANGO PROJECT
+# ========================
+
+# Byte-compiled / cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
 *.pyc
-legacyApp/__pycache__/tests.cpython-313-pytest-8.4.2.pyc
+.pytest_cache/
+.cache/
+
+# Virtual environments
+.env
+.venv
+venv/
+env/
+ENV/
+virtualenv/
+Lib/
+Scripts/
+Include/
+pip-selfcheck.json
+pyvenv.cfg
+
+# Django stuff
+*.log
+*.pot
+db.sqlite3
+db.sqlite3-journal
+test_db.sqlite3
+local_settings.py
+media/
+staticfiles/
+static/admin/
+static/rest_framework/
+
+# Django migrations
+**/migrations/*.py
+!**/migrations/__init__.py
+**/migrations/*.pyc
+
+# Security
+secrets.json
+*.key
+*.pem
+obstetric_care/settings_production.py
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+*.cover
+.hypothesis/
+# coverage.xml  # <-- NO ignorar si usas SonarCloud
+
+# Testing
+test_settings.py
+.tox/
+nosetests.xml
+*.log
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+.history/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Backup files
+*.bak
+*.swp
+*.swo
+*~
+*.tmp
+.temp/
+
+# Package files
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.manifest
+*.spec
+
+# Documentation
+docs/_build/
+site/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# CUSTOM PROJECT EXCLUSIONS
+# ========================
+
+# Legacy system files
+legacy_data/
+old_backup/
+
+# Local development
+local_*.py
+*.local
+
+# Temporary test files
+test_*.db
+temp_*.json
+
+# Documentación de Evaluación
+xevaluacion 2/
+xevaluacion 2/*
+
+# Tests compilados
+**/tests/*.pyc
+**/test old/*.pyc
+
+# Locust cache
+__pycache__/locustfile*.pyc
