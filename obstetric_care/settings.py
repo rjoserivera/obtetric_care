@@ -39,27 +39,35 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # ✅ Apps de terceros (AGREGAR)
-    'crispy_forms',              # Formularios con Bootstrap
-    'crispy_bootstrap5',         # Templates de Bootstrap 5
-    'widget_tweaks',             # Widgets personalizados
-    'phonenumber_field',         # Validación de teléfonos
-    'django_filters',            # Filtros avanzados
-    'rest_framework',            # API REST
-    'debug_toolbar',             # Barra de debug (solo desarrollo)
-    'django_extensions',         # Extensiones de Django    
+    # Apps de terceros
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'widget_tweaks',
+    'phonenumber_field',
+    'django_filters',
+    'rest_framework',
+    'debug_toolbar',
+    'django_extensions',
+    'auditlog',
 
-    # ✅ Apps de Obtetric Care
+    # Apps de Obstetric Care (ORDEN IMPORTANTE)
     'inicioApp',
+    'gestionApp',
     'matronaApp',
     'medicoApp',
     'tensApp',
-    'gestionApp',
     'legacyApp',
+    'ingresoPartoApp',      # ← ANTES de gestionProcesosApp
+    'recienNacidoApp',      # ← ANTES de gestionProcesosApp
     'partosApp',
+<<<<<<< Updated upstream
     'ingresoPartoApp',
     'recienNacidoApp',
+=======
+    'gestionProcesosApp',   # ← DEBE IR DESPUÉS
+>>>>>>> Stashed changes
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

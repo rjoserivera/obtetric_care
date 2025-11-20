@@ -1,10 +1,13 @@
 """
-Formularios de tensApp
+Importaciones centralizadas de formularios de tensApp
 """
-from .registro_tens_form import RegistroTensForm
-from .tratamiento_aplicado_form import TratamientoAplicadoForm
+
+from .administracion_forms import (
+    AdministracionMedicamentoForm,
+    BuscarMedicamentoPendienteForm
+)
 
 __all__ = [
-    'RegistroTensForm',
-    'TratamientoAplicadoForm',
+    'AdministracionMedicamentoForm',
+    'BuscarMedicamentoPendienteForm'
 ]
