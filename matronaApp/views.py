@@ -6,7 +6,7 @@ from django.db.models import Q, Count, Prefetch
 
 from matronaApp.models import IngresoPaciente, FichaObstetrica, MedicamentoFicha
 from gestionApp.models import Persona, Paciente, Matrona
-from gestionApp.forms.Gestion_form import PacienteForm
+from gestionApp.forms import PacienteForm
 from matronaApp.forms import IngresoPacienteForm, FichaObstetricaForm  # <-- ESTA LÍNEA ES LA IMPORTANTE
 from legacyApp.models import ControlesPrevios
 

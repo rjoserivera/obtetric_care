@@ -157,6 +157,9 @@ temp_*.json
 xevaluacion 2/
 xevaluacion 2/*
 
+# Documentación de Evaluación
+Documentación/*
+
 # Tests compilados
 **/tests/*.pyc
 **/test old/*.pyc

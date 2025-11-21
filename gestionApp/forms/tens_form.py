@@ -33,18 +33,18 @@ class TensForm(forms.ModelForm):
     class Meta:
         model = Tens
         fields = [
-            'Especialidad',
-            'Registro_tens',
+            'Nivel',
+            'Certificaciones',
             'Años_experiencia',
             'Turno',
             'Activo'
         ]
         
         widgets = {
-            'Especialidad': forms.Select(attrs={
+            'Nivel': forms.Select(attrs={
                 'class': 'form-select'
             }),
-            'Registro_tens': forms.TextInput(attrs={
+            'Certificaciones': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Número de registro TENS'
             }),

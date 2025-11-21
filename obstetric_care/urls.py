@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from inicioApp import views as inicio_views
@@ -15,3 +16,10 @@ urlpatterns = [
     path('tens/', include('tensApp.urls')),
     path('partos/', include('partosApp.urls')), 
 ]
+
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        path("__debug__/", include(debug_toolbar.urls)),
+    ]

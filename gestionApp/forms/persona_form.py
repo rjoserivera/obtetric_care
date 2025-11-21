@@ -33,12 +33,13 @@ class PersonaForm(forms.ModelForm):
     
     class Meta:
         model = Persona
+        
         fields = [
-            'Nombre', 'Apellido_Paterno', 'Apellido_Materno',
+            'Rut', 'Nombre', 'Apellido_Paterno', 'Apellido_Materno',
             'Fecha_nacimiento', 'Sexo', 'Telefono', 'Direccion',
             'Email', 'Inmigrante', 'Nacionalidad', 'Pueblos_originarios',
             'Discapacidad', 'Tipo_de_Discapacidad', 'Privada_de_Libertad',
-            'Trans_masculino', 'Observaciones', 'Activo'
+            'Trans_Masculino', 'Activo' 
         ]
         
         widgets = {

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'auditlog',
 
+
     # Apps de Obstetric Care (ORDEN IMPORTANTE)
     'inicioApp',
     'gestionApp',
@@ -57,15 +58,10 @@ INSTALLED_APPS = [
     'medicoApp',
     'tensApp',
     'legacyApp',
-    'ingresoPartoApp',      # ← ANTES de gestionProcesosApp
-    'recienNacidoApp',      # ← ANTES de gestionProcesosApp
-    'partosApp',
-<<<<<<< Updated upstream
     'ingresoPartoApp',
-    'recienNacidoApp',
-=======
-    'gestionProcesosApp',   # ← DEBE IR DESPUÉS
->>>>>>> Stashed changes
+    'recienNacidoApp', 
+    'partosApp',
+    'gestionProcesosApp',
 ]
 
 
@@ -90,9 +86,12 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',  # ← AGREGADO
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',  # ← AGREGADO
+                'django.template.context_processors.static',  # ← AGREGADO
             ],
         },
     },
@@ -167,10 +166,139 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ═══════════════════════════════════════════════════════════════
+# CONFIGURACIONES ADICIONALES NECESARIAS
+# ═══════════════════════════════════════════════════════════════
+
+# ──────────────────────────────────────────────────────────────
+# AUTENTICACIÓN
+# ──────────────────────────────────────────────────────────────
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/gestion/dashboard/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+
+# ──────────────────────────────────────────────────────────────
+# CRISPY FORMS (Bootstrap 5)
+# ──────────────────────────────────────────────────────────────
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+# ──────────────────────────────────────────────────────────────
+# PHONENUMBER FIELD (Números de teléfono chilenos)
+# ──────────────────────────────────────────────────────────────
+PHONENUMBER_DEFAULT_REGION = 'CL'
+PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
+
+
+# ──────────────────────────────────────────────────────────────
+# DEBUG TOOLBAR (Solo en desarrollo)
+# ──────────────────────────────────────────────────────────────
+INTERNAL_IPS = [
+    "127.0.0.1",
+    "localhost",
+]
+
+
+# ──────────────────────────────────────────────────────────────
+# DJANGO REST FRAMEWORK (Configuración básica)
+# ──────────────────────────────────────────────────────────────
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 50,
+}
+
+
+# ──────────────────────────────────────────────────────────────
+# AUDITLOG (Registro de auditoría)
+# ──────────────────────────────────────────────────────────────
+# Modelos que serán auditados automáticamente
+# (Puedes agregar tus modelos aquí más adelante)
+
+
+# ──────────────────────────────────────────────────────────────
+# MENSAJES DE DJANGO (Bootstrap 5)
+# ──────────────────────────────────────────────────────────────
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
+
+
+# ──────────────────────────────────────────────────────────────
+# SEGURIDAD (Solo para producción - comentado en desarrollo)
+# ──────────────────────────────────────────────────────────────
+# SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_BROWSER_XSS_FILTER = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True
+# X_FRAME_OPTIONS = 'DENY'
+
+
+# ──────────────────────────────────────────────────────────────
+# LOGGING (Registro de eventos)
+# ──────────────────────────────────────────────────────────────
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'django.log',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+# Crear directorio de logs si no existe
+LOGS_DIR = BASE_DIR / 'logs'
+if not LOGS_DIR.exists():
+    LOGS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+# ═══════════════════════════════════════════════════════════════
+# FIN DE CONFIGURACIONES
+# ═══════════════════════════════════════════════════════════════
