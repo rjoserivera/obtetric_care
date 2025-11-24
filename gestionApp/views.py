@@ -1,10 +1,9 @@
 # gestionApp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic import ListView, DetailView
 from django.http import JsonResponse
-from .forms import PersonaForm, PacienteForm, MedicoForm, MatronaForm, TensForm
+from .forms.Gestion_form import PersonaForm, PacienteForm, MedicoForm, MatronaForm, TensForm
 from .models import Persona, Medico, Matrona, Tens
 from matronaApp.models import Paciente
 from datetime import datetime
@@ -287,35 +286,31 @@ def asignar_rol_tens(request, pk):
 # DASHBOARD ADMINISTRATIVO
 # ============================================
 
-from django.contrib.auth.models import User, Group
-
-@login_required
 def dashboard_admin(request):
-    # Contar roles
+    """
+    Vista principal del dashboard administrativo.
+    Muestra estadísticas generales y accesos rápidos.
+    """
+    
+    # Contar todos los roles activos
     total_medicos = Medico.objects.filter(Activo=True).count()
     total_matronas = Matrona.objects.filter(Activo=True).count()
     total_tens = Tens.objects.filter(Activo=True).count()
     total_pacientes = Paciente.objects.filter(activo=True).count()
     
-    # Contar administradores
-    try:
-        grupo_admin = Group.objects.get(name='Administrador')
-        total_admins = grupo_admin.user_set.count()
-    except Group.DoesNotExist:
-        total_admins = 0
+    # Total de usuarios en el sistema
+    total_usuarios = total_medicos + total_matronas + total_tens + total_pacientes
     
-    total_admins += User.objects.filter(is_superuser=True).exclude(
-        groups__name='Administrador'
-    ).count()
-    
+    # Total de personas registradas
     total_personas = Persona.objects.filter(Activo=True).count()
     
+    # Contexto para el template
     context = {
         'total_medicos': total_medicos,
         'total_matronas': total_matronas,
         'total_tens': total_tens,
         'total_pacientes': total_pacientes,
-        'total_admins': total_admins,
+        'total_usuarios': total_usuarios,
         'total_personas': total_personas,
         'fecha_actual': datetime.now().strftime('%d/%m/%Y'),
     }
