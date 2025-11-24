@@ -1,10 +1,10 @@
+# .gitignore
 # ========================
 # PYTHON + DJANGO PROJECT
 # ========================
 
 # Byte-compiled / cache
 __pycache__/
-**/__pycache__/
 *.py[cod]
 *$py.class
 *.pyc
@@ -41,7 +41,7 @@ static/rest_framework/
 !**/migrations/__init__.py
 **/migrations/*.pyc
 
-# Security
+# Security - NUNCA subir estos
 secrets.json
 *.key
 *.pem
@@ -53,7 +53,8 @@ htmlcov/
 .coverage.*
 *.cover
 .hypothesis/
-# coverage.xml  # <-- NO ignorar si usas SonarCloud
+# NO ignorar coverage.xml - SonarCloud lo necesita
+# coverage.xml
 
 # Testing
 test_settings.py
@@ -141,7 +142,7 @@ dmypy.json
 # CUSTOM PROJECT EXCLUSIONS
 # ========================
 
-# Legacy system files
+# Legacy system files (si tienes)
 legacy_data/
 old_backup/
 
@@ -153,16 +154,7 @@ local_*.py
 test_*.db
 temp_*.json
 
-# Documentación de Evaluación
+# Archivos de Documentacion
+.xevaluacion 2/
 xevaluacion 2/
 xevaluacion 2/*
-
-# Documentación de Evaluación
-Documentación/*
-
-# Tests compilados
-**/tests/*.pyc
-**/test old/*.pyc
-
-# Locust cache
-__pycache__/locustfile*.pyc
