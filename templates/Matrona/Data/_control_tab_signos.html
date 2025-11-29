@@ -1,0 +1,23 @@
+﻿{# Tab: Signos Vitales #}
+<div class="tab-pane fade" id="signos" role="tabpanel">
+    <div class="row">
+        <div class="col-md-6">
+            <h6 class="text-danger border-bottom pb-2">Signos Vitales Maternos</h6>
+            <p><strong>Presión Arterial:</strong> {{ legacy_selected.presion_sistolica|default:"--" }}/{{ legacy_selected.presion_diastolica|default:"--" }} mmHg</p>
+            <p><strong>Frecuencia Cardíaca:</strong> {{ legacy_selected.frecuencia_cardiaca_materna|default:"--" }} lpm</p>
+            <p><strong>Temperatura:</strong> {{ legacy_selected.temperatura_c|default:"--" }} °C</p>
+            <p><strong>Saturación O:</strong> {{ legacy_selected.saturacion_o2|default:"--" }}%</p>
+        </div>
+        <div class="col-md-6">
+            <h6 class="text-danger border-bottom pb-2">Evaluación Clínica</h6>
+            <p><strong>Edema:</strong> {{ legacy_selected.get_edema_grado_display|default:"No evaluado" }}</p>
+            {% if legacy_selected.edema_localizacion %}
+            <p><strong>Localización:</strong> {{ legacy_selected.edema_localizacion }}</p>
+            {% endif %}
+            <p><strong>Varices:</strong> {% if legacy_selected.varices %}Sí{% elif legacy_selected.varices == False %}No{% else %}No evaluado{% endif %}</p>
+            {% if legacy_selected.reflejos_osteotendinosos %}
+            <p><strong>Reflejos Osteotendinosos:</strong> {{ legacy_selected.reflejos_osteotendinosos }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

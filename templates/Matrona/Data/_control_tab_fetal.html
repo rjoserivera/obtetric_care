@@ -1,0 +1,12 @@
+﻿{# Tab: Evaluación Fetal #}
+<div class="tab-pane fade" id="fetal" role="tabpanel">
+    <div class="row">
+        <div class="col-md-6">
+            <h6 class="text-danger border-bottom pb-2">Estado Fetal</h6>
+            <p><strong>FCF:</strong> {{ legacy_selected.fcf_lpm|default:"--" }} lpm</p>
+            <p><strong>Movimientos Fetales:</strong> {{ legacy_selected.get_movimientos_fetales_display|default:"No evaluado" }}</p>
+            <p><strong>Presentación:</strong> {{ legacy_selected.get_presentacion_fetal_display|default:"No evaluada" }}</p>
+            <p><strong>Situación:</strong> {{ legacy_selected.get_situacion_fetal_display|default:"No evaluada" }}</p>
+        </div>
+    </div>
+</div>

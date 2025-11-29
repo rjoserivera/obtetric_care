@@ -1,0 +1,449 @@
+﻿{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}Crear Ficha Obstétrica - Sistema Obstétrico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-primary">
+                <i class="bi bi-file-medical-fill"></i> Nueva Ficha Obstétrica
+            </h2>
+            <hr>
+        </div>
+    </div>
+
+    <!-- Información del Paciente -->
+    <div class="card mb-4 border-primary">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-person-circle"></i> Datos del Paciente</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>RUT:</strong> {{ paciente.persona.Rut }}</p>
+                    <p><strong>Nombre:</strong> {{ paciente.persona.Nombre }} {{ paciente.persona.Apellido_Paterno }}
+                        {{paciente.persona.Apellido_Materno }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Edad:</strong> {{ paciente.edad|default:"--" }} años</p>
+                    <p><strong>Fecha Nacimiento:</strong> {{ paciente.persona.Fecha_nacimiento|date:"d/m/Y" }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Teléfono:</strong> {{ paciente.persona.Telefono|default:"No registrado" }}</p>
+                    <p><strong>Email:</strong> {{ paciente.persona.Email|default:"No registrado" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de Ficha Obstétrica -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Datos de la Ficha Obstétrica</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" id="formCrearFicha">
+                {% csrf_token %}
+                <input type="hidden" name="activa" value="on">
+                {{ form.paciente_id }}
+                <input type="hidden" name="patologias_criticas" value="NINGUNA">
+
+                <!-- Matrona Responsable -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="id_matrona_responsable" class="form-label">Matrona Responsable</label>
+                        {{ form.matrona_responsable }}
+                    </div>
+                </div>
+
+                <!-- Mostrar errores si existen -->
+                {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    <h5><i class="bi bi-exclamation-triangle"></i> Corrija los siguientes errores:</h5>
+                    {{ form.errors }}
+                </div>
+                {% endif %}
+
+                <!-- SECCIÓN 1: Información del Embarazo Actual -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">🤰 Embarazo Actual</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Fecha Ãšltima Regla -->
+                            <div class="col-md-4 mb-3">
+                                <label for="id_fecha_ultima_regla" class="form-label">
+                                    Fecha Última Regla (FUR)
+                                </label>
+                                {{ form.fecha_ultima_regla }}
+                            </div>
+
+                            <!-- Fecha Probable Parto -->
+                            <div class="col-md-4 mb-3">
+                                <label for="id_fecha_probable_parto" class="form-label">
+                                    Fecha Probable de Parto (FPP)
+                                </label>
+                                {{ form.fecha_probable_parto }}
+                            </div>
+
+                            <!-- Edad Gestacional Semanas -->
+                            <div class="col-md-2 mb-3">
+                                <label for="id_edad_gestacional_semanas" class="form-label">
+                                    EG (semanas)
+                                </label>
+                                {{ form.edad_gestacional_semanas }}
+                                <small class="form-text text-muted">0-42</small>
+                            </div>
+
+                            <!-- Edad Gestacional DÃ­as -->
+                            <div class="col-md-2 mb-3">
+                                <label for="id_edad_gestacional_dias" class="form-label">
+                                    EG (días)
+                                </label>
+                                {{ form.edad_gestacional_dias }}
+                                <small class="form-text text-muted">0-6</small>
+                            </div>
+
+                            <!-- Nombre Acompañante -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_nombre_acompanante" class="form-label">
+                                    Nombre del Acompañante
+                                </label>
+                                {{ form.nombre_acompanante }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: Datos Antropométricos -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">📏 Datos Antropométricos</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Peso Actual -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_peso_actual" class="form-label">
+                                    Peso Actual (kg)
+                                </label>
+                                {{ form.peso_actual }}
+                                <small class="form-text text-muted">30-200 kg</small>
+                            </div>
+
+                            <!-- Talla -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_talla" class="form-label">
+                                    Talla (cm)
+                                </label>
+                                {{ form.talla }}
+                                <small class="form-text text-muted">120-220 cm</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 3: Antecedentes Obstétricos -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">👩‍🍼 Antecedentes Obstétricos</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Número de Gestas -->
+                            <div class="col-md-2 mb-3">
+                                <label for="id_numero_gestas" class="form-label">
+                                    Gestas (G)
+                                </label>
+                                {{ form.numero_gestas }}
+                            </div>
+
+                            <!-- Número de Partos -->
+                            <div class="col-md-2 mb-3">
+                                <label for="id_numero_partos" class="form-label">
+                                    Partos (P)
+                                </label>
+                                {{ form.numero_partos }}
+                            </div>
+
+                            <!-- Partos Vaginales -->
+                            <div class="col-md-2 mb-3">
+                                <label for="id_partos_vaginales" class="form-label">
+                                    P. Vaginales
+                                </label>
+                                {{ form.partos_vaginales }}
+                            </div>
+
+                            <!-- Cesáreas -->
+                            <div class="col-md-2 mb-3">
+                                <label for="id_partos_cesareas" class="form-label">
+                                    Cesáreas (C)
+                                </label>
+                                {{ form.partos_cesareas }}
+                            </div>
+
+                            <!-- Abortos -->
+                            <div class="col-md-2 mb-3">
+                                <label for="id_numero_abortos" class="form-label">
+                                    Abortos (A)
+                                </label>
+                                {{ form.numero_abortos }}
+                            </div>
+
+                            <!-- Nacidos Vivos -->
+                            <div class="col-md-2 mb-3">
+                                <label for="id_nacidos_vivos" class="form-label">
+                                    Nacidos Vivos
+                                </label>
+                                {{ form.nacidos_vivos }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- SECCIÓN 5: Tamizajes Clínicos -->
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0">🔎 Tamizajes Clínicos</h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- Tamizaje VIH -->
+                        <div class="row border-bottom pb-3 mb-3">
+                            <div class="col-12 mb-2">
+                                <h6 class="text-primary">🧪 Tamizaje VIH</h6>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_vih_tomado" class="form-label">
+                                    ¿Se realizó prueba VIH?
+                                </label>
+                                <div class="form-check">
+                                    {{ form.vih_tomado }}
+                                    <label class="form-check-label" for="id_vih_tomado">
+                                        Sí, se realizó
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_vih_resultado" class="form-label">
+                                    Resultado VIH
+                                </label>
+                                {{ form.vih_resultado }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_vih_aro" class="form-label">
+                                    Nº ARO (si otra patología)
+                                </label>
+                                {{ form.vih_aro }}
+                            </div>
+                        </div>
+
+                        <!-- Tamizaje SGB -->
+                        <div class="row border-bottom pb-3 mb-3">
+                            <div class="col-12 mb-2">
+                                <h6 class="text-primary">🧪 Tamizaje Estreptococo Grupo B (SGB)</h6>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_sgb_pesquisa" class="form-label">
+                                    ¿Se realizó pesquisa SGB?
+                                </label>
+                                <div class="form-check">
+                                    {{ form.sgb_pesquisa }}
+                                    <label class="form-check-label" for="id_sgb_pesquisa">
+                                        Sí, se realizó
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_sgb_resultado" class="form-label">
+                                    Resultado SGB
+                                </label>
+                                {{ form.sgb_resultado }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_sgb_antibiotico" class="form-label">
+                                    Antibiótico para SGB
+                                </label>
+                                {{ form.sgb_antibiotico }}
+                            </div>
+                        </div>
+
+                        <!-- Tamizaje VDRL (Sífilis) -->
+                        <div class="row border-bottom pb-3 mb-3">
+                            <div class="col-12 mb-2">
+                                <h6 class="text-primary">🔬 Tamizaje VDRL (Sífilis)</h6>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_vdrl_resultado" class="form-label">
+                                    Resultado VDRL
+                                </label>
+                                {{ form.vdrl_resultado }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_vdrl_tratamiento_atb" class="form-label">
+                                    ¿Recibió tratamiento antibiótico?
+                                </label>
+                                <div class="form-check">
+                                    {{ form.vdrl_tratamiento_atb }}
+                                    <label class="form-check-label" for="id_vdrl_tratamiento_atb">
+                                        Sí, recibió tratamiento
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tamizaje Hepatitis B -->
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                <h6 class="text-primary">🧪 Tamizaje Hepatitis B</h6>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_hepatitis_b_tomado" class="form-label">
+                                    ¿Se realizó examen Hepatitis B?
+                                </label>
+                                <div class="form-check">
+                                    {{ form.hepatitis_b_tomado }}
+                                    <label class="form-check-label" for="id_hepatitis_b_tomado">
+                                        Sí, se realizó
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_hepatitis_b_resultado" class="form-label">
+                                    Resultado Hepatitis B
+                                </label>
+                                {{ form.hepatitis_b_resultado }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_hepatitis_b_derivacion" class="form-label">
+                                    ¿Requiere derivación a Gastro-Hepatólogo?
+                                </label>
+                                <div class="form-check">
+                                    {{ form.hepatitis_b_derivacion }}
+                                    <label class="form-check-label" for="id_hepatitis_b_derivacion">
+                                        Sí, requiere derivación
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 6: Observaciones y Antecedentes -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">📝 Observaciones y Antecedentes</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Observaciones Generales -->
+                            <div class="col-12 mb-3">
+                                <label for="id_observaciones" class="form-label">
+                                    Observaciones Generales del Embarazo
+                                </label>
+                                {{ form.observaciones }}
+                                <small class="form-text text-muted">
+                                    Observaciones sobre el embarazo actual, evolución, etc.
+                                </small>
+                            </div>
+
+                            <!-- Antecedentes Relevantes -->
+                            <div class="col-12 mb-3">
+                                <label for="id_antecedentes_relevantes" class="form-label">
+                                    Antecedentes Médicos Relevantes
+                                </label>
+                                {{ form.antecedentes_relevantes }}
+                                <small class="form-text text-muted">
+                                    Antecedentes médicos, quirúrgicos, alergias, medicamentos habituales, etc.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle"></i> Crear Ficha Obstétrica
+                        </button>
+                        <a href="{% url 'matrona:lista_fichas_paciente' paciente.pk %}"
+                            class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="reset" class="btn btn-outline-warning btn-lg">
+                            <i class="bi bi-arrow-clockwise"></i> Limpiar Formulario
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notas Informativas -->
+    <div class="alert alert-info mt-4" role="alert">
+        <h6><i class="bi bi-info-circle"></i> Información Importante</h6>
+        <ul class="mb-0">
+            <li>Los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
+            <li>La Fecha Probable de Parto se calcula sumando 280 días a la FUM</li>
+            <li>Puede agregar medicamentos y más detalles después de crear la ficha</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Calcular FPP automáticamente al ingresar FUM
+    document.getElementById('id_fecha_ultima_regla')?.addEventListener('change', function () {
+        const fum = new Date(this.value);
+        const today = new Date();
+
+        if (fum) {
+            // 1. Calcular FPP (FUR + 280 días)
+            // Ajustamos la zona horaria para evitar errores de día
+            const fumDate = new Date(fum.getUTCFullYear(), fum.getUTCMonth(), fum.getUTCDate());
+            const fpp = new Date(fumDate.getTime() + (280 * 24 * 60 * 60 * 1000));
+
+            const fppInput = document.getElementById('id_fecha_probable_parto');
+            if (fppInput) {
+                fppInput.value = fpp.toISOString().split('T')[0];
+            }
+
+            // 2. Calcular Edad Gestacional (Diferencia entre hoy y FUR)
+            const diffTime = Math.abs(today - fumDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Si la fecha es futura, no calculamos
+            if (fumDate <= today) {
+                const semanas = Math.floor(diffDays / 7);
+                const dias = diffDays % 7;
+
+                const semanasInput = document.getElementById('id_edad_gestacional_semanas');
+                const diasInput = document.getElementById('id_edad_gestacional_dias');
+
+                if (semanasInput) semanasInput.value = semanas;
+                if (diasInput) diasInput.value = dias;
+            }
+        }
+    });
+
+    // Validación de formulario
+    document.getElementById('formCrearFicha').addEventListener('submit', function (e) {
+        const edadGestacional = parseInt(document.getElementById('id_edad_gestacional')?.value);
+
+        if (edadGestacional && (edadGestacional < 0 || edadGestacional > 42)) {
+            e.preventDefault();
+            alert('❌ La edad gestacional debe estar entre 0 y 42 semanas');
+            return false;
+        }
+    });
+
+    console.log('✅ Formulario de crear ficha cargado');
+</script>
+{% endblock %}

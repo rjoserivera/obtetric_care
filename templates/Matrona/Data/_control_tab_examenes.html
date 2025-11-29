@@ -1,0 +1,78 @@
+﻿{# Tab: Exámenes, Tamizajes, Patologías y Tratamiento #}
+<div class="tab-pane fade" id="examenes" role="tabpanel">
+    <div class="row">
+        <div class="col-md-6">
+            <h6 class="text-danger border-bottom pb-2">Laboratorio General</h6>
+            <p><strong>Glucosa:</strong> {{ legacy_selected.glucosa_mg_dl|default:"--" }} mg/dL</p>
+            <p><strong>Hemoglobina:</strong> {{ legacy_selected.hemoglobina_g_dl|default:"--" }} g/dL</p>
+            <p><strong>Hematocrito:</strong> {{ legacy_selected.hematocrito_pct|default:"--" }}%</p>
+            <p><strong>Grupo Sanguíneo:</strong> {{ legacy_selected.grupo_sanguineo|default:"--" }}</p>
+            <p><strong>Factor Rh:</strong> {{ legacy_selected.factor_rh|default:"--" }}</p>
+            {% if legacy_selected.proteinuria %}
+            <p><strong>Proteinuria:</strong> {{ legacy_selected.proteinuria }}</p>
+            {% endif %}
+            {% if legacy_selected.leucocitos_orina %}
+            <p><strong>Leucocitos en Orina:</strong> {{ legacy_selected.leucocitos_orina }}</p>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <h6 class="text-danger border-bottom pb-2">Tamizajes</h6>
+            <p><strong>VIH:</strong> {{ legacy_selected.vih_resultado|default:"No realizado" }} {% if legacy_selected.vih_fecha_toma %}<small class="text-muted">({{ legacy_selected.vih_fecha_toma|date:"d/m/Y" }})</small>{% endif %}</p>
+            <p><strong>VDRL:</strong> {{ legacy_selected.vdrl_resultado|default:"No realizado" }} {% if legacy_selected.vdrl_fecha %}<small class="text-muted">({{ legacy_selected.vdrl_fecha|date:"d/m/Y" }})</small>{% endif %}</p>
+            {% if legacy_selected.sgb_resultado %}
+            <p><strong>SGB:</strong> {{ legacy_selected.sgb_resultado }} {% if legacy_selected.sgb_fecha_cultivo %}<small class="text-muted">({{ legacy_selected.sgb_fecha_cultivo|date:"d/m/Y" }})</small>{% endif %}</p>
+            {% if legacy_selected.sgb_profilaxis %}
+            <p><strong>Profilaxis SGB:</strong> {% if legacy_selected.sgb_profilaxis %}Sí{% else %}No{% endif %}</p>
+            {% endif %}
+            {% endif %}
+            {% if legacy_selected.toxoplasma_resultado %}
+            <p><strong>Toxoplasma:</strong> {{ legacy_selected.toxoplasma_resultado }} {% if legacy_selected.toxoplasma_fecha %}<small class="text-muted">({{ legacy_selected.toxoplasma_fecha|date:"d/m/Y" }})</small>{% endif %}</p>
+            {% endif %}
+            {% if legacy_selected.hepatitis_b_resultado %}
+            <p><strong>Hepatitis B:</strong> {{ legacy_selected.hepatitis_b_resultado }} {% if legacy_selected.hepatitis_b_fecha %}<small class="text-muted">({{ legacy_selected.hepatitis_b_fecha|date:"d/m/Y" }})</small>{% endif %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if legacy_selected.diabetes_gestacional or legacy_selected.hipertension_arterial or legacy_selected.preeclampsia_leve or legacy_selected.preeclampsia_severa or legacy_selected.eclampsia or legacy_selected.anemia or legacy_selected.infeccion_urinaria or legacy_selected.corioamnionitis or legacy_selected.amenaza_parto_prematuro or legacy_selected.rotura_prematura_membranas or legacy_selected.otras_patologias %}
+    <hr>
+    <h6 class="text-danger border-bottom pb-2">Patologías Detectadas</h6>
+    <div class="row">
+        <div class="col-12">
+            <ul class="list-unstyled">
+                {% if legacy_selected.diabetes_gestacional %}<li><i class="bi bi-check-circle-fill text-warning"></i> Diabetes Gestacional</li>{% endif %}
+                {% if legacy_selected.hipertension_arterial %}<li><i class="bi bi-check-circle-fill text-warning"></i> Hipertensión Arterial</li>{% endif %}
+                {% if legacy_selected.preeclampsia_leve %}<li><i class="bi bi-check-circle-fill text-warning"></i> Preeclampsia Leve</li>{% endif %}
+                {% if legacy_selected.preeclampsia_severa %}<li><i class="bi bi-check-circle-fill text-danger"></i> Preeclampsia Severa</li>{% endif %}
+                {% if legacy_selected.eclampsia %}<li><i class="bi bi-check-circle-fill text-danger"></i> Eclampsia</li>{% endif %}
+                {% if legacy_selected.anemia %}<li><i class="bi bi-check-circle-fill text-warning"></i> Anemia</li>{% endif %}
+                {% if legacy_selected.infeccion_urinaria %}<li><i class="bi bi-check-circle-fill text-warning"></i> Infección Urinaria</li>{% endif %}
+                {% if legacy_selected.corioamnionitis %}<li><i class="bi bi-check-circle-fill text-danger"></i> Corioamnionitis</li>{% endif %}
+                {% if legacy_selected.amenaza_parto_prematuro %}<li><i class="bi bi-check-circle-fill text-warning"></i> Amenaza de Parto Prematuro</li>{% endif %}
+                {% if legacy_selected.rotura_prematura_membranas %}<li><i class="bi bi-check-circle-fill text-danger"></i> Rotura Prematura de Membranas</li>{% endif %}
+                {% if legacy_selected.otras_patologias %}<li><i class="bi bi-check-circle-fill text-info"></i> Otras: {{ legacy_selected.otras_patologias }}</li>{% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
+    <hr>
+    <h6 class="text-danger border-bottom pb-2">Tratamiento</h6>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Ácido Fólico:</strong> {% if legacy_selected.acido_folico %}Sí{% elif legacy_selected.acido_folico == False %}No{% else %}No especificado{% endif %}</p>
+            <p><strong>Sulfato Ferroso:</strong> {% if legacy_selected.sulfato_ferroso %}Sí{% elif legacy_selected.sulfato_ferroso == False %}No{% else %}No especificado{% endif %}</p>
+            <p><strong>Aspirina Profiláctica:</strong> {% if legacy_selected.aspirina_profilactica %}Sí{% elif legacy_selected.aspirina_profilactica == False %}No{% else %}No especificado{% endif %}</p>
+        </div>
+        <div class="col-md-6">
+            {% if legacy_selected.medicamentos_activos %}
+            <p><strong>Medicamentos Activos:</strong></p>
+            <p class="text-muted">{{ legacy_selected.medicamentos_activos }}</p>
+            {% endif %}
+            {% if legacy_selected.otros_tratamientos %}
+            <p><strong>Otros Tratamientos:</strong></p>
+            <p class="text-muted">{{ legacy_selected.otros_tratamientos }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

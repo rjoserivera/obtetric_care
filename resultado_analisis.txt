@@ -1,0 +1,108 @@
+
+============================================================
+AN+¸LISIS DE CAMPOS PARA RUT: 16293109-1
+============================================================
+
+Total de controles encontrados: 5
+
+RESUMEN:
+   Total de campos: 82
+   Campos llenos: 45
+   Campos vacios: 37
+   Completitud: 54.9%
+
+
+============================================================
+CAMPOS CON DATOS (45):
+============================================================
+
+  ‘«Û paciente_rut: 16293109-1
+  ‘«Û fecha_control: 2023-01-15
+  ‘«Û numero_control: 1
+  ‘«Û tipo_control: PRENATAL
+  ‘«Û consultorio_origen: CESFAM Coronel
+  ‘«Û profesional_nombre: Dra. Mar+°a Gonz+Ìlez
+  ‘«Û profesional_tipo: MEDICO
+  ‘«Û semanas_gestacion: 8
+  ‘«Û dias_gestacion: 3
+  ‘«Û fur: 2022-11-20
+  ‘«Û fpp: 2023-08-27
+  ‘«Û peso_kg: 62.50
+  ‘«Û talla_cm: 162.00
+  ‘«Û imc: 23.80
+  ‘«Û presion_sistolica: 110
+  ‘«Û presion_diastolica: 70
+  ‘«Û frecuencia_cardiaca_materna: 72
+  ‘«Û temperatura_c: 36.5
+  ‘«Û fcf_lpm: 145
+  ‘«Û movimientos_fetales: PRESENTES
+  ‘«Û presentacion_fetal: CEFALICA
+  ‘«Û situacion_fetal: LONGITUDINAL
+  ‘«Û glucosa_mg_dl: 85.00
+  ‘«Û hemoglobina_g_dl: 12.5
+  ‘«Û hematocrito_pct: 38.00
+  ‘«Û grupo_sanguineo: O
+  ‘«Û factor_rh: +
+  ‘«Û vih_resultado: NEGATIVO
+  ‘«Û vih_fecha_toma: 2023-01-15
+  ‘«Û vdrl_resultado: NO_REACTIVO
+  ‘«Û vdrl_fecha: 2023-01-15
+  ‘«Û nivel_riesgo: BAJO
+  ‘«Û acido_folico: True
+  ‘«Û sulfato_ferroso: True
+  ‘«Û numero_gestas: 2
+  ‘«Û numero_partos: 1
+  ‘«Û partos_vaginales_previos: 1
+  ‘«Û cesareas_previas: 0
+  ‘«Û numero_abortos: 0
+  ‘«Û hijos_vivos: 1
+  ‘«Û paridad_formato: G2P1A0
+  ‘«Û fecha_proximo_control: 2023-02-15
+  ‘«Û observaciones: Embarazo de curso normal. Paciente sin antecedentes m+¶rbi...
+  ‘«Û indicaciones_medicas: Continuar con +Ìcido f+¶lico y sulfato ferroso. Control en ...
+  ‘«Û sistema_origen: Legacy
+
+============================================================
+CAMPOS VAC+ÏOS (37):
+============================================================
+
+  ‘«Û altura_uterina_cm
+  ‘«Û ganancia_peso_total_kg
+  ‘«Û saturacion_o2
+  ‘«Û proteinuria
+  ‘«Û leucocitos_orina
+  ‘«Û vih_orden
+  ‘«Û sgb_resultado
+  ‘«Û sgb_fecha_cultivo
+  ‘«Û sgb_profilaxis
+  ‘«Û toxoplasma_resultado
+  ‘«Û toxoplasma_fecha
+  ‘«Û hepatitis_b_resultado
+  ‘«Û hepatitis_b_fecha
+  ‘«Û diabetes_gestacional
+  ‘«Û hipertension_arterial
+  ‘«Û preeclampsia_leve
+  ‘«Û preeclampsia_severa
+  ‘«Û eclampsia
+  ‘«Û anemia
+  ‘«Û infeccion_urinaria
+  ‘«Û corioamnionitis
+  ‘«Û amenaza_parto_prematuro
+  ‘«Û rotura_prematura_membranas
+  ‘«Û otras_patologias
+  ‘«Û numero_aro
+  ‘«Û medicamentos_activos
+  ‘«Û aspirina_profilactica
+  ‘«Û otros_tratamientos
+  ‘«Û edema_grado
+  ‘«Û edema_localizacion
+  ‘«Û varices
+  ‘«Û reflejos_osteotendinosos
+  ‘«Û tiene_plan_parto
+  ‘«Û realizo_visita_guiada
+  ‘«Û motivo_consulta
+  ‘«Û turno
+  ‘«Û fecha_hora_registro
+
+============================================================
+

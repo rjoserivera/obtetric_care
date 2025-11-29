@@ -1,0 +1,387 @@
+{% extends 'Shared/base.html' %}
+{% load static %}
+
+{% block title %}Registrar Nuevo Paciente - Sistema Obstétrico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card mb-3 border-success">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-person-plus"></i> Vincular Paciente
+            </h4>
+            <p class="mb-0 mt-2 small">
+                <i class="bi bi-info-circle"></i>
+                Para registrar un paciente, primero debe existir como persona en el sistema.
+                Si la persona no está registrada, solicite al administrador que la registre en
+                <strong>Gestión → Registrar Persona</strong>.
+            </p>
+        </div>
+    </div>
+
+    <!-- Alerta informativa -->
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <h5 class="alert-heading">
+            <i class="bi bi-lightbulb"></i> Proceso de Registro
+        </h5>
+        <ol class="mb-0">
+            <li>Ingrese el RUT de la persona que desea vincular como paciente</li>
+            <li>El sistema buscará automáticamente sus datos personales</li>
+            <li>Complete la información específica del paciente (estado civil, previsión, etc.)</li>
+            <li>Guarde el registro</li>
+        </ol>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Formulario -->
+    <form method="post" id="formRegistrarPaciente">
+        {% csrf_token %}
+
+        <!-- Mostrar errores globales -->
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <!-- SECCIÓN 1: Buscar Persona -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 text-primary">
+                    <i class="bi bi-search"></i> Buscar Persona por RUT
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- RUT de la Persona -->
+                    <div class="col-md-6 mb-3">
+                        {{ form.rut_persona.label_tag }}
+                        {{ form.rut_persona }}
+                        {% if form.rut_persona.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.rut_persona.errors }}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">{{ form.rut_persona.help_text }}</small>
+                    </div>
+
+                    <!-- Botón de búsqueda -->
+                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                        <button type="button" class="btn btn-primary" id="btnBuscarPersona">
+                            <i class="bi bi-search"></i> Buscar Persona
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resultado de la búsqueda -->
+                <div id="resultadoBusqueda" class="mt-3" style="display: none;">
+                    <div class="alert alert-success">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-person-check"></i> Persona Encontrada
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Nombre:</strong> <span id="persona_nombre"></span></p>
+                                <p class="mb-1"><strong>RUT:</strong> <span id="persona_rut"></span></p>
+                                <p class="mb-1"><strong>Fecha Nacimiento:</strong> <span id="persona_fecha_nac"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Sexo:</strong> <span id="persona_sexo"></span></p>
+                                <p class="mb-1"><strong>Teléfono:</strong> <span id="persona_telefono"></span></p>
+                                <p class="mb-1"><strong>Email:</strong> <span id="persona_email"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Persona ya es paciente -->
+                <div id="yaPaciente" class="mt-3" style="display: none;">
+                    <div class="alert alert-warning">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-exclamation-circle"></i> Persona Ya Registrada como Paciente
+                        </h6>
+                        <p class="mb-0" id="mensajeYaPaciente"></p>
+                        <hr>
+                        <p class="mb-0">
+                            <strong>¿Qué hacer?</strong> Esta persona ya está vinculada como paciente.
+                            Puede ver sus datos en
+                            <a href="{% url 'matrona:lista_pacientes' %}" class="alert-link">
+                                Lista de Pacientes
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Error de búsqueda -->
+                <div id="errorBusqueda" class="mt-3" style="display: none;">
+                    <div class="alert alert-danger">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle"></i> Persona No Encontrada
+                        </h6>
+                        <p class="mb-0" id="mensajeError"></p>
+                        <hr>
+                        <p class="mb-0">
+                            <strong>¿Qué hacer?</strong> Solicite al administrador que registre esta persona en
+                            <a href="{% url 'gestion:registrar_persona' %}" class="alert-link" target="_blank">
+                                Gestión → Registrar Persona
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campo oculto para persona -->
+        <input type="hidden" name="persona" id="id_persona" value="">
+
+        <!-- SECCIÓN 2: Información del Paciente -->
+        <div class="card mb-3 shadow-sm" id="seccionPaciente" style="display: none;">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 text-success">
+                    <i class="bi bi-heart-pulse"></i> Información del Paciente
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Estado Civil -->
+                    <div class="col-md-6 mb-3">
+                        {{ form.Estado_civil.label_tag }}
+                        {{ form.Estado_civil }}
+                        {% if form.Estado_civil.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.Estado_civil.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Previsión -->
+                    <div class="col-md-6 mb-3">
+                        {{ form.Previcion.label_tag }}
+                        {{ form.Previcion }}
+                        {% if form.Previcion.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.Previcion.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Acompañante -->
+                    <div class="col-md-6 mb-3">
+                        {{ form.Acompañante.label_tag }}
+                        {{ form.Acompañante }}
+                        {% if form.Acompañante.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.Acompañante.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Contacto de Emergencia -->
+                    <div class="col-md-6 mb-3">
+                        {{ form.Contacto_emergencia.label_tag }}
+                        {{ form.Contacto_emergencia }}
+                        {% if form.Contacto_emergencia.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.Contacto_emergencia.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4" id="seccionBotones" style="display: none;">
+            <div class="card-body">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-check-circle"></i> Vincular como Paciente
+                </button>
+                <a href="{% url 'matrona:menu_matrona' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+                <button type="reset" class="btn btn-outline-warning btn-lg" id="btnLimpiar">
+                    <i class="bi bi-arrow-clockwise"></i> Limpiar Formulario
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Validar RUT chileno
+    function validarRut(rut) {
+        rut = rut.replace(/\./g, '').replace(/-/g, '');
+        if (rut.length < 2) return false;
+
+        const cuerpo = rut.slice(0, -1);
+        const dv = rut.slice(-1).toUpperCase();
+
+        let suma = 0;
+        let multiplo = 2;
+
+        for (let i = cuerpo.length - 1; i >= 0; i--) {
+            suma += parseInt(cuerpo.charAt(i)) * multiplo;
+            multiplo = multiplo === 7 ? 2 : multiplo + 1;
+        }
+
+        const dvEsperado = 11 - (suma % 11);
+        const dvCalculado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : dvEsperado.toString();
+
+        return dv === dvCalculado;
+    }
+
+    // Formatear RUT mientras se escribe
+    const inputRutPersona = document.getElementById('rut_persona_paciente');
+    if (inputRutPersona) {
+        inputRutPersona.addEventListener('input', function (e) {
+            let rut = this.value.replace(/\./g, '').replace(/-/g, '');
+            rut = rut.replace(/[^0-9kK]/g, '');
+
+            if (rut.length > 1) {
+                rut = rut.slice(0, -1) + '-' + rut.slice(-1);
+            }
+
+            this.value = rut.toUpperCase();
+
+            if (rut.length >= 9) {
+                if (validarRut(rut)) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            }
+        });
+    }
+
+    // Buscar persona por RUT
+    document.getElementById('btnBuscarPersona')?.addEventListener('click', function () {
+        const rut = document.getElementById('rut_persona_paciente').value.trim();
+
+        if (!rut) {
+            alert('❌ Por favor ingrese un RUT');
+            return;
+        }
+
+        if (!validarRut(rut)) {
+            alert('❌ El RUT ingresado no es válido');
+            return;
+        }
+
+        // Ocultar resultados previos
+        document.getElementById('resultadoBusqueda').style.display = 'none';
+        document.getElementById('yaPaciente').style.display = 'none';
+        document.getElementById('errorBusqueda').style.display = 'none';
+        document.getElementById('seccionPaciente').style.display = 'none';
+        document.getElementById('seccionBotones').style.display = 'none';
+
+        // Mostrar loading
+        this.disabled = true;
+        this.innerHTML = '<i class="bi bi-hourglass-split"></i> Buscando...';
+
+        // Hacer petición AJAX
+        const url = `/matrona/api/persona/buscar/?rut=${encodeURIComponent(rut)}`;
+        console.log('🔍 Buscando persona en:', url);
+
+        fetch(url)
+            .then(response => {
+                console.log('📡 Respuesta recibida:', response);
+                return response.json();
+            })
+            .then(data => {
+                console.log('📦 Datos recibidos:', data);
+                if (data.encontrado) {
+                    // Verificar si ya es paciente
+                    if (data.es_paciente) {
+                        document.getElementById('mensajeYaPaciente').textContent =
+                            'Esta persona ya está registrada como paciente. No puede vincularla nuevamente.';
+                        document.getElementById('yaPaciente').style.display = 'block';
+                    } else {
+                        // Mostrar datos de la persona
+                        document.getElementById('persona_nombre').textContent = data.persona.nombre_completo;
+                        document.getElementById('persona_rut').textContent = data.persona.rut;
+                        document.getElementById('persona_fecha_nac').textContent = data.persona.fecha_nacimiento;
+                        document.getElementById('persona_sexo').textContent =
+                            data.persona.sexo === 'F' ? 'Femenino' : 'Masculino';
+                        document.getElementById('persona_telefono').textContent = data.persona.telefono || 'No especificado';
+                        document.getElementById('persona_email').textContent = data.persona.email || 'No especificado';
+
+                        // Guardar el ID de la persona en el campo oculto
+                        document.getElementById('id_persona').value = data.persona.id;
+                        console.log('✅ Persona guardada con ID:', data.persona.id);
+
+                        // Mostrar resultado y formulario de paciente
+                        document.getElementById('resultadoBusqueda').style.display = 'block';
+                        document.getElementById('seccionPaciente').style.display = 'block';
+                        document.getElementById('seccionBotones').style.display = 'block';
+                    }
+                } else {
+                    // Persona no encontrada
+                    console.log('❌ Persona no encontrada:', data.mensaje);
+                    document.getElementById('mensajeError').textContent = data.mensaje;
+                    document.getElementById('errorBusqueda').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('💥 Error en la petición:', error);
+                document.getElementById('mensajeError').textContent =
+                    'Error al buscar la persona. Por favor intente nuevamente.';
+                document.getElementById('errorBusqueda').style.display = 'block';
+            })
+            .finally(() => {
+                // Restaurar botón
+                this.disabled = false;
+                this.innerHTML = '<i class="bi bi-search"></i> Buscar Persona';
+            });
+    });
+
+    // Limpiar formulario
+    document.getElementById('btnLimpiar')?.addEventListener('click', function () {
+        document.getElementById('resultadoBusqueda').style.display = 'none';
+        document.getElementById('yaPaciente').style.display = 'none';
+        document.getElementById('errorBusqueda').style.display = 'none';
+        document.getElementById('seccionPaciente').style.display = 'none';
+        document.getElementById('seccionBotones').style.display = 'none';
+        document.getElementById('rut_persona_paciente').value = '';
+        document.getElementById('rut_persona_paciente').classList.remove('is-valid', 'is-invalid');
+        document.getElementById('id_persona').value = ''; // Limpiar el ID de la persona oculta
+        document.getElementById('formRegistrarPaciente').reset(); // Resetear el resto del formulario
+    });
+
+    // Validar formulario antes de enviar
+    document.getElementById('formRegistrarPaciente').addEventListener('submit', function (e) {
+        const rut = document.getElementById('rut_persona_paciente').value;
+
+        if (!validarRut(rut)) {
+            e.preventDefault();
+            alert('❌ El RUT ingresado no es válido');
+            return false;
+        }
+
+        // Validar que se haya buscado la persona y se haya encontrado
+        if (document.getElementById('resultadoBusqueda').style.display === 'none' || document.getElementById('id_persona').value === '') {
+            e.preventDefault();
+            alert('❌ Debe buscar y seleccionar una persona válida antes de vincularla como paciente');
+            return false;
+        }
+
+        // Validar campos obligatorios del paciente
+        const estadoCivil = document.getElementById('id_Estado_civil').value;
+        const prevision = document.getElementById('id_Previcion').value;
+        const contactoEmergencia = document.getElementById('id_Contacto_emergencia').value;
+
+        if (!estadoCivil || !prevision || !contactoEmergencia) {
+            e.preventDefault();
+            alert('❌ Por favor complete todos los campos obligatorios de Información del Paciente:\n- Estado Civil\n- Previsión\n- Contacto de Emergencia');
+            return false;
+        }
+    });
+
+    console.log('✅ Formulario de vincular paciente cargado');
+</script>
+{% endblock %}

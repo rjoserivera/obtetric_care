@@ -1,0 +1,83 @@
+﻿{# Template parcial para mostrar controles previos de la base de datos legacy #}
+{% if legacy_total and legacy_total|add:0 > 0 %}
+<div class="collapse mt-3 {% if request.GET.ctrl %}show{% endif %}" id="historialLegacy">
+    <div class="card card-body bg-light">
+        <h5 class="text-secondary mb-3">
+            <i class="bi bi-file-medical-fill"></i> Controles de Rutina Previos (LEGACY)
+        </h5>
+
+        {% if legacy_controles %}
+        {# Selector de controles #}
+        <div class="mb-3">
+            <label class="form-label">Seleccionar control:</label>
+            <div class="btn-group" role="group">
+                {% for ctrl in legacy_controles %}
+                <a href="?ctrl={{ ctrl.id }}#historialLegacy"
+                    class="btn {% if legacy_selected and legacy_selected.id == ctrl.id %}btn-danger{% else %}btn-outline-danger{% endif %} btn-sm">
+                    {{ ctrl.fecha_control|date:"d/m/Y" }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# Detalle del control seleccionado #}
+        {% if legacy_selected %}
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>{{ legacy_header }}</strong>
+                    <span class="badge bg-light text-danger">{{ legacy_badge }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                {# Tabs de navegación #}
+                <ul class="nav nav-tabs mb-3" id="controlTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general"
+                            type="button">
+                            <i class="bi bi-info-circle"></i> General
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="signos-tab" data-bs-toggle="tab" data-bs-target="#signos"
+                            type="button">
+                            <i class="bi bi-heart-pulse"></i> Signos Vitales
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="fetal-tab" data-bs-toggle="tab" data-bs-target="#fetal"
+                            type="button">
+                            <i class="bi bi-person-hearts"></i> Evaluación Fetal
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="examenes-tab" data-bs-toggle="tab" data-bs-target="#examenes"
+                            type="button">
+                            <i class="bi bi-clipboard2-pulse"></i> Exámenes
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="antecedentes-tab" data-bs-toggle="tab"
+                            data-bs-target="#antecedentes" type="button">
+                            <i class="bi bi-journal-medical"></i> Antecedentes
+                        </button>
+                    </li>
+                </ul>
+
+                {# Contenido de los tabs #}
+                <div class="tab-content" id="controlTabsContent">
+                    {% include "Matrona/Data/_control_tab_general.html" %}
+                    {% include "Matrona/Data/_control_tab_signos.html" %}
+                    {% include "Matrona/Data/_control_tab_fetal.html" %}
+                    {% include "Matrona/Data/_control_tab_examenes.html" %}
+                    {% include "Matrona/Data/_control_tab_antecedentes.html" %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% else %}
+        <p class="text-muted">No hay controles previos registrados.</p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

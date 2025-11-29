@@ -1,0 +1,50 @@
+﻿{# Tab: Información General del Control #}
+<div class="tab-pane fade show active" id="general" role="tabpanel">
+    <div class="row">
+        <div class="col-md-6">
+            <h6 class="text-danger border-bottom pb-2">Información del Control</h6>
+            <p><strong>Tipo:</strong> {{ legacy_selected.get_tipo_control_display|default:"No especificado" }}</p>
+            <p><strong>Consultorio:</strong> {{ legacy_selected.consultorio_origen|default:"No especificado" }}</p>
+            <p><strong>Profesional:</strong> {{ legacy_profesional_nombre }}</p>
+            <p><strong>Tipo Profesional:</strong> {{ legacy_tipo_profesional }}</p>
+            <p><strong>Nivel de Riesgo:</strong>
+                <span
+                    class="badge {% if legacy_selected.nivel_riesgo == 'BAJO' %}bg-success{% elif legacy_selected.nivel_riesgo == 'MEDIO' %}bg-warning{% else %}bg-danger{% endif %}">
+                    {{ legacy_selected.get_nivel_riesgo_display|default:"No evaluado" }}
+                </span>
+            </p>
+        </div>
+        <div class="col-md-6">
+            <h6 class="text-danger border-bottom pb-2">Edad Gestacional</h6>
+            <p><strong>Semanas:</strong> {{ legacy_selected.semanas_gestacion }}+{{ legacy_selected.dias_gestacion }}
+                semanas</p>
+            <p><strong>FUR:</strong> {{ legacy_selected.fur|date:"d/m/Y"|default:"No registrada" }}</p>
+            <p><strong>FPP:</strong> {{ legacy_selected.fpp|date:"d/m/Y"|default:"No registrada" }}</p>
+
+            <h6 class="text-danger border-bottom pb-2 mt-3">Datos Antropométricos</h6>
+            <p><strong>Peso:</strong> {{ legacy_selected.peso_kg|default:"--" }} kg</p>
+            <p><strong>Talla:</strong> {{ legacy_selected.talla_cm|default:"--" }} cm</p>
+            <p><strong>IMC:</strong> {{ legacy_selected.imc|default:"--" }}</p>
+            <p><strong>Altura Uterina:</strong> {{ legacy_selected.altura_uterina_cm|default:"--" }} cm</p>
+            <p><strong>Ganancia de Peso Total:</strong> {{ legacy_selected.ganancia_peso_total_kg|default:"--" }} kg</p>
+        </div>
+    </div>
+
+    {% if legacy_selected.observaciones or legacy_selected.indicaciones_medicas %}
+    <hr>
+    <div class="row">
+        {% if legacy_selected.observaciones %}
+        <div class="col-md-6">
+            <h6 class="text-danger border-bottom pb-2">Observaciones</h6>
+            <p class="text-muted">{{ legacy_selected.observaciones }}</p>
+        </div>
+        {% endif %}
+        {% if legacy_selected.indicaciones_medicas %}
+        <div class="col-md-6">
+            <h6 class="text-danger border-bottom pb-2">Indicaciones Médicas</h6>
+            <p class="text-muted">{{ legacy_selected.indicaciones_medicas }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>

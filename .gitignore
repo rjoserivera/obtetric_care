@@ -1,0 +1,160 @@
+# .gitignore
+# ========================
+# PYTHON + DJANGO PROJECT
+# ========================
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.pytest_cache/
+.cache/
+
+# Virtual environments
+.env
+.venv
+venv/
+env/
+ENV/
+virtualenv/
+Lib/
+Scripts/
+Include/
+pip-selfcheck.json
+pyvenv.cfg
+
+# Django stuff
+*.log
+*.pot
+db.sqlite3
+db.sqlite3-journal
+test_db.sqlite3
+local_settings.py
+media/
+staticfiles/
+static/admin/
+static/rest_framework/
+
+# Django migrations
+**/migrations/*.py
+!**/migrations/__init__.py
+**/migrations/*.pyc
+
+# Security - NUNCA subir estos
+secrets.json
+*.key
+*.pem
+obstetric_care/settings_production.py
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+*.cover
+.hypothesis/
+# NO ignorar coverage.xml - SonarCloud lo necesita
+# coverage.xml
+
+# Testing
+test_settings.py
+.tox/
+nosetests.xml
+*.log
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+.history/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Backup files
+*.bak
+*.swp
+*.swo
+*~
+*.tmp
+.temp/
+
+# Package files
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.manifest
+*.spec
+
+# Documentation
+docs/_build/
+site/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# CUSTOM PROJECT EXCLUSIONS
+# ========================
+
+# Legacy system files (si tienes)
+legacy_data/
+old_backup/
+
+# Local development
+local_*.py
+*.local
+
+# Temporary test files
+test_*.db
+temp_*.json
+
+# Archivos de Documentacion
+.xevaluacion 2/
+xevaluacion 2/
+xevaluacion 2/*
