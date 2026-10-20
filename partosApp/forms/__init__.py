@@ -1,27 +1,30 @@
 # partosApp/forms/__init__.py
 """
-Formularios de partosApp - Registro de partos
+Inicialización de formularios de partosApp
 """
 
-# Formularios existentes en partosApp/forms/
-from .paso6_profesionales_form import ProfesionalesForm
-from .registro_parto_completo_form import RegistroPartoCompletoForm
+from .registro_parto_forms import (
+    RegistroPartoBaseForm,
+    TrabajoDePartoForm,
+    InformacionPartoForm,
+    PuerperioForm,
+    AnestesiaAnalgesiaForm,
+    ProfesionalesForm,
+    RegistroPartoCompletoForm,
+)
 
-# Todos los demás formularios son el form completo usado parcialmente
-RegistroPartoBaseForm = RegistroPartoCompletoForm
-TrabajoDePartoForm = RegistroPartoCompletoForm
-InformacionPartoForm = RegistroPartoCompletoForm
-PuerperioForm = RegistroPartoCompletoForm
-AnestesiaAnalgesiaForm = RegistroPartoCompletoForm
+from .recien_nacido_forms import (
+    RegistroRecienNacidoForm,
+    DatosRecienNacidoForm,
+    ApegoAcompanamientoForm,
+)
 
-# Formularios de RN y documentos (están en recienNacidoApp)
-from recienNacidoApp.forms import RegistroRecienNacidoForm, DocumentosPartoForm
-
-# Aliases para compatibilidad
-DatosRecienNacidoForm = RegistroRecienNacidoForm
-ApegoAcompanamientoForm = RegistroRecienNacidoForm
+from .documentos_forms import (
+    DocumentosPartoForm,
+)
 
 __all__ = [
+    # Formularios de Parto
     'RegistroPartoBaseForm',
     'TrabajoDePartoForm',
     'InformacionPartoForm',
@@ -29,8 +32,10 @@ __all__ = [
     'AnestesiaAnalgesiaForm',
     'ProfesionalesForm',
     'RegistroPartoCompletoForm',
+    # Formularios de RN
     'RegistroRecienNacidoForm',
     'DatosRecienNacidoForm',
     'ApegoAcompanamientoForm',
+    # Formularios de Documentos
     'DocumentosPartoForm',
 ]

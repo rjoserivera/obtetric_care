@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -32,6 +31,7 @@ urlpatterns = [
     path('medico/', include('medicoApp.urls')),
     path('tens/', include('tensApp.urls')),
 <<<<<<< HEAD
+<<<<<<< HEAD
     path('partos/', include('partosApp.urls')), 
 ]
 
@@ -50,6 +50,16 @@ if settings.DEBUG:
     # path('2fa/', include('two_factor.urls')),
 ]
 
+=======
+    path('partos/', include('partosApp.urls')),
+
+    # ============================================
+    # AUTENTICACIÓN 2FA (TEMPORALMENTE DESACTIVADO)
+    # ============================================
+    # path('2fa/', include('two_factor.urls')),
+]
+
+>>>>>>> origin/cambios2
 # ============================================
 # DEBUG TOOLBAR (TEMPORALMENTE DESACTIVADO)
 # ============================================
@@ -60,5 +70,9 @@ if settings.DEBUG:
 #             path('__debug__/', include(debug_toolbar.urls)),
 #         ] + urlpatterns
 #     except ImportError:
+<<<<<<< HEAD
 #  
 >>>>>>> origin/alexitorres
+=======
+#  
+>>>>>>> origin/cambios2

@@ -1,10 +1,41 @@
+# partosApp/forms/__init__.py
 """
-Formularios de recienNacidoApp
+Inicialización de formularios de partosApp
 """
-from .registro_recien_nacido_form import RegistroRecienNacidoForm
-from .documentos_parto_form import DocumentosPartoForm
+
+from .registro_parto_forms import (
+    RegistroPartoBaseForm,
+    TrabajoDePartoForm,
+    InformacionPartoForm,
+    PuerperioForm,
+    AnestesiaAnalgesiaForm,
+    ProfesionalesForm,
+    RegistroPartoCompletoForm,
+)
+
+from .recien_nacido_forms import (
+    RegistroRecienNacidoForm,
+    DatosRecienNacidoForm,
+    ApegoAcompanamientoForm,
+)
+
+from .documentos_forms import (
+    DocumentosPartoForm,
+)
 
 __all__ = [
+    # Formularios de Parto
+    'RegistroPartoBaseForm',
+    'TrabajoDePartoForm',
+    'InformacionPartoForm',
+    'PuerperioForm',
+    'AnestesiaAnalgesiaForm',
+    'ProfesionalesForm',
+    'RegistroPartoCompletoForm',
+    # Formularios de RN
     'RegistroRecienNacidoForm',
+    'DatosRecienNacidoForm',
+    'ApegoAcompanamientoForm',
+    # Formularios de Documentos
     'DocumentosPartoForm',
 ]

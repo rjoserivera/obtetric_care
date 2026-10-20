@@ -1,7 +1,11 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 # .gitignore
 >>>>>>> origin/alexitorres
+=======
+# .gitignore
+>>>>>>> origin/cambios2
 # ========================
 # PYTHON + DJANGO PROJECT
 # ========================
@@ -9,9 +13,12 @@
 # Byte-compiled / cache
 __pycache__/
 <<<<<<< HEAD
+<<<<<<< HEAD
 **/__pycache__/
 =======
 >>>>>>> origin/alexitorres
+=======
+>>>>>>> origin/cambios2
 *.py[cod]
 *$py.class
 *.pyc
@@ -49,10 +56,14 @@ static/rest_framework/
 **/migrations/*.pyc
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Security
 =======
 # Security - NUNCA subir estos
 >>>>>>> origin/alexitorres
+=======
+# Security - NUNCA subir estos
+>>>>>>> origin/cambios2
 secrets.json
 *.key
 *.pem
@@ -65,11 +76,16 @@ htmlcov/
 *.cover
 .hypothesis/
 <<<<<<< HEAD
+<<<<<<< HEAD
 # coverage.xml  # <-- NO ignorar si usas SonarCloud
 =======
 # NO ignorar coverage.xml - SonarCloud lo necesita
 # coverage.xml
 >>>>>>> origin/alexitorres
+=======
+# NO ignorar coverage.xml - SonarCloud lo necesita
+# coverage.xml
+>>>>>>> origin/cambios2
 
 # Testing
 test_settings.py
@@ -158,10 +174,14 @@ dmypy.json
 # ========================
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Legacy system files
 =======
 # Legacy system files (si tienes)
 >>>>>>> origin/alexitorres
+=======
+# Legacy system files (si tienes)
+>>>>>>> origin/cambios2
 legacy_data/
 old_backup/
 
@@ -173,6 +193,7 @@ local_*.py
 test_*.db
 temp_*.json
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 # Documentación de Evaluación
 xevaluacion 2/
@@ -193,3 +214,9 @@ __pycache__/locustfile*.pyc
 xevaluacion 2/
 xevaluacion 2/*
 >>>>>>> origin/alexitorres
+=======
+# Archivos de Documentacion
+.xevaluacion 2/
+xevaluacion 2/
+xevaluacion 2/*
+>>>>>>> origin/cambios2
