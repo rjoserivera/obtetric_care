@@ -38,20 +38,42 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # ============================================
+    # AUTENTICACIÓN 2FA (TEMPORALMENTE DESACTIVADO)
+    # ============================================
+    # "django_otp",
+    # "django_otp.plugins.otp_totp",
+    # "two_factor",    
 
+<<<<<<< HEAD
     # Apps de terceros
+=======
+    # ============================================
+    # APPS DE TERCEROS
+    # ============================================
+>>>>>>> origin/alexitorres
     'crispy_forms',
     'crispy_bootstrap5',
     'widget_tweaks',
     'phonenumber_field',
     'django_filters',
     'rest_framework',
+<<<<<<< HEAD
     'debug_toolbar',
     'django_extensions',
     'auditlog',
 
 
     # Apps de Obstetric Care (ORDEN IMPORTANTE)
+=======
+    
+    # ============================================
+    # APPS DEL SISTEMA OBSTÉTRICO
+    # ============================================
+    'core',                      # Utilidades, decorators compartidos
+    'authentication',            # Gestión de autenticación y roles
+>>>>>>> origin/alexitorres
     'inicioApp',
     'gestionApp',
     'matronaApp',
@@ -73,9 +95,26 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'debug_toolbar.middleware.DebugToolbarMiddleware',  # Barra de debug (solo desarrollo)
+    
+    # ✅ Middleware de autenticación y control de roles
+    'authentication.middleware.role_gatekeeper.RoleGatekeeperMiddleware',
+    
+    # Middleware para 2FA (TEMPORALMENTE DESACTIVADO)
+    # "django_otp.middleware.OTPMiddleware",
+    # "authentication.middleware.require_2fa.Require2FAMiddleware",
 ]
+
+# # Debug Toolbar solo en desarrollo
+# if DEBUG:
+#     INSTALLED_APPS += [
+#         'debug_toolbar',
+#         'django_extensions',
+#     ]
+
+#     MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+
+#     INTERNAL_IPS = ["127.0.0.1"]
+
 
 ROOT_URLCONF = 'obstetric_care.urls'
 
