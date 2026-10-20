@@ -46,46 +46,21 @@ INSTALLED_APPS = [
     # "django_otp.plugins.otp_totp",
     # "two_factor",    
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    # Apps de terceros
-=======
     # ============================================
     # APPS DE TERCEROS
     # ============================================
->>>>>>> origin/alexitorres
-=======
-    # ============================================
-    # APPS DE TERCEROS
-    # ============================================
->>>>>>> origin/cambios2
     'crispy_forms',
     'crispy_bootstrap5',
     'widget_tweaks',
     'phonenumber_field',
     'django_filters',
     'rest_framework',
-<<<<<<< HEAD
-<<<<<<< HEAD
-    'debug_toolbar',
-    'django_extensions',
-    'auditlog',
-
-
-    # Apps de Obstetric Care (ORDEN IMPORTANTE)
-=======
-=======
->>>>>>> origin/cambios2
     
     # ============================================
     # APPS DEL SISTEMA OBSTÉTRICO
     # ============================================
     'core',                      # Utilidades, decorators compartidos
     'authentication',            # Gestión de autenticación y roles
-<<<<<<< HEAD
->>>>>>> origin/alexitorres
-=======
->>>>>>> origin/cambios2
     'inicioApp',
     'matronaApp',
     'medicoApp',
@@ -151,26 +126,31 @@ WSGI_APPLICATION = 'obstetric_care.wsgi.application'
 import pymysql
 pymysql.install_as_MySQLdb()
 
+DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
+DB_USER = os.environ.get('DB_USER', 'root')
+DB_HOST = os.environ.get('DB_HOST', '127.0.0.1')
+DB_PORT = os.environ.get('DB_PORT', '3306')
+
 DATABASES = {
     # Base principal del sistema (es la que usa Django para migraciones nuevas)
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'obstetric_carebdd',
-        'USER': 'root',
-        'PASSWORD': '12345678',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'NAME': os.environ.get('DB_NAME', 'obstetric_carebdd'),
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
         'OPTIONS': {'charset': 'utf8mb4'},
     },
 
     # Base histórica (solo lectura)
     'legacy': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'legacy_obstetric',
-        'USER': 'root',
-        'PASSWORD': '12345678',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'NAME': os.environ.get('LEGACY_DB_NAME', 'legacy_obstetric'),
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
         'OPTIONS': {'charset': 'utf8mb4'},
     },
 }
